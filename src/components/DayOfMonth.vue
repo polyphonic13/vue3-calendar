@@ -51,7 +51,7 @@
     };
 
     watch(() => props.day, () => {
-        dayButtonClasses.current = getIsToday();
+        dayButtonClasses['day_btn--current'] = getIsToday();
     });
 
     watch(() => props.isSelecting, () => {
@@ -61,7 +61,7 @@
     });
 
     const dayButtonClasses = reactive({
-        current: getIsToday(),
+        'day_btn--current': getIsToday(),
     });
 
     const classes = computed(() => ({
@@ -99,14 +99,17 @@
         display: flex;
         flex-direction: column;
 
-        border-right: 1px #ccc solid;
-        border-bottom: 1px #ccc solid;
+        background-color: $active-bg01;
+
+        border-color: $border-color01;
+        border-right: 1px solid;
+        border-bottom: 1px solid;
 
         cursor: pointer;
     }
 
     .day__other_month {
-        background-color: rgba(238, 238, 238, 0.66);
+        background-color: $inactive-bg01;
     }
 
     .day__selecting {
@@ -159,6 +162,19 @@
         box-sizing: border-box;
     }
 
+    .day_button:hover {
+        background-color: #eee;
+    }
+
+    .day_btn--current {
+        background-color: $highlighted-color-primary;
+    }
+
+    .day_btn--current:hover {
+        background-color: $highlighted-color-hover-primary;
+
+    }
+
     @media screen and (max-width: 400px) {
         .day_button {
             min-width: 24px;
@@ -169,17 +185,4 @@
             font-size: 0.5em;
         }
     }
-    .day_button:hover {
-        background-color: #eee;
-    }
-
-    .current {
-        background-color: #d9eafb;
-    }
-
-    .current:hover {
-        background-color: #abcdef;
-
-    }
-
 </style>

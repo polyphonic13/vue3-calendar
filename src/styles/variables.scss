@@ -1,1 +1,14 @@
-$selected-color: rgba(50, 188, 248, 0.2);
+$border-color01: #ccc;
+
+$active-bg01: #fff;
+$active-bg01-hover: rgba(238, 238, 238, 0.75);
+
+$inactive-bg01: rgba(238, 238, 238, 0.66);
+
+$highlighted-color-primary: #d9eafb;
+$highlighted-color-hover-primary: #abcdef;
+
+$selecting-color-primary: rgba(50, 188, 248, 0.2);
+
+/* offset-x | offset-y | blur-radius | spread-radius | color */
+$box-shadow01: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);

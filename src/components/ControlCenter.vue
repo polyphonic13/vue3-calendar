@@ -12,6 +12,7 @@
         </div>
     </div>
 </template>
+
 <script setup lang="ts">
     import { ref, computed } from 'vue';
 
@@ -28,9 +29,11 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/variables.scss';
+
     .control_center {
         color: #123456;
-        background-color: rgba(242, 250, 250);
+        background-color: $highlighted-color-primary;
 
         padding: 8px;
         box-sizing: border-box;

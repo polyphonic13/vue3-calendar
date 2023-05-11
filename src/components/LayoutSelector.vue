@@ -159,7 +159,9 @@
     });
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
+    @import '../styles/variables.scss';
+
     .layout_selector {
         width: 100%;
         min-width: 64px;
@@ -174,18 +176,17 @@
     }
 
     .layout_selector__list {
-        background-color: white;
+        background-color: $active-bg01;
 
         width: 224px;
-        // height: 320px;
+
         top: 38px;
         right: 0;
 
         padding: 8px;
         box-sizing: border-box;
 
-        /* offset-x | offset-y | blur-radius | spread-radius | color */
-        box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+        box-shadow: $box-shadow01;
 
         position: absolute;
         z-index: 100;
@@ -203,17 +204,18 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        // flex: 1;
     }
 
     .list__btn {
         min-width: 90px;
-        background: none;
+        background-color: $active-bg01;
 
         padding: 8px;
         margin: 0 4px 0 4px;
 
-        border: 1px solid #ccc;
+        border: 1px solid;
+        border-color: $border-color01;
+
         box-sizing: border-box;
 
         display: flex;
@@ -223,21 +225,21 @@
         cursor: pointer;
     }
 
-    .list__btn:hover {
-        background-color: rgba(238, 238, 238, 0.75);
-    }
-
     .list__btn:hover:disabled {
         background-color: transparent;
     }
 
     .layout__btn {
-        background: #fff;
+        background: $active-bg01;
         border: transparent;
 
         text-align: left;
 
         cursor: pointer;
+    }
+
+    .list__btn:hover, .layout__btn:hover {
+        background-color: $active-bg01-hover;
     }
 
 </style>

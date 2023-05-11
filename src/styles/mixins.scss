@@ -1,5 +1,5 @@
 @import "./variables.scss";
 
 @mixin selected-item {
-    background-color: $selected-color;
+    background-color: $selecting-color-primary;
 }
