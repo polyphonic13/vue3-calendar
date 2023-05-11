@@ -16,32 +16,32 @@
         >
             <button
                 class="layout_selector__list_item layout__btn"
-                :disabled="props.layout === CalendarType.DAY"
-                @click="() => onLayoutBtnClicked(CalendarType.DAY)"
+                :disabled="props.layout === CalendarLayout.DAY"
+                @click="() => onLayoutBtnClicked(CalendarLayout.DAY)"
             >
                 <span>DAY</span>
                 <span>d</span>
             </button>
             <button
                 class="layout_selector__list_item layout__btn"
-                :disabled="props.layout === CalendarType.WEEK"
-                @click="() => onLayoutBtnClicked(CalendarType.WEEK)"
+                :disabled="props.layout === CalendarLayout.WEEK"
+                @click="() => onLayoutBtnClicked(CalendarLayout.WEEK)"
             >
                 <span>WEEK</span>
                 <span>w</span>
             </button>
             <button
                 class="layout_selector__list_item layout__btn"
-                :disabled="props.layout === CalendarType.MONTH"
-                @click="() => onLayoutBtnClicked(CalendarType.MONTH)"
+                :disabled="props.layout === CalendarLayout.MONTH"
+                @click="() => onLayoutBtnClicked(CalendarLayout.MONTH)"
             >
                 <span>MONTH</span>
                 <span>m</span>
             </button>
             <button
                 class="layout_selector__list_item layout__btn"
-                :disabled="props.layout === CalendarType.YEAR"
-                @click="() => onLayoutBtnClicked(CalendarType.YEAR)"
+                :disabled="props.layout === CalendarLayout.YEAR"
+                @click="() => onLayoutBtnClicked(CalendarLayout.YEAR)"
             >
                 <span>YEAR</span>
                 <span>y</span>
@@ -52,192 +52,192 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted } from 'vue';
+    import { onUnmounted, ref, reactive } from 'vue';
 
-import type { CalendarLayout } from '@/enum/CalendarLayout';
+    import { CalendarLayout } from '@/enum/CalendarLayout';
 
-interface ILayoutSelectorProps {
-    layout: CalendarLayout;
-}
-
-const props = defineProps<ILayoutSelectorProps>();
-
-const emit = defineEmits(['layoutBtnClicked']);
-
-const state = reactive({
-    isListOpen: false,
-});
-
-const root = ref<HTMLElement | null>(null);
-const listBtn = ref<HTMLElement | null>(null);
-
-const LAYOUT_TYPES_FOR_KEY = new Map<string, CalendarType>(
-    [
-        ['m', CalendarType.MONTH],
-        ['w', CalendarType.WEEK],
-        ['d', CalendarType.DAY],
-    ],
-);
-
-const updateLayout = (type: CalendarType) => {
-    state.isListOpen = false;
-    emit('layoutBtnClicked', type);
-};
-
-const onLayoutBtnClicked = (type: CalendarType) => {
-    updateLayout(type);
-};
-
-const onOpenListClicked = () => {
-    state.isListOpen = !state.isListOpen;
-
-    if (!state.isListOpen) {
-        removeDocumentListener();
-        return;
+    interface ILayoutSelectorProps {
+        layout: CalendarLayout;
     }
 
-    addDocumentListener();
-};
+    const props = defineProps<ILayoutSelectorProps>();
 
-const onKeyDown = (event: KeyboardEvent) => {
-    if (!state.isListOpen) {
-        return;
-    }
+    const emit = defineEmits(['layoutBtnClicked']);
 
-    const key = event.key.toLowerCase();
+    const state = reactive({
+        isListOpen: false,
+    });
 
-    if (key === 'escape') {
+    const root = ref<HTMLElement | null>(null);
+    const listBtn = ref<HTMLElement | null>(null);
+
+    const LAYOUT_TYPES_FOR_KEY = new Map<string, CalendarLayout>(
+        [
+            ['m', CalendarLayout.MONTH],
+            ['w', CalendarLayout.WEEK],
+            ['d', CalendarLayout.DAY],
+        ],
+    );
+
+    const updateLayout = (type: CalendarLayout) => {
         state.isListOpen = false;
-        return;
-    }
+        emit('layoutBtnClicked', type);
+    };
 
-    const type: CalendarType | undefined = LAYOUT_TYPES_FOR_KEY.get(key);
+    const onLayoutBtnClicked = (type: CalendarLayout) => {
+        updateLayout(type);
+    };
 
-    if (!type) {
-        return;
-    }
+    const onOpenListClicked = () => {
+        state.isListOpen = !state.isListOpen;
 
-    updateLayout(type);
+        if (!state.isListOpen) {
+            removeDocumentListener();
+            return;
+        }
 
-    if (!listBtn.value) {
-        return;
-    }
+        addDocumentListener();
+    };
 
-    listBtn.value.blur();
-};
+    const onKeyDown = (event: KeyboardEvent) => {
+        if (!state.isListOpen) {
+            return;
+        }
 
-const onDocumentClicked = (event: MouseEvent) => {
-    if (!state.isListOpen) {
-        return;
-    }
+        const key = event.key.toLowerCase();
 
-    if (!root || !root.value) {
-        return;
-    }
+        if (key === 'escape') {
+            state.isListOpen = false;
+            return;
+        }
 
-    if (!event.target) {
-        return;
-    }
+        const type: CalendarLayout | undefined = LAYOUT_TYPES_FOR_KEY.get(key);
 
-    if (root.value.contains(event.target as HTMLElement)) {
-        return;
-    }
+        if (!type) {
+            return;
+        }
 
-    state.isListOpen = false;
-};
+        updateLayout(type);
 
-const addDocumentListener = () => {
-    document.addEventListener('click', (event) => onDocumentClicked(event));
-};
+        if (!listBtn.value) {
+            return;
+        }
 
-const removeDocumentListener = () => {
-    document.removeEventListener('click', (event) => onDocumentClicked(event));
-};
+        listBtn.value.blur();
+    };
 
-onUnmounted(() => {
-    removeDocumentListener();
-});
+    const onDocumentClicked = (event: MouseEvent) => {
+        if (!state.isListOpen) {
+            return;
+        }
+
+        if (!root || !root.value) {
+            return;
+        }
+
+        if (!event.target) {
+            return;
+        }
+
+        if (root.value.contains(event.target as HTMLElement)) {
+            return;
+        }
+
+        state.isListOpen = false;
+    };
+
+    const addDocumentListener = () => {
+        document.addEventListener('click', (event) => onDocumentClicked(event));
+    };
+
+    const removeDocumentListener = () => {
+        document.removeEventListener('click', (event) => onDocumentClicked(event));
+    };
+
+    onUnmounted(() => {
+        removeDocumentListener();
+    });
 </script>
 
 <style lang="scss" scoped>
-.layout_selector {
-    width: 100%;
-    min-width: 64px;
+    .layout_selector {
+        width: 100%;
+        min-width: 64px;
 
-    height: 100%;
+        height: 100%;
 
-    position: relative;
+        position: relative;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-.layout_selector__list {
-    background-color: white;
+    .layout_selector__list {
+        background-color: white;
 
-    width: 224px;
-    // height: 320px;
-    top: 38px;
-    right: 0;
+        width: 224px;
+        // height: 320px;
+        top: 38px;
+        right: 0;
 
-    padding: 8px;
-    box-sizing: border-box;
+        padding: 8px;
+        box-sizing: border-box;
 
-    /* offset-x | offset-y | blur-radius | spread-radius | color */
-    box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+        /* offset-x | offset-y | blur-radius | spread-radius | color */
+        box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
 
-    position: absolute;
-    z-index: 100;
+        position: absolute;
+        z-index: 100;
 
-    display: flex;
-    flex-direction: column;
-}
+        display: flex;
+        flex-direction: column;
+    }
 
-.layout_selector__list_item {
-    width: 100%;
+    .layout_selector__list_item {
+        width: 100%;
 
-    padding: 8px;
-    box-sizing: border-box;
+        padding: 8px;
+        box-sizing: border-box;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    // flex: 1;
-}
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        // flex: 1;
+    }
 
-.list__btn {
-    min-width: 90px;
-    background: none;
+    .list__btn {
+        min-width: 90px;
+        background: none;
 
-    padding: 8px;
-    margin: 0 4px 0 4px;
+        padding: 8px;
+        margin: 0 4px 0 4px;
 
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-    cursor: pointer;
-}
+        cursor: pointer;
+    }
 
-.list__btn:hover {
-    background-color: rgba(238, 238, 238, 0.75);
-}
+    .list__btn:hover {
+        background-color: rgba(238, 238, 238, 0.75);
+    }
 
-.list__btn:hover:disabled {
-    background-color: transparent;
-}
+    .list__btn:hover:disabled {
+        background-color: transparent;
+    }
 
-.layout__btn {
-    background: #fff;
-    border: transparent;
+    .layout__btn {
+        background: #fff;
+        border: transparent;
 
-    text-align: left;
+        text-align: left;
 
-    cursor: pointer;
-}
+        cursor: pointer;
+    }
 
 </style>

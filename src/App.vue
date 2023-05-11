@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import Calendar from './components/Calendar.vue'
+import Calendar from '@/views/Calendar.vue'
 </script>
 
 <template>
     <div class="wrapper">
-        <Calendar msg="You did it!" />
+        <Calendar />
     </div>
 </template>
 

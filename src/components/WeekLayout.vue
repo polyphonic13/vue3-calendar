@@ -23,7 +23,7 @@
                     v-for="(day, d2) in props.weekInfo.days"
                     :key="`${props.year}${props.month}${day.date}${d2}`"
                     :index="d2"
-                    :day-name="day.dayName"
+                    :day-name="`${(day.dayName) ? day.dayName : ''}`"
                     :is-include-time-label="(d2 === 0)"
                     :is-selecting="isSelecting"
                     :selected-items="selectedItems"
@@ -38,7 +38,12 @@
 </template>
 
 <script setup lang="ts">
-    import { IEvent, IWeekInfo } from '~/interfaces';
+    import { toRef, watch, onMounted } from 'vue';
+
+    import type { IEvent, IWeekInfo } from '@/interfaces';
+
+    import { TIMES_IN_DAY } from '@/composables/use-date-utils';
+    import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
 
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';

@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-    import { reactive, computed } from 'vue';
+    import { reactive, computed, onMounted } from 'vue';
 
     import { CalendarLayout } from '../enum/CalendarLayout';
 
@@ -55,22 +55,18 @@
         IDayInfo,
         IMonthInfo,
         IEvent,
-        IWeekInfo,
-        IYearMonthDay,
     } from '../interfaces';
 
     import {
         MONTH_NAMES,
         getMonthInfo,
-        getPrevWeek,
-        getNextWeek,
-        convertDateToYMD,
+        getMonthInfoForToday,
     } from '../composables/use-date-utils'
 
-    import MonthLayout from '../components/MonthLayout.vue';
-    import WeekLayout from './WeekLayout.vue';
-    import DayLayout from './DayLayout.vue';
-    import LayoutSelector from './LayoutSelector.vue';
+    import MonthLayout from '@/components/MonthLayout.vue';
+    import WeekLayout from '@/components/WeekLayout.vue';
+    import DayLayout from '@/components/DayLayout.vue';
+    import LayoutSelector from '@/components/LayoutSelector.vue';
 
     interface ICalendarProps {
         layout?: CalendarLayout,

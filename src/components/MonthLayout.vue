@@ -22,14 +22,19 @@
 </template>
 
 <script setup lang="ts">
-    import {
+    import { toRef, watch, onMounted } from 'vue';
+
+    import type {
         IDayInfo,
         IEvent,
         IMonthInfo,
-    } from '~/interfaces';
+    } from '@/interfaces';
 
     import DayOfMonth from './DayOfMonth.vue';
     import DaysOfWeekNames from './DaysOfWeekNames.vue';
+
+    import { TIMES_IN_DAY } from '@/composables/use-date-utils';
+    import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
 
     interface IMonthProps {
         year: number;

@@ -5,7 +5,7 @@
                 :year="props.year"
                 :month="props.dayInfo.month"
                 :day="props.dayInfo.date"
-                :day-name="props.dayInfo.dayName"
+                :day-name="dayName"
                 @mousedown="onAddEventForDay"
             />
         </div>
@@ -13,7 +13,7 @@
             <div class="day_list">
                 <DayOfWeek
                     :index="0"
-                    :day-name="props.dayInfo.dayName"
+                    :day-name="dayName"
                     :is-include-time-label="true"
                     :is-selecting="isSelecting"
                     :selected-items="selectedItems"
@@ -27,10 +27,15 @@
 </template>
 
 <script setup lang="ts">
-    import { IDayInfo, IEvent } from '~/interfaces';
+    import { toRef, watch, onMounted, computed } from 'vue';
+
+    import type { IDayInfo, IEvent } from '@/interfaces';
 
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
+
+    import { TIMES_IN_DAY } from '@/composables/use-date-utils';
+    import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
 
     interface IDayLayoutProps {
         year: number;
@@ -51,6 +56,8 @@
     const isSelecting = toRef(state, 'isSelecting');
 
     const emit = defineEmits(['addEvent']);
+
+    const dayName = computed(() => (props.dayInfo.dayName) ? props.dayInfo.dayName : '');
 
     const initHourIndices = () => {
         initIndices<string>(TIMES_IN_DAY);
