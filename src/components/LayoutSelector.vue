@@ -160,7 +160,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '../styles/variables.scss';
+    @import '../styles/global.scss';
 
     .layout_selector {
         width: 100%;
@@ -176,7 +176,7 @@
     }
 
     .layout_selector__list {
-        background-color: $active-bg01;
+        background-color: $primary-bg01;
 
         width: 224px;
 
@@ -208,7 +208,7 @@
 
     .list__btn {
         min-width: 90px;
-        background-color: $active-bg01;
+        background-color: $primary-bg01;
 
         padding: 8px;
         margin: 0 4px 0 4px;
@@ -230,7 +230,7 @@
     }
 
     .layout__btn {
-        background: $active-bg01;
+        background: $primary-bg01;
         border: transparent;
 
         text-align: left;
@@ -239,7 +239,7 @@
     }
 
     .list__btn:hover, .layout__btn:hover {
-        background-color: $active-bg01-hover;
+        background-color: $primary-bg01-hover;
     }
 
 </style>

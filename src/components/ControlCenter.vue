@@ -29,7 +29,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '../styles/variables.scss';
+    @import '../styles/global.scss';
 
     .control_center {
         color: #123456;

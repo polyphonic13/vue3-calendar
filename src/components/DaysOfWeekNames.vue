@@ -15,10 +15,10 @@
 </script>
 
 <style scoped lang="scss">
-    @import '../styles/variables.scss';
+    @import '../styles/global.scss';
 
     .day_names {
-        background-color: $active-bg01;
+        background-color: $primary-bg01;
         width: 100%;
         min-height: 28px;
         box-sizing: border-box;

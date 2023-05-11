@@ -452,6 +452,8 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/global.scss';
+
     .calendar {
         height: 100%;
         flex: 1;
@@ -512,8 +514,8 @@
         height: 100%;
 
         box-sizing: border-box;
-        border-right: 1px #ccc solid;
-        border-bottom: 1px #ccc solid;
+        border-right: 1px solid $border-color01;
+        border-bottom: 1px solid $border-color01;
 
         display:flex;
         align-items: center;

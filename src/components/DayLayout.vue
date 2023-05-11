@@ -106,87 +106,87 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/global.scss';
 
-.week {
-    height: calc(100% - 98px);
-
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-
-    border-left: 1px #ccc solid;
-    border-bottom: 1px #ccc solid;
-}
-
-@media screen and (max-width: 400px) {
     .week {
-        height: calc(100% - 144px);
+        height: calc(100% - 98px);
+
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        border-left: 1px solid $border-color01;
+        border-bottom: 1px solid $border-color01;
     }
-}
 
-.day_of_week_headers {
-    width: 100%;
-    display: flex;
+    @media screen and (max-width: 400px) {
+        .week {
+            height: calc(100% - 144px);
+        }
+    }
 
-}
+    .day_of_week_headers {
+        width: 100%;
+        display: flex;
 
-.day_container {
-    width: 100%;
+    }
 
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    .day_container {
+        width: 100%;
 
-    border-top: 1px #ccc solid;
-    box-sizing: border-box;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
 
-    overflow-y: scroll;
+        border-top: 1px solid $border-color01;
+        box-sizing: border-box;
 
-}
+        overflow-y: scroll;
 
-.time_column {
-    max-width: 64px;
+    }
 
-    display: flex;
-    flex-direction: column;
+    .time_column {
+        max-width: 64px;
 
-    text-align: right;
-    user-select: none;
-}
+        display: flex;
+        flex-direction: column;
 
-.week_number {
+        text-align: right;
+        user-select: none;
+    }
 
-    font-size: 1em;
-}
+    .week_number {
 
-.week_number > span {
-    transform: rotate(-90deg);
-}
+        font-size: 1em;
+    }
 
-.time_slot {
-    min-height: 48px;
-    max-height: 48px;
+    .week_number > span {
+        transform: rotate(-90deg);
+    }
 
-    font-size: 0.85em;
-}
+    .time_slot {
+        min-height: 48px;
+        max-height: 48px;
 
-.week_number, .time_slot {
-    padding: 4px;
-    box-sizing: border-box;
+        font-size: 0.85em;
+    }
 
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    /* border: 1px solid #eee; */
-    border-right: 1px #ccc solid;
-    /* border-bottom: 1px #ccc solid; */
+    .week_number, .time_slot {
+        padding: 4px;
+        box-sizing: border-box;
 
-    color: #777;
-}
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        /* border: 1px solid #eee; */
+        border-right: 1px solid $border-color01;
 
-.day_list {
-    flex: 1;
-    display: flex;
-}
+        color: $greyscale01;
+    }
+
+    .day_list {
+        flex: 1;
+        display: flex;
+    }
 
 </style>

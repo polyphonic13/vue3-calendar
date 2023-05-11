@@ -111,6 +111,7 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/global.scss';
 
     .week {
         height: calc(100% - 98px);
@@ -121,8 +122,8 @@
 
         position: relative;
 
-        border-left: 1px #ccc solid;
-        border-bottom: 1px #ccc solid;
+        border-left: 1px solid $border-color01;
+        border-bottom: 1px solid $border-color01;
     }
 
     @media screen and (max-width: 400px) {
@@ -144,7 +145,7 @@
         display: flex;
         flex-direction: column;
 
-        border-top: 1px #ccc solid;
+        border-top: 1px solid $border-color01;
         box-sizing: border-mouseBox;
 
         overflow-y: scroll;
@@ -185,10 +186,10 @@
         align-items: center;
         justify-content: flex-end;
         /* border: 1px solid #eee; */
-        border-right: 1px #ccc solid;
-        /* border-bottom: 1px #ccc solid; */
+        border-right: 1px solid $border-color01;
+        /* border-bottom: 1px solid $border-color01; */
 
-        color: #777;
+        color: $greyscale01;
     }
 
     .day_list {

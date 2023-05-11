@@ -59,6 +59,7 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/global.scss';
     @import '../styles/mixins.scss';
 
     .day {
@@ -70,8 +71,8 @@
         display: flex;
         flex-direction: column;
 
-        border-right: 1px #ccc solid;
-        border-bottom: 1px #ccc solid;
+        border-right: 1px solid $border-color01;
+        border-bottom: 1px solid $border-color01;
 
         cursor: pointer;
     }
@@ -119,7 +120,7 @@
         transform: rotate(-90deg);
 
         font-size: 1em;
-        color: #777;
+        color: $secondary-bg03;
         user-select: none;
     }
 
@@ -168,24 +169,20 @@
         }
     }
     .day_button:hover {
-        background-color: #eee;
+        $primary-bg01-hover: #eee;
     }
 
     .current {
-        /* background-color: rgba(242, 250, 250, 0.75); */
-        /* background-color: #123456; */
-        background-color: #d9eafb;
-        /* color: #fff; */
+        background-color: $highlighted-color-primary;
     }
 
     .current:hover {
-        /* background-color: #345678; */
-        background-color: #abcdef;
+        background-color: $highlighted-color-primary-hover;
 
     }
 
     .inactive {
-        color: #444;
+        color: $secondary-bg02;
         background-color: rgba(238, 238, 238, 0.5);
     }
 

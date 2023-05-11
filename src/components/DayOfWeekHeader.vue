@@ -44,6 +44,8 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/global.scss';
+
     .day {
         width: 100%;
 
@@ -52,9 +54,8 @@
         display: flex;
         flex-direction: column;
 
-        border-right: 1px #ccc solid;
-        border-top: 1px #ccc solid;
-        /* border-bottom: 1px #ccc solid; */
+        border-right: 1px solid $border-color01;
+        border-top: 1px solid $border-color01;
 
         cursor: pointer;
     }
@@ -79,7 +80,7 @@
 
         padding: 4px;
         box-sizing: border-box;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid $border-color01;
 
         display: flex;
         align-items: center;
@@ -119,15 +120,15 @@
         }
     }
     .day_button:hover {
-        background-color: #eee;
+        background-color: $primary-bg01-hover;
     }
 
     .current {
-        background-color: #d9eafb;
+        background-color: $highlighted-color-primary;
     }
 
     .current:hover {
-        background-color: #abcdef;
+        background-color: $highlighted-color-primary-hover;
 
     }
 
