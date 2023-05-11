@@ -15,29 +15,31 @@
 </script>
 
 <style scoped lang="scss">
-    .day_names {
-    background-color: #fff;
-    width: 100%;
-    min-height: 28px;
-    box-sizing: border-box;
+    @import '../styles/variables.scss';
 
-    display: flex;
+    .day_names {
+        background-color: $active-bg01;
+        width: 100%;
+        min-height: 28px;
+        box-sizing: border-box;
+
+        display: flex;
     }
 
     .day_name {
-    text-align: center;
-    width: calc(100%/7);
-    height: 100%;
+        text-align: center;
+        width: calc(100%/7);
+        height: 100%;
 
-    box-sizing: border-box;
-    border-top: 1px #ccc solid;
-    border-right: 1px #ccc solid;
-    border-bottom: 1px #ccc solid;
+        box-sizing: border-box;
+        border-top: 1px solid $border-color01;
+        border-right: 1px solid $border-color01;
+        border-bottom: 1px solid $border-color01;
 
-    display:flex;
-    align-items: center;
-    justify-content: center;
+        display:flex;
+        align-items: center;
+        justify-content: center;
 
-    user-select: none;
+        user-select: none;
     }
 </style>

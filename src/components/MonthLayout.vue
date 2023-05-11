@@ -124,13 +124,15 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/variables.scss';
+
     .month {
         width: 100%;
         flex: 1;
         display: flex;
         flex-direction: column;
 
-        border-left: 1px #ccc solid;
+        border-left: 1px solid $border-color01;
     }
 
     .week {

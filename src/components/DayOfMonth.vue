@@ -89,6 +89,7 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../styles/variables.scss';
     @import '../styles/mixins.scss';
 
     .day {
@@ -101,9 +102,8 @@
 
         background-color: $active-bg01;
 
-        border-color: $border-color01;
-        border-right: 1px solid;
-        border-bottom: 1px solid;
+        border-right: 1px solid $border-color01;
+        border-bottom: 1px solid $border-color01;
 
         cursor: pointer;
     }
@@ -163,7 +163,7 @@
     }
 
     .day_button:hover {
-        background-color: #eee;
+        background-color: $active-bg01-hover;
     }
 
     .day_btn--current {
