@@ -138,6 +138,8 @@ export function useDateUtils() {
 
     const getMonthInfo = (year: number, month: number): IMonthInfo => {
         const monthInfo: IMonthInfo = {
+            year,
+            month,
             monthName: MONTH_NAMES[month],
             days: [],
             weeks: [],

@@ -6,7 +6,7 @@ import { CalendarLayout } from '@/enum/CalendarLayout';
 import { useLocalStorage } from '@/composables/use-local-storage';
 import { useDateUtils, MONTH_NAMES } from '@/composables/use-date-utils';
 
-import type { IBaseCalendarState, ICalendarState } from '@/interfaces';
+import type { IBaseCalendarState, ICalendarState, IMonthInfo } from '@/interfaces';
 
 const LOCAL_STORAGE_KEY = 'calendarAppCalendarData';
 
@@ -15,11 +15,15 @@ const { getMonthInfo, getMonthInfoForToday } = useDateUtils();
 
 export const useCalendarStore = defineStore('calendar', () => {
 
+    const months: IMonthInfo[] = [];
+
     const initState = (): ICalendarState => {
         const savedState = get<IBaseCalendarState>(LOCAL_STORAGE_KEY);
+        let monthInfo;
 
         if (savedState) {
-            const monthInfo = getMonthInfo(savedState.year, savedState.month);
+            monthInfo = getMonthInfo(savedState.year, savedState.month);
+            months.push(monthInfo);
             return {
                 ...savedState,
                 monthInfo,
@@ -30,7 +34,8 @@ export const useCalendarStore = defineStore('calendar', () => {
         const year = now.getFullYear();
         const month = now.getMonth();
 
-        const monthInfo = getMonthInfo(year, month);
+        monthInfo = getMonthInfo(year, month);
+        months.push(monthInfo);
         const { week, day } = monthInfo.todayIndices;
 
         return {
@@ -43,6 +48,8 @@ export const useCalendarStore = defineStore('calendar', () => {
         }
     };
 
+    const state = ref<ICalendarState>(initState());
+
     const saveState = () => {
         const { year, month, week, day, layout } = state.value;
         console.log(`saveState, year = ${year}, month = ${month}, week = ${week}, day = ${day}, layout = ${layout}`);
@@ -50,11 +57,17 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const updateMonthInfo = () => {
+        const { year, month } = state.value;
+        const savedMonth = months.find((monthInfo) => monthInfo.year === year && monthInfo.month === month);
+
+        if (savedMonth) {
+            console.log(`month previously saved`);
+            state.value.monthInfo = savedMonth;
+            return;
+        }
         state.value.monthInfo = getMonthInfo(state.value.year, state.value.month);
-
+        months.push(state.value.monthInfo);
     };
-
-    const state = ref<ICalendarState>(initState());
 
     const setLayout = (value: CalendarLayout) => {
         state.value.layout = value;
