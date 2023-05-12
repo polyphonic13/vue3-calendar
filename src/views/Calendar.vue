@@ -50,10 +50,11 @@
     import { computed } from 'vue';
     import { storeToRefs } from 'pinia';
 
+    import { MONTH_NAMES } from '@/composables/use-date-utils';
+
     import { CalendarLayout } from '../enum/CalendarLayout';
 
     import { useCalendarStore } from '@/stores/calendar';
-    import { MONTH_NAMES, useDateUtils } from '@/composables/use-date-utils';
 
     import type {
         IDayInfo,
@@ -65,17 +66,9 @@
     import DayLayout from '@/components/DayLayout.vue';
     import LayoutSelector from '@/components/LayoutSelector.vue';
 
-    interface ICalendarProps {
-        layout?: CalendarLayout,
-        year?: number,
-        month?: number,
-    }
-
-    const props = defineProps<ICalendarProps>();
-
     const store = useCalendarStore();
     const { state } = storeToRefs(store);
-    console.log(`calendar being defined, state = `, state, `\nstore.state = `, store.state);
+
     const {
         setLayout,
         setInfoToToday,

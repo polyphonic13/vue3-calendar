@@ -6,7 +6,11 @@ import { CalendarLayout } from '@/enum/CalendarLayout';
 import { useLocalStorage } from '@/composables/use-local-storage';
 import { useDateUtils, MONTH_NAMES } from '@/composables/use-date-utils';
 
-import type { IBaseCalendarState, ICalendarState, IMonthInfo } from '@/interfaces';
+import type {
+    IBaseCalendarState,
+    ICalendarState,
+    IMonthInfo,
+} from '@/interfaces';
 
 const LOCAL_STORAGE_KEY = 'calendarAppCalendarData';
 
@@ -17,7 +21,7 @@ export const useCalendarStore = defineStore('calendar', () => {
 
     const months: IMonthInfo[] = [];
 
-    const initState = (): ICalendarState => {
+    const createState = (): ICalendarState => {
         const savedState = get<IBaseCalendarState>(LOCAL_STORAGE_KEY);
         let monthInfo;
 
@@ -48,7 +52,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         }
     };
 
-    const state = ref<ICalendarState>(initState());
+    const state = ref<ICalendarState>(createState());
 
     const saveState = () => {
         const { year, month, week, day, layout } = state.value;
