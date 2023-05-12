@@ -3,7 +3,7 @@
         <div class="header">
             <div class="header__content">
                 <span class="title">{{ headerTitle }}</span>
-                <span v-if="state.layout === CalendarLayout.WEEK && state.monthInfo">WEEK {{ state.monthInfo.weeks[state.weekIndex].weekNumber }}</span>
+                <span v-if="state.layout === CalendarLayout.WEEK && state.monthInfo">WEEK {{ state.monthInfo.weeks[state.week].weekNumber }}</span>
             </div>
             <div class="controls">
                 <button class="control__btn arrow_btn" @click="onPrevClicked">
@@ -23,7 +23,7 @@
         <MonthLayout
             v-if="state.layout === CalendarLayout.MONTH && state.monthInfo && !isUpdating"
             :year="state.year"
-            :month="state.monthIndex"
+            :month="state.month"
             :month-info="state.monthInfo"
             @date-clicked="onDateClicked"
             @add-event="onAddEvent"
@@ -31,16 +31,16 @@
         <WeekLayout
             v-if="state.layout === CalendarLayout.WEEK && state.monthInfo && !isUpdating"
             :year="state.year"
-            :month="state.monthIndex"
-            :index="state.weekIndex"
-            :week-info="state.monthInfo.weeks[state.weekIndex]"
+            :month="state.month"
+            :index="state.week"
+            :week-info="state.monthInfo.weeks[state.week]"
             @date-clicked="onDateClicked"
             @add-event="onAddEvent"
         />
         <DayLayout
             v-if="state.layout === CalendarLayout.DAY && state.monthInfo && !isUpdating"
             :year="state.year"
-            :day-info="state.monthInfo.weeks[state.weekIndex].days[state.dayIndex]"
+            :day-info="state.monthInfo.weeks[state.week].days[state.day]"
             @add-event="onAddEvent"
         />
     </div>
@@ -53,11 +53,10 @@
     import { CalendarLayout } from '../enum/CalendarLayout';
 
     import { useCalendarStore } from '@/stores/calendar';
-    import { useDateUtils } from '@/composables/use-date-utils';
+    import { MONTH_NAMES, useDateUtils } from '@/composables/use-date-utils';
 
     import type {
         IDayInfo,
-        IMonthInfo,
         IEvent,
     } from '../interfaces';
 
@@ -79,10 +78,7 @@
     console.log(`calendar being defined, state = `, state, `\nstore.state = `, store.state);
     const { setLayout, setInfoToToday } = store;
 
-    const {
-        MONTH_NAMES,
-        getMonthInfo,
-    } = useDateUtils();
+    const { getMonthInfo } = useDateUtils();
 
     let isUpdating = false;
 
@@ -94,8 +90,8 @@
         }
         updateMonthInfo();
         const todayIndices = state.value.monthInfo.todayIndices;
-        state.value.weekIndex = todayIndices.week;
-        state.value.dayIndex = todayIndices.day;
+        state.value.week = todayIndices.week;
+        state.value.day = todayIndices.day;
     });
 
     const headerTitle = computed(() => {
@@ -104,10 +100,10 @@
         }
 
         if (state.value.layout !== CalendarLayout.WEEK) {
-            return `${MONTH_NAMES[state.value.monthIndex]} ${state.value.year}`;
+            return `${MONTH_NAMES[state.value.month]} ${state.value.year}`;
         }
 
-        const weekInfo = state.value.monthInfo.weeks[state.value.weekIndex];
+        const weekInfo = state.value.monthInfo.weeks[state.value.week];
         const monthIndices: number[] = [];
 
         weekInfo.days.forEach((day: IDayInfo) => {
@@ -125,21 +121,21 @@
         if (!state) {
             return;
         }
-        state.value.monthInfo = getMonthInfo(state.value.year, state.value.monthIndex);
+        state.value.monthInfo = getMonthInfo(state.value.year, state.value.month);
         // console.log(`get month info: `, state.value.monthInfo);
         isUpdating = false;
     };
 
     const updateMonth = () => {
-        const monthOfCurrentDay = state.value.monthInfo.weeks[state.value.weekIndex].days[state.value.dayIndex].month
-        if (monthOfCurrentDay === state.value.monthIndex) {
+        const monthOfCurrentDay = state.value.monthInfo.weeks[state.value.week].days[state.value.day].month
+        if (monthOfCurrentDay === state.value.month) {
             return;
         }
         // the month changed during an increment/decrement, request new month info
-        const previousIndex = state.value.monthIndex;
-        state.value.monthIndex = monthOfCurrentDay;
+        const previousIndex = state.value.month;
+        state.value.month = monthOfCurrentDay;
         updateMonthInfo();
-        state.value.weekIndex = (previousIndex > monthOfCurrentDay) ? state.value.monthInfo.weeks.length - 1 : 0;
+        state.value.week = (previousIndex > monthOfCurrentDay) ? state.value.monthInfo.weeks.length - 1 : 0;
     };
 
     const updateMonthInfoToToday = () => {
@@ -156,8 +152,8 @@
 
         const { week, day } = indices;
 
-        state.value.weekIndex = week;
-        state.value.dayIndex = day;
+        state.value.week = week;
+        state.value.day = day;
 
         isUpdating = false;
     };
@@ -165,36 +161,36 @@
     const incrementMonth = () => {
         isUpdating = true;
 
-        state.value.weekIndex = 0;
-        state.value.dayIndex = 0;
+        state.value.week = 0;
+        state.value.day = 0;
         // console.log(`incrementMonth`)
-        if (state.value.monthIndex < MONTH_NAMES.length - 1) {
+        if (state.value.month < MONTH_NAMES.length - 1) {
             // console.log(`\tthere are still month months in the year...`);
-            state.value.monthIndex++;
+            state.value.month++;
             updateMonthInfo();
             return;
         }
 
         // console.log(`\treached last month, incrementing to next year`);
         state.value.year++;
-        state.value.monthIndex = 0;
+        state.value.month = 0;
         updateMonthInfo();
     };
 
     const decrementMonth = () => {
         isUpdating = true;
 
-        state.value.dayIndex = 0;
+        state.value.day = 0;
 
-        if (state.value.monthIndex > 0) {
-            state.value.monthIndex--;
+        if (state.value.month > 0) {
+            state.value.month--;
             updateMonthInfo();
             isUpdating = false;
             return;
         }
 
         state.value.year--;
-        state.value.monthIndex = MONTH_NAMES.length - 1;
+        state.value.month = MONTH_NAMES.length - 1;
         updateMonthInfo();
 
         isUpdating = false;
@@ -208,10 +204,10 @@
 
         isUpdating = true;
 
-        state.value.dayIndex = 0;
+        state.value.day = 0;
 
-        if (state.value.weekIndex < state.value.monthInfo.weeks.length - 1) {
-            state.value.weekIndex++;
+        if (state.value.week < state.value.monthInfo.weeks.length - 1) {
+            state.value.week++;
             isUpdating = false;
             return;
         }
@@ -227,16 +223,16 @@
 
         isUpdating = true;
 
-        state.value.dayIndex = 0;
+        state.value.day = 0;
 
-        if (state.value.weekIndex > 0) {
-            state.value.weekIndex--;
+        if (state.value.week > 0) {
+            state.value.week--;
             isUpdating = false;
             return;
         }
 
         decrementMonth();
-        state.value.weekIndex = state.value.monthInfo.weeks.length - 2;
+        state.value.week = state.value.monthInfo.weeks.length - 2;
     };
 
     const incrementDay = () => {
@@ -247,36 +243,36 @@
 
         isUpdating = true;
 
-        if (state.value.dayIndex < 6) {
-            state.value.dayIndex++;
+        if (state.value.day < 6) {
+            state.value.day++;
             updateMonth();
             isUpdating = false;
-            // console.log(`incremented day, dayIndex now = ${state.value.dayIndex}`);
+            // console.log(`incremented day, day now = ${state.value.day}`);
             return;
         }
 
-        if (state.value.weekIndex < state.value.monthInfo.weeks.length - 1) {
-            state.value.weekIndex++;
-            state.value.dayIndex = 0;
-            // console.log(`incremented week, week & day indices now = ${state.value.weekIndex}, ${state.value.dayIndex}`);
+        if (state.value.week < state.value.monthInfo.weeks.length - 1) {
+            state.value.week++;
+            state.value.day = 0;
+            // console.log(`incremented week, week & day indices now = ${state.value.week}, ${state.value.day}`);
             updateMonth();
             isUpdating = false;
             return;
         }
 
-        state.value.monthIndex = (state.value.monthIndex < MONTH_NAMES.length - 1) ? state.value.monthIndex + 1 : 0;
-        state.value.dayIndex = 0;
-        state.value.weekIndex = 0;
-        // console.log(`updated month, focused month now = ${state.value.monthIndex}`);
+        state.value.month = (state.value.month < MONTH_NAMES.length - 1) ? state.value.month + 1 : 0;
+        state.value.day = 0;
+        state.value.week = 0;
+        // console.log(`updated month, focused month now = ${state.value.month}`);
 
-        if (state.value.monthIndex === 0) {
+        if (state.value.month === 0) {
             state.value.year++;
             // console.log(`incremented year`);
         }
 
         updateMonthInfo();
-        state.value.weekIndex = 0;
-        state.value.dayIndex = 0;
+        state.value.week = 0;
+        state.value.day = 0;
 
         isUpdating = false;
     };
@@ -289,35 +285,35 @@
 
         isUpdating = true;
 
-        if (state.value.dayIndex > 0) {
-            state.value.dayIndex--;
-            // console.log(`decremented day, dayIndex now = ${state.value.dayIndex}`);
+        if (state.value.day > 0) {
+            state.value.day--;
+            // console.log(`decremented day, day now = ${state.value.day}`);
             updateMonth();
             isUpdating = false;
             return;
         }
 
-        if (state.value.weekIndex > 0) {
-            state.value.weekIndex--;
-            state.value.dayIndex = state.value.monthInfo.weeks[state.value.weekIndex].days.length - 1;
-            // console.log(`decremented week, week & day indices now = ${state.value.weekIndex}, ${state.value.dayIndex}`);
+        if (state.value.week > 0) {
+            state.value.week--;
+            state.value.day = state.value.monthInfo.weeks[state.value.week].days.length - 1;
+            // console.log(`decremented week, week & day indices now = ${state.value.week}, ${state.value.day}`);
             updateMonth();
             isUpdating = false;
             return;
         }
 
-        state.value.monthIndex = (state.value.monthIndex > 0) ? state.value.monthIndex - 1 : MONTH_NAMES.length - 1;
-        // console.log(`updated month, focused month now = ${state.value.monthIndex}`);
+        state.value.month = (state.value.month > 0) ? state.value.month - 1 : MONTH_NAMES.length - 1;
+        // console.log(`updated month, focused month now = ${state.value.month}`);
 
-        if (state.value.monthIndex === MONTH_NAMES.length - 1) {
+        if (state.value.month === MONTH_NAMES.length - 1) {
             state.value.year--;
             // console.log(`decremented year`);
         }
 
-        // console.log(`week & day indices now = ${state.value.weekIndex}, ${state.value.dayIndex}`)
+        // console.log(`week & day indices now = ${state.value.week}, ${state.value.day}`)
         updateMonthInfo();
-        state.value.weekIndex = state.value.monthInfo.weeks.length - 1;
-        state.value.dayIndex = state.value.monthInfo.weeks[state.value.weekIndex].days.length - 1;
+        state.value.week = state.value.monthInfo.weeks.length - 1;
+        state.value.day = state.value.monthInfo.weeks[state.value.week].days.length - 1;
 
         isUpdating = false;
     };
@@ -366,9 +362,9 @@
         }
 
         state.value.year = new Date().getFullYear();
-        state.value.monthIndex = month;
-        state.value.weekIndex = week
-        state.value.dayIndex = day;
+        state.value.month = month;
+        state.value.week = week
+        state.value.day = day;
 
         isUpdating = false;
     };
@@ -389,8 +385,8 @@
         const { month, week, day } = state.value.monthInfo.todayIndices;
 
         if (month === -1 || week === -1 || day === -1) {
-            const dayIndex = state.value.monthInfo.weeks[0].days.findIndex(day => day.month === state.value.monthIndex);
-            updateWeekAndDayIndices({ week: 0, day: dayIndex });
+            const day = state.value.monthInfo.weeks[0].days.findIndex(day => day.month === state.value.month);
+            updateWeekAndDayIndices({ week: 0, day: day });
             return;
         }
 

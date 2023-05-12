@@ -1,3 +1,4 @@
+import type { IBaseCalendarState } from './ICalendarState';
 import type ICalendarState from './ICalendarState';
 import type IDateIndices from './IDateIndices';
 import type IDayInfo from './IDayInfo';
@@ -8,6 +9,7 @@ import type IWeekInfo from './IWeekInfo';
 import type IYearMonthDay from './IYearMonthDay';
 
 export type {
+    IBaseCalendarState,
     ICalendarState,
     IDateIndices,
     IDayInfo,

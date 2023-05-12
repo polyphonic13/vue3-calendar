@@ -6,7 +6,7 @@ import { CalendarLayout } from '@/enum/CalendarLayout';
 import { useLocalStorage } from '@/composables/use-local-storage';
 import { useDateUtils } from '@/composables/use-date-utils';
 
-import type { ICalendarState } from '@/interfaces';
+import type { IBaseCalendarState, ICalendarState } from '@/interfaces';
 
 const LOCAL_STORAGE_KEY = 'calendarAppCalendarData';
 
@@ -15,57 +15,77 @@ const { getMonthInfo, getMonthInfoForToday } = useDateUtils();
 
 export const useCalendarStore = defineStore('calendar', () => {
 
-    const savedLayout = get<CalendarLayout>(LOCAL_STORAGE_KEY);
-    const layout = (savedLayout) ? savedLayout : CalendarLayout.MONTH;
+    const initState = (): ICalendarState => {
+        const savedState = get<IBaseCalendarState>(LOCAL_STORAGE_KEY);
 
-    const now = new Date();
-    const year = now.getFullYear();
-    const monthIndex = now.getMonth();
-    const monthInfo = getMonthInfo(year, monthIndex);
-    const { week, day } = monthInfo.todayIndices;
+        if (savedState) {
+            const monthInfo = getMonthInfo(savedState.year, savedState.month);
+            return {
+                ...savedState,
+                monthInfo,
+            };
+        }
 
-    const state = ref<ICalendarState>({
-        layout,
-        year,
-        monthIndex,
-        weekIndex: week,
-        dayIndex: day,
-        monthInfo,
-    });
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
 
-    const setLayout = (layout: CalendarLayout) => {
-        state.value.layout = layout;
-        set(LOCAL_STORAGE_KEY, state.value.layout);
+        const monthInfo = getMonthInfo(year, month);
+        const { week, day } = monthInfo.todayIndices;
+
+        return {
+            layout: CalendarLayout.MONTH,
+            year,
+            month,
+            week,
+            day,
+            monthInfo,
+        }
     };
 
-    const setMonthIndex = (index: number) => {
-        state.value.monthIndex = index;
+    const state = ref<ICalendarState>(initState());
+
+    const setLayout = (value: CalendarLayout) => {
+        state.value.layout = value;
+        saveState();
+    };
+
+    const setMonth = (index: number) => {
+        state.value.month = index;
         state.value.monthInfo = getMonthInfo(state.value.year, index);
+        saveState();
     };
 
-    const setWeekIndex = (index: number) => {
-        state.value.weekIndex = index;
+    const setWeek = (index: number) => {
+        state.value.week = index;
+        saveState();
     };
 
-    const setDayIndex = (index: number) => {
-        state.value.dayIndex = index;
+    const setDay = (index: number) => {
+        state.value.day = index;
+        saveState();
     };
 
     const setInfoToToday = () => {
         state.value.monthInfo = getMonthInfoForToday();
-        const { week, day } = monthInfo.todayIndices;
-        state.value.weekIndex = week;
-        state.value.dayIndex = day;
+        const { week, day } = state.value.monthInfo.todayIndices;
+        state.value.week = week;
+        state.value.day = day;
+        saveState();
     };
 
-    console.log(`useCalendarStore, state = `, state);
+    const saveState = () => {
+        const { year, month, week, day, layout } = state.value;
+        console.log(`saveState, year = ${year}, month = ${month}, week = ${week}, day = ${day}, layout = ${layout}`);
+        set<IBaseCalendarState>(LOCAL_STORAGE_KEY, { year, month, week, day, layout });
+    };
 
     return {
         state,
         setLayout,
-        setMonthIndex,
-        setWeekIndex,
-        setDayIndex,
+        setMonth,
+        setWeek,
+        setDay,
         setInfoToToday,
     };
 });
