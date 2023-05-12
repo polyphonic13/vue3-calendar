@@ -37,8 +37,9 @@
     @import '../styles/global.scss';
 
     .control_center {
-        color: #123456;
+        color: $secondary-color01;
         background-color: $highlighted-color-primary;
+        box-shadow: $box-shadow02;
 
         padding: 8px;
         box-sizing: border-box;
