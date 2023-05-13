@@ -12,6 +12,8 @@
             @mouseup="onMouseUp(t)"
         >
             <div v-if="props.isIncludeTimeLabel" class="time_label">{{ time }}</div>
+            <div class="half_hour time_slot__first_half_hour"></div>
+            <div class="half_hour time_slot__first_half_hour"></div>
             <div class="time_slot__selection_column"></div>
             <div class="events"></div>
         </div>
@@ -131,9 +133,23 @@
         }
     }
 
-    .events {
-        min-height: 48px;
+    .half_hour {
+        width: 100%;
+        height: 50%;
+    }
 
+    .first_half_hour {
+        background-color: azure;
+    }
+
+    .second_half_hour {
+        background-color: lightblue;
+    }
+
+    .events {
+        background-color: #fedcba;
+        min-height: 48px;
+        height: 100%;
         flex: 1;
     }
 

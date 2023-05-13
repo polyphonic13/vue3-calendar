@@ -22,7 +22,7 @@
                 <DayOfWeek
                     v-for="(day, d2) in props.weekInfo.days"
                     :key="`${props.year}${props.month}${day.date}${d2}`"
-                    :index="d2"
+                    :index="(d2 + 1)"
                     :day-name="`${(day.dayName) ? day.dayName : ''}`"
                     :is-include-time-label="(d2 === 0)"
                     :is-selecting="isSelecting"
@@ -76,7 +76,6 @@
     };
 
     const onAddEventForTimes = (index: number) => {
-        console.log(`WeekLayout/onAddEventForTimes, index = ${index}, date = `, props.weekInfo.days[index].date);
         const items = selectedItems.value;
         const start = items[0];
         const end = items[items.length - 1];
@@ -104,10 +103,6 @@
     watch(() => props.weekInfo, () => {
         initHourIndices();
     });
-
-    // watch(currentInitiator, () => {
-    //     console.log(`WeekLayout/watch:currentInitiator, new value = ${currentInitiator.value}`);
-    // });
 
     onMounted(() => {
         initHourIndices();
