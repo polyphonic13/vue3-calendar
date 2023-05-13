@@ -2,6 +2,8 @@ import { ref, reactive } from 'vue';
 
 type UseMouseSelectState = {
     isSelecting: boolean,
+    isStartOnSecondHalf: boolean,
+    isEndOnFirstHalf: boolean,
     selectedItems: number[],
     currentInitiator: number,
 };
@@ -12,7 +14,13 @@ export function useMouseItemSelect() {
 
     const flatIndices = ref<number[]>([]);
 
-    let state = reactive<UseMouseSelectState>({ isSelecting: false, selectedItems: [], currentInitiator: -1 });
+    let state = reactive<UseMouseSelectState>({
+        isSelecting: false,
+        isStartOnSecondHalf: false,
+        isEndOnFirstHalf: false,
+        selectedItems: [],
+        currentInitiator: -1,
+    });
 
     const initIndices = <T>(seed: T[]) => {
         state.selectedItems.length = flatIndices.value.length = 0;
@@ -26,7 +34,17 @@ export function useMouseItemSelect() {
         }
     }
 
-    const onMouseDown = (index: number, currentInitiator: number | undefined) => {
+    const getTimesFromItems = () => {
+        const start = (state.isStartOnSecondHalf) ? state.selectedItems[0] + 0.5 : state.selectedItems[0];
+        const end = (state.isEndOnFirstHalf) ? state.selectedItems[state.selectedItems.length - 1] + 0.5 : state.selectedItems[state.selectedItems.length - 1];
+
+        return {
+            start,
+            end,
+        };
+    };
+
+    const onMouseDown = (index: number, currentInitiator: number | undefined, isSecondHalf?: boolean) => {
         if (state.isSelecting) {
             return;
         }
@@ -34,6 +52,7 @@ export function useMouseItemSelect() {
         startIndex.value = -1;
         endIndex.value = -1;
         state.isSelecting = true;
+        state.isStartOnSecondHalf = (isSecondHalf) ? isSecondHalf : false;
         state.currentInitiator = (currentInitiator) ? currentInitiator : -1;
         state.selectedItems.length = 0;
         state.selectedItems.push(index);
@@ -62,12 +81,12 @@ export function useMouseItemSelect() {
         startIndex.value = index;
     };
 
-    const onMouseOver = (index: number) => {
+    const onMouseOver = (index: number, isSecondHalf?: boolean) => {
         if (!state.isSelecting) {
             return;
         }
         updateIndices(index);
-
+        state.isEndOnFirstHalf = (isSecondHalf) ? isSecondHalf : false;
         state.selectedItems = flatIndices.value.filter((item) => item >= startIndex.value && item <= endIndex.value);
     };
 
@@ -78,6 +97,7 @@ export function useMouseItemSelect() {
     return {
         state,
         initIndices,
+        getTimesFromItems,
         onMouseDown,
         onMouseOver,
         onMouseUp,

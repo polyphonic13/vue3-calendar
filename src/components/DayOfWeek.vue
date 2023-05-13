@@ -6,15 +6,26 @@
             v-for="(time, t) in TIMES_IN_DAY"
             :key="t"
             class="time_slot"
-            :class="{ 'time_slot--selecting': (selectedItems.includes(t) && (props.currentInitiator === -1 || props.currentInitiator === props.index)) }"
-            @mousedown="onMouseDown(t)"
-            @mouseover="onMouseOver(t)"
-            @mouseup="onMouseUp(t)"
         >
-            <div v-if="props.isIncludeTimeLabel" class="time_label">{{ time }}</div>
-            <div class="half_hour time_slot__first_half_hour"></div>
-            <div class="half_hour time_slot__first_half_hour"></div>
-            <div class="time_slot__selection_column"></div>
+            <div class="half_hours">
+                <div
+                    class="half_hour first_half_hour"
+                    :class="{ 'time_slot--selecting': (selectedItems.includes(t) && (selectedItems[0] !== t || (selectedItems[0] === t && !isStartOnSecondHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index)) }"
+                    @mousedown="onMouseDown(t, false)"
+                    @mouseover="onMouseOver(t, true)"
+                    @mouseup="onMouseUp(t)"
+                >
+                    <div v-if="props.isIncludeTimeLabel" class="time_label">{{ time }}</div>
+                </div>
+                <div
+                    class="half_hour second_half_hour"
+                    :class="{ 'time_slot--selecting': (selectedItems.includes(t) && (selectedItems[selectedItems.length - 1] !== t || (selectedItems[selectedItems.length - 1] === t && !isEndOnFirstHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index)) }"
+                    @mousedown="onMouseDown(t, true)"
+                    @mouseover="onMouseOver(t, false)"
+                    @mouseup="onMouseUp(t)"
+                ></div>
+            </div>
+            <!-- <div class="time_slot__selection_column"></div> -->
             <div class="events"></div>
         </div>
     </div>
@@ -22,12 +33,15 @@
 
 <script setup lang="ts">
     import { TIMES_IN_DAY } from '@/composables/use-date-utils';
+import { computed } from 'vue';
 
     interface IDayOfWeekProps {
         index: number;
         dayName: string;
         isIncludeTimeLabel: boolean;
         isSelecting: boolean;
+        isStartOnSecondHalf: boolean;
+        isEndOnFirstHalf: boolean;
         selectedItems: number[];
         currentInitiator?: number;
     }
@@ -41,15 +55,19 @@
         'timeOnMouseUp'
     ]);
 
-    const onMouseDown = (index: number) => {
-        emit('timeOnMouseDown', index, props.index);
+    const classes = computed(() => {
+
+    });
+
+    const onMouseDown = (index: number, isSecondHalf: boolean) => {
+        emit('timeOnMouseDown', index, props.index, isSecondHalf);
     };
 
-    const onMouseOver = (index: number) => {
+    const onMouseOver = (index: number, isSecondHalf: boolean) => {
         if (!props.isSelecting) {
             return;
         }
-        emit('timeOnMouseOver', index);
+        emit('timeOnMouseOver', index, isSecondHalf);
     };
 
     const onMouseUp = (index: number) => {
@@ -116,11 +134,11 @@
 
     .time_label {
         min-width: 38px;
-        margin-left: -10px;
+        // margin-left: -10px;
 
-        transform: rotate(-90deg);
+        // transform: rotate(-90deg);
 
-        font-size: 1em;
+        font-size: 0.75em;
         color: $secondary-bg03;
         user-select: none;
     }
@@ -133,17 +151,23 @@
         }
     }
 
+    .half_hours {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;;
+    }
+
     .half_hour {
         width: 100%;
         height: 50%;
     }
 
     .first_half_hour {
-        background-color: azure;
     }
 
     .second_half_hour {
-        background-color: lightblue;
+        border-top: 1px #eee dotted;
     }
 
     .events {

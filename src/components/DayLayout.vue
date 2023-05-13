@@ -16,6 +16,8 @@
                     :day-name="dayName"
                     :is-include-time-label="true"
                     :is-selecting="isSelecting"
+                    :is-start-on-second-half="isStartOnSecondHalf"
+                    :is-end-on-first-half="isEndOnFirstHalf"
                     :selected-items="selectedItems"
                     @time-on-mouse-down="onMouseDown"
                     @time-on-mouse-over="onMouseOver"
@@ -54,6 +56,8 @@
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
+    const isStartOnSecondHalf = toRef(state, 'isStartOnSecondHalf');
+    const isEndOnFirstHalf = toRef(state, 'isEndOnFirstHalf');
 
     const emit = defineEmits(['addEvent']);
 
