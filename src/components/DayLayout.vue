@@ -19,6 +19,7 @@
                     :is-start-on-second-half="isStartOnSecondHalf"
                     :is-end-on-first-half="isEndOnFirstHalf"
                     :selected-items="selectedItems"
+                    :current-initiator="currentInitiator"
                     @time-on-mouse-down="onMouseDown"
                     @time-on-mouse-over="onMouseOver"
                     @time-on-mouse-up="onAddEventForTimes"
@@ -49,6 +50,7 @@
     const {
         state,
         initIndices,
+        getTimesFromItems,
         onMouseDown,
         onMouseOver,
         onMouseUp,
@@ -58,6 +60,7 @@
     const isSelecting = toRef(state, 'isSelecting');
     const isStartOnSecondHalf = toRef(state, 'isStartOnSecondHalf');
     const isEndOnFirstHalf = toRef(state, 'isEndOnFirstHalf');
+    const currentInitiator = toRef(state, 'currentInitiator');
 
     const emit = defineEmits(['addEvent']);
 
@@ -90,12 +93,7 @@
     };
 
     const onAddEventForTimes = (index: number) => {
-        const items = selectedItems.value;
-        const start = items[0];
-        const end = items[items.length - 1];
-
-        addEvent({ start, end });
-
+        addEvent(getTimesFromItems());
         onMouseUp();
     };
 
