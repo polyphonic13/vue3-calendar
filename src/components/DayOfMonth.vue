@@ -115,7 +115,7 @@
     .day__selecting {
         > .day__container {
             > .new_item {
-                @include selected-item;
+                @include selected_item;
             }
         }
 
@@ -139,20 +139,25 @@
     }
 
     .day_button {
-        min-width: 34px;
-        max-width: 34px;
-        min-height: 34px;
-        max-height: 34px;
+        @include day_button;
+    }
 
-        padding: 7px;
-        box-sizing: border-box;
+    .day_button:hover {
+        @include day_button--hover;
+    }
 
-        border-radius: 50%;
-        border: none;
-        background-color: transparent;
+    .day_btn--current {
+        @include day_button--current;
+    }
 
-        font-size: 1.25em;
-        cursor: pointer;
+    .day_btn--current:hover {
+        @include day_button--current--hover;
+    }
+
+    @media screen and (max-width: 400px) {
+        .day_button {
+            @include day_button--mobile;
+        }
     }
 
     .new_item {
@@ -162,27 +167,4 @@
         box-sizing: border-box;
     }
 
-    .day_button:hover {
-        background-color: $primary-bg01-hover;
-    }
-
-    .day_btn--current {
-        background-color: $highlighted-color-primary;
-    }
-
-    .day_btn--current:hover {
-        background-color: $highlighted-color-primary-hover;
-
-    }
-
-    @media screen and (max-width: 400px) {
-        .day_button {
-            min-width: 24px;
-            min-height: 24px;
-
-            padding: 4px;
-
-            font-size: 0.5em;
-        }
-    }
 </style>

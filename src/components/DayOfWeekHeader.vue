@@ -45,6 +45,7 @@
 
 <style scoped lang="scss">
     @import '../styles/global.scss';
+    @import '../styles/mixins.scss';
 
     .day {
         width: 100%;
@@ -93,34 +94,25 @@
     }
 
     .day_button {
-        min-width: 34px;
-        max-width: 34px;
-        min-height: 34px;
-        max-height: 34px;
+        @include day_button;
+    }
 
-        padding: 7px;
-        box-sizing: border-box;
+    .day_button:hover {
+        @include day_button--hover;
+    }
 
-        border-radius: 50%;
-        border: none;
-        background-color: transparent;
+    .day_btn--current {
+        @include day_button--current;
+    }
 
-        font-size: 1em;
-        cursor: pointer;
+    .day_btn--current:hover {
+        @include day_button--current--hover;
     }
 
     @media screen and (max-width: 400px) {
         .day_button {
-            min-width: 24px;
-            min-height: 24px;
-
-            padding: 4px;
-
-            font-size: 0.5em;
+            @include day_button--mobile;
         }
-    }
-    .day_button:hover {
-        background-color: $primary-bg01-hover;
     }
 
     .current {
@@ -129,7 +121,6 @@
 
     .current:hover {
         background-color: $highlighted-color-primary-hover;
-
     }
 
     .items {

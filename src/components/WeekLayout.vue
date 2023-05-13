@@ -105,6 +105,10 @@
         initHourIndices();
     });
 
+    // watch(currentInitiator, () => {
+    //     console.log(`WeekLayout/watch:currentInitiator, new value = ${currentInitiator.value}`);
+    // });
+
     onMounted(() => {
         initHourIndices();
     });

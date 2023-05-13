@@ -35,6 +35,7 @@ export function useMouseItemSelect() {
         endIndex.value = -1;
         state.isSelecting = true;
         state.currentInitiator = (currentInitiator) ? currentInitiator : -1;
+        console.log(`onMouseDown currentInitiator = ${currentInitiator}`);
         state.selectedItems.length = 0;
         state.selectedItems.push(index);
 

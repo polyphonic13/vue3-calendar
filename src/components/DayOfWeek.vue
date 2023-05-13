@@ -6,7 +6,7 @@
             v-for="(time, t) in TIMES_IN_DAY"
             :key="t"
             class="time_slot"
-            :class="{ time_slot__selecting: (selectedItems.includes(t) && (props.currentInitiator === -1 || props.currentInitiator === props.index)) }"
+            :class="{ 'time_slot--selecting': (selectedItems.includes(t) && (props.currentInitiator === -1 || props.currentInitiator === props.index)) }"
             @mousedown="onMouseDown(t)"
             @mouseover="onMouseOver(t)"
             @mouseup="onMouseUp(t)"
@@ -96,7 +96,6 @@
         min-height: 56px;
         max-height: 56px;
 
-        /* padding: 4px; */
         box-sizing: border-box;
         border-bottom: 1px solid #eee;
 
@@ -104,8 +103,8 @@
         align-items: center;
     }
 
-    .time_slot__selecting {
-        @include selected-item;
+    .time_slot--selecting {
+        @include selected_item;
     }
 
     .time_slot__selection_column {
@@ -144,18 +143,22 @@
     }
 
     .day_button {
-        min-width: 32px;
-        min-height: 32px;
+        @include day_button;
+        // @include flex_centered;
+        // flex-direction: column;
 
-        padding: 8px;
-        box-sizing: border-box;
+        // min-width: 32px;
+        // min-height: 32px;
 
-        border-radius: 50%;
-        border: none;
-        background-color: transparent;
+        // padding: 8px;
+        // box-sizing: border-box;
 
-        font-size: 1em;
-        cursor: pointer;
+        // border-radius: 50%;
+        // border: none;
+        // background-color: transparent;
+
+        // font-size: 1em;
+        // cursor: pointer;
     }
 
     @media screen and (max-width: 400px) {

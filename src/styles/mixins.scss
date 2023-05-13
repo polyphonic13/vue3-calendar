@@ -1,5 +1,53 @@
 @import "./variables.scss";
 
-@mixin selected-item {
+@mixin selected_item {
     background-color: $selecting-color-primary;
+}
+
+@mixin flex_centered {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin day_button {
+    @include flex_centered;
+    flex-direction: column;
+
+    min-width: 34px;
+    max-width: 34px;
+    min-height: 34px;
+    max-height: 34px;
+
+    padding: 7px;
+    box-sizing: border-box;
+
+    border-radius: 50%;
+    border: none;
+    background-color: transparent;
+
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+@mixin day_button--mobile {
+    min-width: 24px;
+    min-height: 24px;
+
+    padding: 4px;
+
+    font-size: 0.5em;
+}
+
+@mixin day_button--hover {
+    background-color: $primary-bg01-hover;
+}
+
+@mixin day_button--current {
+    background-color: $highlighted-color-primary;
+}
+
+@mixin day_button--current--hover {
+    background-color: $highlighted-color-primary-hover;
 }
