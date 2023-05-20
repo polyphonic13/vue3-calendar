@@ -3,6 +3,7 @@ import type ICalendarState from './ICalendarState';
 import type IDateIndices from './IDateIndices';
 import type IDayInfo from './IDayInfo';
 import type IEvent from './IEvent';
+import type IEventState from './IEventState';
 import type IMonthInfo from './IMonthInfo';
 import type ISavedAppData from './ISavedAppData';
 import type IUIState from './IUIState';
@@ -15,6 +16,7 @@ export type {
     IDateIndices,
     IDayInfo,
     IEvent,
+    IEventState,
     IMonthInfo,
     ISavedAppData,
     IUIState,

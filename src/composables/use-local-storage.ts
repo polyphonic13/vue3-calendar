@@ -1,6 +1,6 @@
 export function useLocalStorage() {
 
-    const get = <T>(key: string): T | undefined => {
+    const load = <T>(key: string): T | undefined => {
         const valueString: string | null = window.localStorage.getItem(key);
 
         if (!valueString) {
@@ -10,8 +10,8 @@ export function useLocalStorage() {
         return JSON.parse(valueString) as T;
     };
 
-    const set = <T>(key: string, value: T) => {
-        const saved = get<T>(key);
+    const save = <T>(key: string, value: T) => {
+        const saved = load<T>(key);
 
         if (!saved) {
             // save new
@@ -29,7 +29,7 @@ export function useLocalStorage() {
     };
 
     return {
-        get,
-        set,
+        load,
+        save,
     };
 };

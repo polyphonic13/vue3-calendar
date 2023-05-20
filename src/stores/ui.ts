@@ -5,7 +5,7 @@ import { useLocalStorage } from '@/composables/use-local-storage';
 
 const LOCAL_STORAGE_KEY = 'calendarAppUIData';
 
-const { get, set } = useLocalStorage();
+const { load, save } = useLocalStorage();
 
 import type {
     IUIState,
@@ -14,7 +14,7 @@ import type {
 export const useUIStore = defineStore('ui', () => {
 
     const createState = (): IUIState => {
-        const savedState = get<IUIState>(LOCAL_STORAGE_KEY);
+        const savedState = load<IUIState>(LOCAL_STORAGE_KEY);
 
         if (savedState) {
             return savedState;
@@ -28,7 +28,7 @@ export const useUIStore = defineStore('ui', () => {
     const state = ref<IUIState>(createState());
 
     const saveState = () => {
-        set<IUIState>(LOCAL_STORAGE_KEY, state.value);
+        save<IUIState>(LOCAL_STORAGE_KEY, state.value);
     };
 
     const toggleisControlCenterCollapsed = () => {

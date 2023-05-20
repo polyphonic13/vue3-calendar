@@ -161,6 +161,13 @@ import { computed } from 'vue';
     .half_hour {
         width: 100%;
         height: 50%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        padding-left: 4px;
+        box-sizing: border-box;
     }
 
     .first_half_hour {

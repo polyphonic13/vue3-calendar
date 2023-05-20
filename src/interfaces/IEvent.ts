@@ -1,4 +1,5 @@
 export default interface IEvent {
+    id: number;
     times: {
         start: number,
         end: number,
@@ -9,4 +10,7 @@ export default interface IEvent {
     };
     month: number;
     year: number;
+    title: string;
+    description: string;
+    location: string;
 }

@@ -85,7 +85,7 @@
         const date = props.weekInfo.days[index].date;
         const { month, year } = props;
 
-        const event: IEvent = {
+        const event: Partial<IEvent> = {
             times,
             dates: {
                 start: date,

@@ -14,7 +14,7 @@ import type {
 
 const LOCAL_STORAGE_KEY = 'calendarAppCalendarData';
 
-const { get, set } = useLocalStorage();
+const { load, save } = useLocalStorage();
 const { getMonthInfo, getMonthInfoForToday } = useDateUtils();
 
 export const useCalendarStore = defineStore('calendar', () => {
@@ -22,7 +22,7 @@ export const useCalendarStore = defineStore('calendar', () => {
     const months: IMonthInfo[] = [];
 
     const createState = (): ICalendarState => {
-        const savedState = get<IBaseCalendarState>(LOCAL_STORAGE_KEY);
+        const savedState = load<IBaseCalendarState>(LOCAL_STORAGE_KEY);
         let monthInfo;
 
         if (savedState) {
@@ -56,8 +56,8 @@ export const useCalendarStore = defineStore('calendar', () => {
 
     const saveState = () => {
         const { year, month, week, day, layout } = state.value;
-        console.log(`saveState, year = ${year}, month = ${month}, week = ${week}, day = ${day}, layout = ${layout}`);
-        set<IBaseCalendarState>(LOCAL_STORAGE_KEY, { year, month, week, day, layout });
+        // console.log(`saveState, year = ${year}, month = ${month}, week = ${week}, day = ${day}, layout = ${layout}`);
+        save<IBaseCalendarState>(LOCAL_STORAGE_KEY, { year, month, week, day, layout });
     };
 
     const updateMonthInfo = () => {
@@ -85,11 +85,11 @@ export const useCalendarStore = defineStore('calendar', () => {
 
         if (month === -1 || week === -1 || day === -1) {
             const day = state.value.monthInfo.weeks[0].days.findIndex(day => day.month === state.value.month);
-            setWeekAndDayIndices({ week: 0, day });
+            saveWeekAndDayIndices({ week: 0, day });
             return;
         }
 
-        setWeekAndDayIndices({ week, day });
+        saveWeekAndDayIndices({ week, day });
         saveState();
     };
 
@@ -105,7 +105,7 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const setDay = (indices: { week: number, day: number }) => {
-        setWeekAndDayIndices(indices);
+        saveWeekAndDayIndices(indices);
         setLayout(CalendarLayout.DAY);
         saveState();
     };
@@ -118,7 +118,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         saveState();
     };
 
-    const setWeekAndDayIndices = (indices: { week: number, day: number }) => {
+    const saveWeekAndDayIndices = (indices: { week: number, day: number }) => {
         const { week, day } = indices;
 
         state.value.week = week;

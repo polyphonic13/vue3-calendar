@@ -60,6 +60,10 @@
         }
     });
 
+    watch(() => props.month, () => {
+        console.log(`DayOfMonth, month change, month = ${props.month}, currentMonth = ${props.currentMonth}`);
+    });
+
     const dayButtonClasses = reactive({
         'day_btn--current': getIsToday(),
     });

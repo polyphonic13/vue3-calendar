@@ -73,7 +73,7 @@
         const end = props.monthInfo.days[selectedItems.value[selectedItems.value.length - 1]].date;
         const { month, year } = props;
 
-        const event: IEvent = {
+        const event: Partial<IEvent> = {
             times,
             dates: {
                 start,

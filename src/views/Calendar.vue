@@ -55,6 +55,7 @@
     import { CalendarLayout } from '../enum/CalendarLayout';
 
     import { useCalendarStore } from '@/stores/calendar';
+    import { useEventStore } from '@/stores/events';
 
     import type {
         IDayInfo,
@@ -66,8 +67,8 @@
     import DayLayout from '@/components/DayLayout.vue';
     import LayoutSelector from '@/components/LayoutSelector.vue';
 
-    const store = useCalendarStore();
-    const { state } = storeToRefs(store);
+    const calendarStore = useCalendarStore();
+    const { state } = storeToRefs(calendarStore);
 
     const {
         setLayout,
@@ -75,7 +76,15 @@
         setDay,
         increment,
         decrement,
-    } = store;
+    } = calendarStore;
+
+    const eventStore = useEventStore();
+
+    const {
+        addEvent,
+        updateEvent,
+        deleteEvent,
+    } = eventStore;
 
     const headerTitle = computed(() => {
         if (!state) {
@@ -85,7 +94,7 @@
         if (state.value.layout !== CalendarLayout.WEEK) {
             return `${MONTH_NAMES[state.value.month]} ${state.value.year}`;
         }
-
+        // console.log(`updating headerTitle`);
         const weekInfo = state.value.monthInfo.weeks[state.value.week];
         const monthIndices: number[] = [];
 
@@ -120,9 +129,16 @@
         setDay(indices);
     };
 
-    const onAddEvent = (event: IEvent) => {
-        console.log(`Calendar/onAddEvent, event = ${JSON.stringify(event)}`);
-    }
+    const onAddEvent = (event: Partial<IEvent>) => {
+        // event = {
+        //     ...event,
+        //     title: '',
+        //     description: '',
+        //     location: '',
+        // } as IEvent;
+        // console.log(`Calendar/onAddEvent, event = ${JSON.stringify(event)}`);
+        addEvent(event);
+    };
 </script>
 
 <style scoped lang="scss">

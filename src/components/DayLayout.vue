@@ -74,7 +74,7 @@
         const { date, month } = props.dayInfo;
         const year = props.year;
 
-        const event: IEvent = {
+        const event: Partial<IEvent> = {
             times,
             dates: {
                 start: date,
