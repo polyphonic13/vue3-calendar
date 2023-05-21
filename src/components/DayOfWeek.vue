@@ -9,7 +9,7 @@
         >
             <div class="half_hours">
                 <div
-                    class="half_hour first_half_hour"
+                    class="half_hour"
                     :class="{ 'time_slot--selecting': (selectedItems.includes(t) && (selectedItems[0] !== t || (selectedItems[0] === t && !isStartOnSecondHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index)) }"
                     @mousedown="onMouseDown(t, false)"
                     @mouseover="onMouseOver(t, true)"
@@ -32,8 +32,11 @@
 </template>
 
 <script setup lang="ts">
+    import { computed, onMounted } from 'vue';
+
+    import type { IEvent } from '@/interfaces';
+
     import { TIMES_IN_DAY } from '@/composables/use-date-utils';
-import { computed } from 'vue';
 
     interface IDayOfWeekProps {
         index: number;
@@ -44,6 +47,7 @@ import { computed } from 'vue';
         isEndOnFirstHalf: boolean;
         selectedItems: number[];
         currentInitiator?: number;
+        events: IEvent[];
     }
 
     const props = defineProps<IDayOfWeekProps>();
@@ -76,6 +80,10 @@ import { computed } from 'vue';
         }
         emit('timeOnMouseUp', index);
     };
+
+    onMounted(() => {
+        console.log(`DayOfWeek/onMounted, events = `, props.events);
+    });
 </script>
 
 <style scoped lang="scss">

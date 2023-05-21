@@ -30,6 +30,7 @@
                     :is-end-on-first-half="isEndOnFirstHalf"
                     :selected-items="selectedItems"
                     :current-initiator="currentInitiator"
+                    :events="weekEvents(d2)"
                     @time-on-mouse-down="onMouseDown"
                     @time-on-mouse-over="onMouseOver"
                     @time-on-mouse-up="onAddEventForTimes(d2)"
@@ -40,12 +41,14 @@
 </template>
 
 <script setup lang="ts">
-    import { toRef, watch, onMounted } from 'vue';
+    import { toRef, watch, computed, onMounted } from 'vue';
 
     import type { IEvent, IWeekInfo } from '@/interfaces';
 
     import { TIMES_IN_DAY } from '@/composables/use-date-utils';
+
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
+    import { useEventStore } from '@/stores/events';
 
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
@@ -67,6 +70,8 @@
         onMouseOver,
         onMouseUp,
     } = useMouseItemSelect();
+
+    const { getEventsForRange } = useEventStore();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -103,6 +108,11 @@
     watch(() => props.weekInfo, () => {
         initHourIndices();
     });
+
+    const weekEvents = (index: number) => {
+        const days = props.weekInfo.days;
+        return getEventsForRange(props.year, props.month, days[index].date, days[index].date);
+    };
 
     onMounted(() => {
         initHourIndices();

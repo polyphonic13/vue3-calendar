@@ -53,6 +53,16 @@ export const useEventStore = defineStore('eventStore', () => {
         return state.value.events;
     };
 
+    const getEventsForRange = (year: number, month: number, startDate?: number, endDate?: number): IEvent[] => {
+        const monthEvents = state.value.events.filter((event: IEvent) => event.year === year && event.month === month);
+
+        if (!startDate || !endDate) {
+            return monthEvents;
+        }
+
+        return monthEvents.filter((event: IEvent) => event.dates.start >= startDate && event.dates.end <= endDate);
+    };
+
     const addEvent = (payload: Partial<IEvent>) => {
         const event: IEvent = createEvent(payload);
         state.value.events.push(event);
@@ -74,6 +84,7 @@ export const useEventStore = defineStore('eventStore', () => {
 
     return {
         getEvents,
+        getEventsForRange,
         addEvent,
         updateEvent,
         deleteEvent,
