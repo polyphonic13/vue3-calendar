@@ -7,6 +7,7 @@
             :key="t"
             class="time_slot"
         >
+            <!-- <div class="time_slot__selection_column"></div> -->
             <div class="half_hours">
                 <div
                     class="half_hour"
@@ -30,9 +31,15 @@
                     @touchmove="onMouseOver(t, true)"
                     @touchend="onMouseUp(t)"
                 ></div>
-                <div class="time_slot__selection_column"></div>
             </div>
-            <!-- <div class="events">{{  props.events.length }}</div> -->
+            <div class="events">
+                <div
+                    v-for="(event, e) in events"
+                    :key="event.id"
+                    class="event"
+                    :style="`width: ${(100/events.length)}%; height: ${((100/48) * ((event.times.end - event.times.start) * 2))}%; top: ${((100/48) * (event.times.start * 2))}%; left: ${(100/events.length) * e}%;`"
+                >{{ event.times.start }} - {{  event.times.end }}</div>
+            </div>
         </div>
     </div>
 </template>
@@ -114,6 +121,8 @@
         border-right: 1px solid $border-color01;
         border-bottom: 1px solid $border-color01;
 
+        position: relative;
+
         cursor: pointer;
     }
 
@@ -165,19 +174,15 @@
         user-select: none;
     }
 
-    @media screen and (max-width: 400px) {
-        .time_label {
-            margin-left: -12px;
-
-            font-size: 0.75em;
-        }
-    }
 
     .half_hours {
+        // background-color: aqua;
         width: 100%;
         height: 100%;
         display: flex;
-        flex-direction: column;;
+        flex-direction: column;
+
+        position: relative;
     }
 
     .half_hour {
@@ -190,6 +195,10 @@
 
         padding-left: 4px;
         box-sizing: border-box;
+
+        position: absolute;
+
+        z-index: 1;
     }
 
     .second_half_hour {
@@ -197,10 +206,30 @@
     }
 
     .events {
-        background-color: #fedcba;
-        min-height: 48px;
-        height: 100%;
-        flex: 1;
+        // background-color: #fedcba;
+
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 16px;
+
+        position: absolute;
+    }
+
+    .event {
+        background-color: rgba(238, 238, 238, 0.5);
+
+        width: 100%;
+
+        border-radius: 8px;
+
+        padding: 8px;
+        box-sizing: border-box;
+
+        position: absolute;
+        z-index: 2;
+
+        display: flex;
     }
 
     .day_name {
@@ -227,16 +256,6 @@
         // cursor: pointer;
     }
 
-    @media screen and (max-width: 400px) {
-        .day_button {
-            min-width: 24px;
-            min-height: 24px;
-
-            padding: 4px;
-
-            font-size: 0.5em;
-        }
-    }
     .day_button:hover {
         $primary-bg01-hover: #eee;
     }
@@ -255,4 +274,20 @@
         background-color: rgba(238, 238, 238, 0.5);
     }
 
+    @media screen and (max-width: 400px) {
+        .time_label {
+            margin-left: -12px;
+
+            font-size: 0.75em;
+        }
+
+        .day_button {
+            min-width: 24px;
+            min-height: 24px;
+
+            padding: 4px;
+
+            font-size: 0.5em;
+        }
+    }
 </style>

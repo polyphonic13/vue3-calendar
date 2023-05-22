@@ -60,7 +60,7 @@ export const useEventStore = defineStore('eventStore', () => {
             return monthEvents;
         }
 
-        return monthEvents.filter((event: IEvent) => event.dates.start >= startDate && event.dates.end <= endDate);
+        return monthEvents.filter((event: IEvent) => event.dates.start >= startDate && event.dates.end <= endDate).sort((a, b) => { return a.times.start - b.times.start });
     };
 
     const addEvent = (payload: Partial<IEvent>) => {
