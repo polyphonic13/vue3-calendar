@@ -36,7 +36,8 @@ export function useMouseItemSelect() {
 
     const getTimesFromItems = () => {
         const start = (state.isStartOnSecondHalf) ? state.selectedItems[0] + 0.5 : state.selectedItems[0];
-        const end = (state.isEndOnFirstHalf) ? state.selectedItems[state.selectedItems.length - 1] + 0.5 : state.selectedItems[state.selectedItems.length - 1];
+        const modifier = (state.isEndOnFirstHalf) ? 0.5 : 1;
+        const end = state.selectedItems[state.selectedItems.length - 1] + modifier;
 
         return {
             start,
@@ -85,12 +86,17 @@ export function useMouseItemSelect() {
         if (!state.isSelecting) {
             return;
         }
+
         updateIndices(index);
-        state.isEndOnFirstHalf = (isSecondHalf) ? isSecondHalf : false;
+        state.isEndOnFirstHalf = !!isSecondHalf;
         state.selectedItems = flatIndices.value.filter((item) => item >= startIndex.value && item <= endIndex.value);
     };
 
     const onMouseUp = () => {
+        if (!state.isSelecting) {
+            return;
+        }
+        console.log(`use mouse item select on mouse up`);
         state.isSelecting = false;
     };
 

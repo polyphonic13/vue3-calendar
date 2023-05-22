@@ -34,11 +34,11 @@
             </div>
             <div class="events">
                 <div
-                    v-for="(event, e) in events"
+                    v-for="(event, e) in formattedEvents"
                     :key="event.id"
                     class="event"
-                    :style="`width: ${(100/events.length)}%; height: ${((100/48) * ((event.times.end - event.times.start) * 2))}%; top: ${((100/48) * (event.times.start * 2))}%; left: ${(100/events.length) * e}%;`"
-                >{{ event.times.start }} - {{  event.times.end }}</div>
+                    :style="`width: ${event.width}%; height: ${((100/48) * ((event.times.end - event.times.start) * 2))}%; top: ${((100/48) * (event.times.start * 2))}%; left: ${event.left}%;`"
+                >{{ convertNumberToTime(event.times.start) }} - {{ convertNumberToTime(event.times.end) }}</div>
             </div>
         </div>
     </div>
@@ -49,7 +49,9 @@
 
     import type { IEvent } from '@/interfaces';
 
-    import { TIMES_IN_DAY } from '@/composables/use-date-utils';
+    import { TIMES_IN_DAY, useDateUtils } from '@/composables/use-date-utils';
+
+    const { convertNumberToTime, getIsTimeWithinRange } = useDateUtils();
 
     interface IDayOfWeekProps {
         index: number;
@@ -76,10 +78,35 @@
 
     });
 
-    watch(() => props.events, () => {
-        if (props.events.length === 0) {
-            return;
-        }
+    interface IFormattedEvent extends IEvent {
+        width: number;
+        left: number;
+    }
+
+    const formattedEvents = computed(() => {
+        let count;
+        const formatted: IFormattedEvent[] = props.events.map((event: IEvent, e: number) => {
+            count = 0;
+            const neighbors = props.events.reduce((count: number, evt: IEvent) => {
+                if (event.id !== evt.id && getIsTimeWithinRange(event.times, evt.times)) {
+                    count++
+                };
+                return count;
+            }, count);
+
+            const width = (100 / neighbors + 1);
+            const left = (100 / neighbors) * e;
+            console.log(`neighbors for ${event.times.start}/${event.times.end} = ${neighbors}`);
+
+            return {
+                ...event,
+                width,
+                left,
+            };
+        });
+
+
+        return formatted;
     });
 
     const onMouseDown = (index: number, isSecondHalf: boolean) => {
@@ -87,16 +114,11 @@
     };
 
     const onMouseOver = (index: number, isSecondHalf: boolean) => {
-        if (!props.isSelecting) {
-            return;
-        }
         emit('timeOnMouseOver', index, isSecondHalf);
     };
 
     const onMouseUp = (index: number) => {
-        if (!props.isSelecting) {
-            return;
-        }
+        console.log(`onMouseUp, index = ${index}`);
         emit('timeOnMouseUp', index);
     };
 
@@ -203,6 +225,8 @@
 
     .second_half_hour {
         border-top: 1px #eee dotted;
+
+        top: 50%;
     }
 
     .events {

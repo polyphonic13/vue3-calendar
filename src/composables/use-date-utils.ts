@@ -2,6 +2,7 @@ import type {
     IDateIndices,
     IDayInfo,
     IMonthInfo,
+    INumberRange,
     IWeekInfo,
     IYearMonthDay,
 } from '../interfaces';
@@ -300,6 +301,24 @@ export function useDateUtils() {
 
     }
 
+    const convertNumberToTime = (source: number) => {
+        const suffix = (Math.floor(source) > 11) ? 'PM' : 'AM';
+        let hour = Math.floor(source % 12);
+
+        const minNum = Math.floor(60 * (source - Math.floor(source)));
+        const minute = (minNum < 10) ? `0${minNum}` : minNum;
+
+        if (hour === 0) {
+            hour = 12;
+        }
+
+        return `${hour}:${minute} ${suffix}`;
+    };
+
+    const getIsTimeWithinRange = (source: INumberRange, test: INumberRange) => {
+        return (test.start >= source.start && test.start <= source.end) || (test.end >= source.start && test.end <= source.end);
+    };
+
     return {
         getMonthInfo,
         getMonthInfoForToday,
@@ -308,6 +327,8 @@ export function useDateUtils() {
         getNextWeek,
         getPrevWeek,
         convertDateToYMD,
+        convertNumberToTime,
+        getIsTimeWithinRange,
     };
 
 }
