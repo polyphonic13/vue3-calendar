@@ -14,6 +14,9 @@
                     @mousedown="onMouseDown(t, false)"
                     @mouseover="onMouseOver(t, true)"
                     @mouseup="onMouseUp(t)"
+                    @touchstart="onMouseDown(t, false)"
+                    @touchmove="onMouseOver(t, true)"
+                    @touchend="onMouseUp(t)"
                 >
                     <div v-if="props.isIncludeTimeLabel" class="time_label">{{ time }}</div>
                 </div>
@@ -23,16 +26,19 @@
                     @mousedown="onMouseDown(t, true)"
                     @mouseover="onMouseOver(t, false)"
                     @mouseup="onMouseUp(t)"
+                    @touchstart="onMouseDown(t, false)"
+                    @touchmove="onMouseOver(t, true)"
+                    @touchend="onMouseUp(t)"
                 ></div>
+                <div class="time_slot__selection_column"></div>
             </div>
-            <!-- <div class="time_slot__selection_column"></div> -->
-            <div class="events"></div>
+            <!-- <div class="events">{{  props.events.length }}</div> -->
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted } from 'vue';
+    import { computed, onMounted, watch } from 'vue';
 
     import type { IEvent } from '@/interfaces';
 
@@ -61,6 +67,12 @@
 
     const classes = computed(() => {
 
+    });
+
+    watch(() => props.events, () => {
+        if (props.events.length === 0) {
+            return;
+        }
     });
 
     const onMouseDown = (index: number, isSecondHalf: boolean) => {
@@ -136,7 +148,9 @@
     }
 
     .time_slot__selection_column {
-        width: 32px;
+        background: #ffeeff;
+        min-width: 10%;
+        flex: 1;
         height: 100%;
     }
 
@@ -176,9 +190,6 @@
 
         padding-left: 4px;
         box-sizing: border-box;
-    }
-
-    .first_half_hour {
     }
 
     .second_half_hour {

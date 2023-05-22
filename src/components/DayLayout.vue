@@ -20,6 +20,7 @@
                     :is-end-on-first-half="isEndOnFirstHalf"
                     :selected-items="selectedItems"
                     :current-initiator="currentInitiator"
+                    :events="[]"
                     @time-on-mouse-down="onMouseDown"
                     @time-on-mouse-over="onMouseOver"
                     @time-on-mouse-up="onAddEventForTimes"
