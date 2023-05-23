@@ -28,10 +28,12 @@
         </div>
         <div class="event_modal__content">
             <input
+                ref="titleInput"
                 class="event__title"
                 type="text"
                 placeholder="Add Title"
                 :autofocus="true"
+                :disabled="isEditingDisabled"
                 v-model="props.event!.title"
             />
             <div class="event__date_and_time">
@@ -43,6 +45,7 @@
                 class="event__description"
                 rows="5"
                 placeholder="Description"
+                :disabled="isEditingDisabled"
                 v-model="props.event!.description"
             />
         </div>
@@ -57,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, watch } from 'vue';
+    import { ref, computed, watch } from 'vue';
 
     import type { IEvent } from '@/interfaces';
     import { useEventStore } from '@/stores/events';
@@ -81,16 +84,13 @@
 
     const emit = defineEmits(['onClose']);
 
-    let isEditing = false;
+    const isEditing = ref(false);
+    const titleInput = ref<HTMLElement | null>(null);
 
     const props = defineProps<IEventModalProps>();
 
     const isEditingDisabled = computed(() => {
-        return !isEditing && !props.isNew;
-    });
-
-    watch(isEditingDisabled, () => {
-        console.log(`is editing disabled now = ${isEditingDisabled}`);
+        return !isEditing.value && !props.isNew;
     });
 
     const startDay = computed(() => {
@@ -119,13 +119,20 @@
         console.log(`EventModal/watch event, event = ${JSON.stringify(props.event)}`);
     });
 
-    const onEditClicked = () => {
-        console.log(`onEditClicked, isEditing = ${isEditing}`);
-        if (isEditing || !props.event) {
+    const onEditClicked = (event: MouseEvent) => {
+        event.stopPropagation();
+        console.log(`onEditClicked, isEditing = ${isEditing.value}`);
+        if (isEditing.value || !props.event) {
             return;
         }
         viewEvent(props.event);
-        isEditing = true;
+        isEditing.value = true;
+
+        if (!titleInput.value) {
+            return;
+        }
+        console.log(`title input = `, titleInput.value);
+        titleInput.value.focus();
     };
 
     const onDeleteClicked = () => {

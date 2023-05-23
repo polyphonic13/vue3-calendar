@@ -38,7 +38,7 @@
                     :key="event.id"
                     role="button"
                     class="event_card"
-                    :style="`width: ${event.width}%; height: ${event.height}%; left: ${event.left}%; top: ${event.top}%;`"
+                    :style="`height: ${event.height}%; top: ${event.top}%;`"
                     @click="onEventClicked(e)"
                 >
                     <div class="event_card__title"><b>{{ event.title }}</b></div>
@@ -89,9 +89,7 @@
     });
 
     interface IFormattedEvent extends IEvent {
-        width: number;
         height: number;
-        left: number;
         top: number;
     }
 
@@ -109,9 +107,7 @@
                 return count;
             }, count);
 
-            const width = 100;
             const height = (100/48) * ((event.times.end - event.times.start) * 2);
-            const left = 0;
             const top = (100/48) * (event.times.start * 2);
             // console.log(`neighbors for ${event.times.start}/${event.times.end} = ${neighbors}, left = ${left}`);
 
@@ -119,9 +115,7 @@
 
             return {
                 ...event,
-                width,
                 height,
-                left,
                 top,
             };
         });

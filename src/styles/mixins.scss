@@ -88,11 +88,11 @@
 
 @mixin event_card {
     background-color: $transparentGrey03;
-    border: 1px solid $greyscale03;
+    border: 1px solid $greyscale02;
 
     width: 100%;
 
-    padding: 8px;
+    padding: 2px 4px;
     box-sizing: border-box;
 
     position: absolute;
