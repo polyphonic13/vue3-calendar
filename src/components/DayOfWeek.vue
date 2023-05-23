@@ -37,7 +37,7 @@
                     v-for="(event, e) in formattedEvents"
                     :key="event.id"
                     class="event"
-                    :style="`width: ${event.width}%; height: ${((100/48) * ((event.times.end - event.times.start) * 2))}%; top: ${((100/48) * (event.times.start * 2))}%; left: ${event.left}%;`"
+                    :style="`width: ${event.width}%; height: ${event.height}%; left: ${event.left}%; top: ${event.top}%;`"
                 >{{ convertNumberToTime(event.times.start) }} - {{ convertNumberToTime(event.times.end) }}</div>
             </div>
         </div>
@@ -80,13 +80,18 @@
 
     interface IFormattedEvent extends IEvent {
         width: number;
+        height: number;
         left: number;
+        top: number;
     }
 
     const formattedEvents = computed(() => {
         let count;
+        let offset;
+
         const formatted: IFormattedEvent[] = props.events.map((event: IEvent, e: number) => {
             count = 0;
+            offset = 0;
             const neighbors = props.events.reduce((count: number, evt: IEvent) => {
                 if (event.id !== evt.id && getIsTimeWithinRange(event.times, evt.times)) {
                     count++
@@ -94,14 +99,24 @@
                 return count;
             }, count);
 
-            const width = (100 / neighbors + 1);
-            const left = (100 / neighbors) * e;
-            console.log(`neighbors for ${event.times.start}/${event.times.end} = ${neighbors}`);
+            // const width = (100 / neighbors + 1);
+            // const width = 100 - (neighbors * 5);
+            const width = 100;
+            const height = (100/48) * ((event.times.end - event.times.start) * 2);
+            // const left = (100 / neighbors);
+            // const left = (neighbors === 0) ? 0 : (neighbors - 1) * 5;
+            const left = 0;
+            const top = (100/48) * (event.times.start * 2);
+            console.log(`neighbors for ${event.times.start}/${event.times.end} = ${neighbors}, left = ${left}`);
+
+            offset = (count === 0) ? 0 : offset + 1;
 
             return {
                 ...event,
                 width,
+                height,
                 left,
+                top,
             };
         });
 
@@ -241,7 +256,8 @@
     }
 
     .event {
-        background-color: rgba(238, 238, 238, 0.5);
+        background-color: rgba(238, 238, 238, 0.75);
+        border: 1px solid #ddd;
 
         width: 100%;
 
@@ -254,6 +270,13 @@
         z-index: 2;
 
         display: flex;
+
+        transition: all 0.25s ease;
+    }
+
+    .event:hover {
+        box-shadow: $box-shadow01;
+        z-index: 100;
     }
 
     .day_name {
