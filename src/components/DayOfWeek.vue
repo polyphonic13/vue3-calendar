@@ -256,7 +256,7 @@
     }
 
     .event {
-        background-color: rgba(238, 238, 238, 0.75);
+        background-color: rgba(238, 238, 238, 0.95);
         border: 1px solid #ddd;
 
         width: 100%;
@@ -270,6 +270,8 @@
         z-index: 2;
 
         display: flex;
+
+        overflow: hidden;
 
         transition: all 0.25s ease;
     }
