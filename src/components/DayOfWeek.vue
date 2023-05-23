@@ -36,9 +36,14 @@
                 <div
                     v-for="(event, e) in formattedEvents"
                     :key="event.id"
+                    role="button"
                     class="event"
                     :style="`width: ${event.width}%; height: ${event.height}%; left: ${event.left}%; top: ${event.top}%;`"
-                >{{ convertNumberToTime(event.times.start) }} - {{ convertNumberToTime(event.times.end) }}</div>
+                    @click="onEventClicked(e)"
+                >
+                    <div class="event_card__title"><b>{{ event.title }}</b></div>
+                    <div class="event_card__times">{{ convertNumberToTimeString(event.times.start) }} - {{ convertNumberToTimeString(event.times.end) }}</div>
+                </div>
             </div>
         </div>
     </div>
@@ -49,9 +54,14 @@
 
     import type { IEvent } from '@/interfaces';
 
+    import { useEventStore } from '@/stores/events';
     import { TIMES_IN_DAY, useDateUtils } from '@/composables/use-date-utils';
 
-    const { convertNumberToTime, getIsTimeWithinRange } = useDateUtils();
+    const {
+        editEvent,
+    } = useEventStore();
+
+    const { convertNumberToTimeString, getIsTimeWithinRange } = useDateUtils();
 
     interface IDayOfWeekProps {
         index: number;
@@ -131,6 +141,15 @@
     const onMouseUp = (index: number) => {
         console.log(`onMouseUp, index = ${index}`);
         emit('timeOnMouseUp', index);
+    };
+
+    const onEventClicked = (index: number) => {
+        if (index > props.events.length) {
+            console.warn(`ERROR: can no edit non-existent event with index ${index}`);
+            return;
+        }
+        console.log(`DayOfWeek/onEventClicked, index = ${index}\nevent = ${JSON.stringify(props.events[index])}`);
+        editEvent(props.events[index]);
     };
 </script>
 
@@ -250,14 +269,11 @@
     .event {
         border-radius: 8px;
 
-        @include event;
+        @include event_card;
     }
 
     .event:hover {
-        box-shadow: $box-shadow01;
-        background-color: $transparentGrey04;
-
-        z-index: 100;
+        @include event_card--hover;
     }
 
     .day_name {
@@ -266,7 +282,7 @@
     }
 
     .day_button {
-        @include day_button;
+        @include circle_button;
         // @include flex_centered;
         // flex-direction: column;
 

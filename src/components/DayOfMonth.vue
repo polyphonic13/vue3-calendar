@@ -143,24 +143,24 @@
     }
 
     .day_button {
-        @include day_button;
+        @include circle_button;
     }
 
     .day_button:hover {
-        @include day_button--hover;
+        @include circle_button--hover;
     }
 
     .day_btn--current {
-        @include day_button--current;
+        @include circle_button--current;
     }
 
     .day_btn--current:hover {
-        @include day_button--current--hover;
+        @include circle_button--current--hover;
     }
 
     @media screen and (max-width: 400px) {
         .day_button {
-            @include day_button--mobile;
+            @include circle_button--mobile;
         }
     }
 

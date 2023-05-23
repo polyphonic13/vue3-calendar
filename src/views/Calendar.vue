@@ -43,6 +43,12 @@
             :day-info="state.monthInfo.weeks[state.week].days[state.day]"
             @add-event="onAddEvent"
         />
+        <EventModal
+            v-if="isEditingEvent"
+            :event="focusedEvent"
+            :is-new="isNewEvent"
+            @on-close="onEventModalClose"
+        />
     </div>
 </template>
 
@@ -66,6 +72,7 @@
     import WeekLayout from '@/components/WeekLayout.vue';
     import DayLayout from '@/components/DayLayout.vue';
     import LayoutSelector from '@/components/LayoutSelector.vue';
+    import EventModal from '@/components/EventModal.vue';
 
     const calendarStore = useCalendarStore();
     const { state } = storeToRefs(calendarStore);
@@ -81,10 +88,17 @@
     const eventStore = useEventStore();
 
     const {
+        createEvent,
         addEvent,
         updateEvent,
         deleteEvent,
+        cancelEditEvent,
+        getIsEditingEvent,
+        setIsEditingEvent,
+        getFocusedEvent,
     } = eventStore;
+
+    let isNewEvent = false;
 
     const headerTitle = computed(() => {
         if (!state) {
@@ -107,6 +121,14 @@
         const months = monthIndices.map((index) => MONTH_NAMES[index]);
 
         return `${months.join(' - ')} ${state.value.year}`;
+    });
+
+    const isEditingEvent = computed(() => {
+        return getIsEditingEvent();
+    });
+
+    const focusedEvent = computed(() => {
+        return getFocusedEvent();
     });
 
     const onPrevClicked = () => {
@@ -137,7 +159,22 @@
         //     location: '',
         // } as IEvent;
         // console.log(`Calendar/onAddEvent, event = ${JSON.stringify(event)}`);
-        addEvent(event);
+        // addEvent(event);
+
+        resetEventEditing();
+        createEvent(event);
+        isNewEvent = true;
+        setIsEditingEvent(true);
+    };
+
+    const onEventModalClose = () => {
+        resetEventEditing();
+    };
+
+    const resetEventEditing = () => {
+        setIsEditingEvent(false);
+        isNewEvent = false;
+        cancelEditEvent();
     };
 </script>
 

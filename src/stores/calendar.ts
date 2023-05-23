@@ -43,7 +43,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         const { week, day } = monthInfo.todayIndices;
 
         return {
-            layout: CalendarLayout.MONTH,
+            layout: CalendarLayout.WEEK,
             year,
             month,
             week,

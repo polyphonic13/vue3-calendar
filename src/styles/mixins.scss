@@ -11,7 +11,28 @@
     justify-content: center;
 }
 
-@mixin day_button {
+@mixin text_button {
+    @include flex_centered;
+
+    padding: 8px 16px;
+
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+
+    cursor: pointer;
+}
+
+@mixin text_button--primary {
+    background-color: $blue05;
+    color: $greyscale01;
+}
+
+@mixin text_button--hover {
+    opacity: 0.5;
+}
+
+@mixin circle_button {
     @include flex_centered;
     flex-direction: column;
 
@@ -31,7 +52,7 @@
     cursor: pointer;
 }
 
-@mixin day_button--mobile {
+@mixin circle_button--mobile {
     min-width: 24px;
     min-height: 24px;
 
@@ -40,19 +61,19 @@
     font-size: 0.5em;
 }
 
-@mixin day_button--hover {
+@mixin circle_button--hover {
     background-color: $primary-bg01-hover;
 }
 
-@mixin day_button--current {
+@mixin circle_button--current {
     background-color: $highlighted-color-primary;
 }
 
-@mixin day_button--current--hover {
+@mixin circle_button--current--hover {
     background-color: $highlighted-color-primary-hover;
 }
 
-@mixin event {
+@mixin event_card {
     background-color: $transparentGrey03;
     border: 1px solid $greyscale03;
 
@@ -65,8 +86,20 @@
     z-index: 2;
 
     display: flex;
+    flex-direction: column;
 
     overflow: hidden;
 
     transition: all 0.25s ease;
+
+    > * {
+        margin: 4px;
+    }
+}
+
+@mixin event_card--hover {
+    box-shadow: $box-shadow01;
+    background-color: $transparentGrey04;
+
+    z-index: 100;
 }

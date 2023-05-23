@@ -14,6 +14,7 @@ export const DAYS_OF_WEEK = [
     'Wednesday',
     'Thursday',
     'Friday',
+    'Saturday',
 ];
 
 export const DAYS_IN_MONTH = [
@@ -301,7 +302,7 @@ export function useDateUtils() {
 
     }
 
-    const convertNumberToTime = (source: number) => {
+    const convertNumberToTimeString = (source: number) => {
         const suffix = (Math.floor(source) > 11) ? 'PM' : 'AM';
         let hour = Math.floor(source % 12);
 
@@ -313,6 +314,12 @@ export function useDateUtils() {
         }
 
         return `${hour}:${minute} ${suffix}`;
+    };
+
+    const convertYMDToDateString = (year: number, month: number, day: number) => {
+        const date = new Date(year, month, day);
+        console.log(`day of week = ${date.getDay()}`);
+        return `${DAYS_OF_WEEK[date.getDay()]} ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
     };
 
     const getIsTimeWithinRange = (source: INumberRange, test: INumberRange) => {
@@ -327,7 +334,8 @@ export function useDateUtils() {
         getNextWeek,
         getPrevWeek,
         convertDateToYMD,
-        convertNumberToTime,
+        convertNumberToTimeString,
+        convertYMDToDateString,
         getIsTimeWithinRange,
     };
 
