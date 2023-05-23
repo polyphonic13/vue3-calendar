@@ -44,7 +44,7 @@
             @add-event="onAddEvent"
         />
         <EventModal
-            v-if="isEditingEvent"
+            v-if="isViewingEvent"
             :event="focusedEvent"
             :is-new="isNewEvent"
             @on-close="onEventModalClose"
@@ -93,8 +93,8 @@
         updateEvent,
         deleteEvent,
         cancelEditEvent,
-        getIsEditingEvent,
-        setIsEditingEvent,
+        getisViewingEvent,
+        setisViewingEvent,
         getFocusedEvent,
     } = eventStore;
 
@@ -123,8 +123,8 @@
         return `${months.join(' - ')} ${state.value.year}`;
     });
 
-    const isEditingEvent = computed(() => {
-        return getIsEditingEvent();
+    const isViewingEvent = computed(() => {
+        return getisViewingEvent();
     });
 
     const focusedEvent = computed(() => {
@@ -164,7 +164,7 @@
         resetEventEditing();
         createEvent(event);
         isNewEvent = true;
-        setIsEditingEvent(true);
+        setisViewingEvent(true);
     };
 
     const onEventModalClose = () => {
@@ -172,7 +172,7 @@
     };
 
     const resetEventEditing = () => {
-        setIsEditingEvent(false);
+        setisViewingEvent(false);
         isNewEvent = false;
         cancelEditEvent();
     };

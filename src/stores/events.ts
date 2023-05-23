@@ -23,7 +23,7 @@ export const useEventStore = defineStore('eventStore', () => {
 
         return {
             events: [],
-            isEditingEvent: false,
+            isViewingEvent: false,
             focusedEvent: null,
         };
     };
@@ -70,7 +70,7 @@ export const useEventStore = defineStore('eventStore', () => {
     }
 
     const addEvent = () => {
-        state.value.isEditingEvent = false;
+        state.value.isViewingEvent = false;
 
         if (!state.value.focusedEvent) {
             console.warn(`ERROR: can not add new event`);
@@ -82,17 +82,17 @@ export const useEventStore = defineStore('eventStore', () => {
         save<IEventState>(LOCAL_STORAGE_KEY, state.value);
     };
 
-    const editEvent = (payload: Partial<IEvent>) => {
+    const viewEvent = (payload: Partial<IEvent>) => {
         if (!payload.id) {
             console.warn(`ERROR: can not edit event without value id\n${JSON.stringify(payload)}`);
             return;
         }
         state.value.focusedEvent = payload;
-        state.value.isEditingEvent = true;
+        state.value.isViewingEvent = true;
     };
 
     const cancelEditEvent = () => {
-        state.value.isEditingEvent = false;
+        state.value.isViewingEvent = false;
 
         if (!state.value.focusedEvent) {
             return;
@@ -101,7 +101,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const updateEvent = () => {
-        state.value.isEditingEvent = false;
+        state.value.isViewingEvent = false;
 
         if (!state.value.focusedEvent) {
             console.warn(`ERROR: can not update event`);
@@ -114,7 +114,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const deleteEvent = () => {
-        state.value.isEditingEvent = false;
+        state.value.isViewingEvent = false;
 
         if (!state.value.focusedEvent || !state.value.focusedEvent.id) {
             console.warn(`ERROR: can not delete event`);
@@ -124,12 +124,12 @@ export const useEventStore = defineStore('eventStore', () => {
         save<IEventState>(LOCAL_STORAGE_KEY, state.value);
     };
 
-    const getIsEditingEvent = () => {
-        return state.value.isEditingEvent;
+    const getisViewingEvent = () => {
+        return state.value.isViewingEvent;
     };
 
-    const setIsEditingEvent = (value: boolean) => {
-        state.value.isEditingEvent = value;
+    const setisViewingEvent = (value: boolean) => {
+        state.value.isViewingEvent = value;
     };
 
     const getFocusedEvent = () => {
@@ -141,12 +141,12 @@ export const useEventStore = defineStore('eventStore', () => {
         getEventsForRange,
         createEvent,
         addEvent,
-        editEvent,
+        viewEvent,
         cancelEditEvent,
         updateEvent,
         deleteEvent,
-        getIsEditingEvent,
-        setIsEditingEvent,
+        getisViewingEvent,
+        setisViewingEvent,
         getFocusedEvent,
     };
 });

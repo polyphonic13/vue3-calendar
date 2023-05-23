@@ -1,5 +1,8 @@
 <template>
-    <div class="event_modal">
+    <div
+        class="event_modal"
+        @keydown="onKeyDown"
+    >
         <div class="event_modal__header">
             <span></span>
             <button
@@ -27,9 +30,9 @@
             <input
                 class="event__title"
                 type="text"
-                v-model="props.event!.title"
-                :autofocus="true"
                 placeholder="Add Title"
+                :autofocus="true"
+                v-model="props.event!.title"
             />
             <div class="event__date_and_time">
                 <span>{{ startDay }}</span>
@@ -54,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted, watch } from 'vue';
+    import { computed, watch } from 'vue';
 
     import type { IEvent } from '@/interfaces';
     import { useEventStore } from '@/stores/events';
@@ -70,10 +73,8 @@
     const eventStore = useEventStore();
 
     const {
-        createEvent,
         addEvent,
-        editEvent,
-        cancelEditEvent,
+        viewEvent,
         updateEvent,
         deleteEvent,
     } = eventStore;
@@ -83,6 +84,14 @@
     let isEditing = false;
 
     const props = defineProps<IEventModalProps>();
+
+    const isEditingDisabled = computed(() => {
+        return !isEditing && !props.isNew;
+    });
+
+    watch(isEditingDisabled, () => {
+        console.log(`is editing disabled now = ${isEditingDisabled}`);
+    });
 
     const startDay = computed(() => {
         if (!props.event || !props.event.year || !props.event.month || !props.event.dates) {
@@ -111,10 +120,11 @@
     });
 
     const onEditClicked = () => {
+        console.log(`onEditClicked, isEditing = ${isEditing}`);
         if (isEditing || !props.event) {
             return;
         }
-        editEvent(props.event);
+        viewEvent(props.event);
         isEditing = true;
     };
 
@@ -130,14 +140,18 @@
     };
 
     const onCloseClicked = () => {
-        // setIsEditingEvent(false);
         emit('onClose');
     };
 
-    onMounted(() => {
-        console.log(`EventModal/onMounted, event = ${JSON.stringify(props.event)}`);
-        isEditing = !props.isNew;
-    });
+    const onKeyDown = (event: KeyboardEvent) => {
+        const key = event.key.toLowerCase();
+
+        if (key !== 'escape') {
+            return;
+        }
+
+        emit('onClose');
+    };
 </script>
 
 <style lang="scss">
@@ -202,6 +216,10 @@
         outline: none;
     }
 
+    .event__title:disabled {
+        border: none;
+    }
+
     .event__date_and_time {
         display: flex;
         justify-content: space-between;
@@ -209,6 +227,11 @@
 
     .event__description {
         font-family: $mainFont;
+    }
+
+    .event__description:disabled {
+        background-color: transparent;
+        border: none;
     }
 
     .circle_button  {

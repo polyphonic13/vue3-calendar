@@ -32,12 +32,12 @@
                     @touchend="onMouseUp(t)"
                 ></div>
             </div>
-            <div class="events">
+            <div class="event_cards">
                 <div
                     v-for="(event, e) in formattedEvents"
                     :key="event.id"
                     role="button"
-                    class="event"
+                    class="event_card"
                     :style="`width: ${event.width}%; height: ${event.height}%; left: ${event.left}%; top: ${event.top}%;`"
                     @click="onEventClicked(e)"
                 >
@@ -58,7 +58,7 @@
     import { TIMES_IN_DAY, useDateUtils } from '@/composables/use-date-utils';
 
     const {
-        editEvent,
+        viewEvent,
     } = useEventStore();
 
     const { convertNumberToTimeString, getIsTimeWithinRange } = useDateUtils();
@@ -149,7 +149,7 @@
             return;
         }
         console.log(`DayOfWeek/onEventClicked, index = ${index}\nevent = ${JSON.stringify(props.events[index])}`);
-        editEvent(props.events[index]);
+        viewEvent(props.events[index]);
     };
 </script>
 
@@ -255,24 +255,17 @@
         top: 50%;
     }
 
-    .events {
-        // background-color: #fedcba;
-
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 16px;
-
-        position: absolute;
+    .event_cards {
+        @include event_cards;
     }
 
-    .event {
+    .event_card {
         border-radius: 8px;
 
         @include event_card;
     }
 
-    .event:hover {
+    .event_card:hover {
         @include event_card--hover;
     }
 
@@ -283,21 +276,6 @@
 
     .day_button {
         @include circle_button;
-        // @include flex_centered;
-        // flex-direction: column;
-
-        // min-width: 32px;
-        // min-height: 32px;
-
-        // padding: 8px;
-        // box-sizing: border-box;
-
-        // border-radius: 50%;
-        // border: none;
-        // background-color: transparent;
-
-        // font-size: 1em;
-        // cursor: pointer;
     }
 
     .day_button:hover {
@@ -332,6 +310,14 @@
             padding: 4px;
 
             font-size: 0.5em;
+        }
+
+        .event_cards {
+            @include event_cards--mobile;
+        }
+
+        .event_card {
+            @include event_card--mobile;
         }
     }
 </style>

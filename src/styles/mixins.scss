@@ -73,6 +73,19 @@
     background-color: $highlighted-color-primary-hover;
 }
 
+@mixin event_cards {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 16px;
+
+    position: absolute;
+}
+
+@mixin event_cards--mobile {
+    right: 4px;
+}
+
 @mixin event_card {
     background-color: $transparentGrey03;
     border: 1px solid $greyscale03;
@@ -102,4 +115,13 @@
     background-color: $transparentGrey04;
 
     z-index: 100;
+}
+
+@mixin event_card--mobile {
+    font-size: 0.5em;
+    padding: 4px;
+
+    > * {
+        margin: 4px 2px;
+    }
 }
