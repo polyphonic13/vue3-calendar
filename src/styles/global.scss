@@ -3,7 +3,7 @@
 $border-color01: $greyscale02;
 
 $primary-bg01: $greyscale01;
-$primary-bg01-hover: $greyscale05;
+$primary-bg01-hover: $transparentGrey03;
 
 $secondary-bg01: $blue04;
 $secondary-bg02: $greyscale06;
@@ -11,7 +11,7 @@ $secondary-bg03: $greyscale07;
 
 $secondary-color01: $blue05;
 
-$inactive-bg01: $greyscale04;
+$inactive-bg01: $transparentGrey02;
 
 $highlighted-color-primary: $blue01;
 $highlighted-color-primary-hover: $blue02;
@@ -19,6 +19,11 @@ $highlighted-color-primary-hover: $blue02;
 $selecting-color-primary: $blue03;
 
 /* offset-x | offset-y | blur-radius | spread-radius | color */
+// layout selector, day of week event
 $box-shadow01: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+// control center
 $box-shadow02: 0 3px 5px -1px rgba(18, 52, 86, 0.5), 0 6px 10px 0 rgba(18, 52, 86, 0.14),
     0 1px 18px 0 rgba(18, 52, 86, 0.12);
+// event modal
+$box-shadow03: 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12),
+    0 11px 15px -7px rgba(0, 0, 0, 0.2);

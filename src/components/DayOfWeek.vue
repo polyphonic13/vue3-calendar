@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted, watch } from 'vue';
+    import { computed } from 'vue';
 
     import type { IEvent } from '@/interfaces';
 
@@ -99,15 +99,11 @@
                 return count;
             }, count);
 
-            // const width = (100 / neighbors + 1);
-            // const width = 100 - (neighbors * 5);
             const width = 100;
             const height = (100/48) * ((event.times.end - event.times.start) * 2);
-            // const left = (100 / neighbors);
-            // const left = (neighbors === 0) ? 0 : (neighbors - 1) * 5;
             const left = 0;
             const top = (100/48) * (event.times.start * 2);
-            console.log(`neighbors for ${event.times.start}/${event.times.end} = ${neighbors}, left = ${left}`);
+            // console.log(`neighbors for ${event.times.start}/${event.times.end} = ${neighbors}, left = ${left}`);
 
             offset = (count === 0) ? 0 : offset + 1;
 
@@ -136,10 +132,6 @@
         console.log(`onMouseUp, index = ${index}`);
         emit('timeOnMouseUp', index);
     };
-
-    onMounted(() => {
-        console.log(`DayOfWeek/onMounted, events = `, props.events);
-    });
 </script>
 
 <style scoped lang="scss">
@@ -256,28 +248,15 @@
     }
 
     .event {
-        background-color: rgba(238, 238, 238, 0.95);
-        border: 1px solid #ddd;
-
-        width: 100%;
-
         border-radius: 8px;
 
-        padding: 8px;
-        box-sizing: border-box;
-
-        position: absolute;
-        z-index: 2;
-
-        display: flex;
-
-        overflow: hidden;
-
-        transition: all 0.25s ease;
+        @include event;
     }
 
     .event:hover {
         box-shadow: $box-shadow01;
+        background-color: $transparentGrey04;
+
         z-index: 100;
     }
 

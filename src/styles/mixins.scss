@@ -51,3 +51,22 @@
 @mixin day_button--current--hover {
     background-color: $highlighted-color-primary-hover;
 }
+
+@mixin event {
+    background-color: $transparentGrey03;
+    border: 1px solid $greyscale03;
+
+    width: 100%;
+
+    padding: 8px;
+    box-sizing: border-box;
+
+    position: absolute;
+    z-index: 2;
+
+    display: flex;
+
+    overflow: hidden;
+
+    transition: all 0.25s ease;
+}
