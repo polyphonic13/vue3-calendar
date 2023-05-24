@@ -6,6 +6,7 @@ type UseMouseSelectState = {
     isEndOnFirstHalf: boolean,
     selectedItems: number[],
     currentInitiator: number,
+    currentType: string;
 };
 
 export function useMouseItemSelect() {
@@ -20,6 +21,7 @@ export function useMouseItemSelect() {
         isEndOnFirstHalf: false,
         selectedItems: [],
         currentInitiator: -1,
+        currentType: '',
     });
 
     const initIndices = <T>(seed: T[]) => {
@@ -45,7 +47,7 @@ export function useMouseItemSelect() {
         };
     };
 
-    const onMouseDown = (index: number, currentInitiator: number | undefined, isSecondHalf?: boolean) => {
+    const onMouseDown = (index: number, currentInitiator: number | undefined, currentType: string, isSecondHalf?: boolean) => {
         if (state.isSelecting) {
             return;
         }
@@ -55,6 +57,7 @@ export function useMouseItemSelect() {
         state.isSelecting = true;
         state.isStartOnSecondHalf = (isSecondHalf) ? isSecondHalf : false;
         state.currentInitiator = (currentInitiator) ? currentInitiator : -1;
+        state.currentType = '';
         state.selectedItems.length = 0;
         state.selectedItems.push(index);
 

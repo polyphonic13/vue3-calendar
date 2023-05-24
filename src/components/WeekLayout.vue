@@ -7,11 +7,19 @@
             <DayOfWeekHeader
                 v-for="(day, d) in props.weekInfo.days"
                 :key="`${props.year}${day.month}${day.date}${d}`"
+                :index="d"
                 :year="props.year"
                 :month="day.month"
                 :day="day.date"
                 :day-name="day.dayName"
-                @date-clicked="$emit('dateClicked', { day: d, week: props.index })"
+                :is-selecting="isSelecting"
+                :selected-items="selectedItems"
+                :current-initiator="currentInitiator"
+                :current-type="currentType"
+                :events="dayEvents(d)"
+                @day-on-mouse-down="onDayMouseDown"
+                @day-on-mouse-over="onDayMouseOver"
+                @day-on-mouse-up="onDayMouseUp"
             />
         </div>
         <div
@@ -30,10 +38,11 @@
                     :is-end-on-first-half="isEndOnFirstHalf"
                     :selected-items="selectedItems"
                     :current-initiator="currentInitiator"
-                    :events="weekEvents(d2)"
-                    @time-on-mouse-down="onMouseDown"
-                    @time-on-mouse-over="onMouseOver"
-                    @time-on-mouse-up="onAddEventForTimes(d2)"
+                    :current-type="currentType"
+                    :events="hourlyEvents(d2)"
+                    @time-on-mouse-down="onTimeMouseDown"
+                    @time-on-mouse-over="onTimeMouseOver"
+                    @time-on-mouse-up="onTimeMouseUp(d2)"
                 />
             </div>
         </div>
@@ -41,9 +50,9 @@
 </template>
 
 <script setup lang="ts">
-    import { toRef, watch, computed, onMounted } from 'vue';
+    import { toRef, watch, onMounted } from 'vue';
 
-    import type { IEvent, IWeekInfo } from '@/interfaces';
+    import type { IEvent, INumberRange, IWeekInfo } from '@/interfaces';
 
     import { TIMES_IN_DAY } from '@/composables/use-date-utils';
 
@@ -52,6 +61,7 @@
 
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
+import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
     interface IWeekProps {
         year: number;
@@ -78,6 +88,7 @@
     const isStartOnSecondHalf = toRef(state, 'isStartOnSecondHalf');
     const isEndOnFirstHalf = toRef(state, 'isEndOnFirstHalf');
     const currentInitiator = toRef(state, 'currentInitiator');
+    const currentType = toRef(state, 'currentType');
 
     const emit = defineEmits(['addEvent']);
 
@@ -85,17 +96,16 @@
         initIndices<string>(TIMES_IN_DAY);
     };
 
-    const onAddEventForTimes = (index: number) => {
-        const times = getTimesFromItems();
-        const date = props.weekInfo.days[index].date;
+    watch(() => props.weekInfo, () => {
+        initHourIndices();
+    });
+
+    const addEvent = (times: INumberRange, dates: INumberRange) => {
         const { month, year } = props;
 
         const event: Partial<IEvent> = {
             times,
-            dates: {
-                start: date,
-                end: date,
-            },
+            dates,
             month,
             year,
         };
@@ -105,13 +115,58 @@
         onMouseUp();
     };
 
-    watch(() => props.weekInfo, () => {
-        initHourIndices();
-    });
+    const onTimeMouseDown = (day: number, hour: number, isSecondHalf?: boolean) => {
+        onMouseDown(hour, day, MouseSelectionType.HOURLY, isSecondHalf);
+    };
+
+    const onTimeMouseOver = (hour: number, isSecondHalf?: boolean) => {
+        if (!isSelecting) {
+            return;
+        }
+        onMouseOver(hour, isSecondHalf)
+    };
+
+    const onTimeMouseUp = (day: number) => {
+        const times = getTimesFromItems();
+        const date = props.weekInfo.days[day].date;
+
+        addEvent(times, { start: date, end: date });
+    };
+
+    const onDayMouseDown = (day: number) => {
+        console.log(`onDayMouseDown, day = ${day}`);
+        onMouseDown(day, day, MouseSelectionType.DAILY);
+    }
+
+    const onDayMouseOver = (day: number) => {
+        if (!isSelecting) {
+            return;
+        }
+        console.log(`onDayMouseOver, day = ${day}`);
+        onMouseOver(day);
+    };
+
+    const onDayMouseUp = (day: number) => {
+        console.log(`onDayMouseUp, day = ${day}`);
+        const times = { start: 0, end: 0 };
+        const dates = {
+            start: props.weekInfo.days[selectedItems.value[0]].date,
+            end: props.weekInfo.days[selectedItems.value[selectedItems.value.length - 1]].date,
+        };
+        addEvent(times, dates);
+    };
 
     const weekEvents = (index: number) => {
         const days = props.weekInfo.days;
         return getEventsForRange(props.year, props.month, days[index].date, days[index].date);
+    };
+
+    const hourlyEvents = (index: number) => {
+        return weekEvents(index).filter((event) => event.times.start !== 0 && event.times.end !== 0);
+    };
+
+    const dayEvents = (index: number) => {
+        return weekEvents(index).filter((event) => event.times.start === 0 && event.times.start === 0);
     };
 
     onMounted(() => {

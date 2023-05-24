@@ -17,7 +17,7 @@ export const useEventStore = defineStore('eventStore', () => {
         const savedState = load<IEventState>(LOCAL_STORAGE_KEY);
 
         if (savedState) {
-            console.log(`EventStore/createState, savedState events = `, savedState.events);
+            // console.log(`EventStore/createState, savedState events = `, savedState.events);
             return savedState;
         }
 

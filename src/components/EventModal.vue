@@ -35,9 +35,11 @@
                 v-model="props.event!.title"
             />
             <div class="event__date_and_time">
-                <span>{{ startDay }}</span>
-                <span v-if="!isSameDay"> - {{ endDay }}</span>
-                <span>{{ convertNumberToTimeString(props.event!.times!.start) }} - {{ convertNumberToTimeString(props.event!.times!.end) }}</span>
+                <div>
+                    <span>{{ startDay }}</span>
+                    <span v-if="!isSameDayEvent"> - {{ endDay }}</span>
+                </div>
+                <span v-if="!isFullDayEvent">{{ convertNumberToTimeString(props.event!.times!.start) }} - {{ convertNumberToTimeString(props.event!.times!.end) }}</span>
             </div>
             <textarea
                 class="event__description"
@@ -110,12 +112,19 @@
         return convertYMDToDateString(props.event.year, props.event.month, props.event.dates.end);
     });
 
-    const isSameDay = computed(() => {
+    const isSameDayEvent = computed(() => {
         if (!props.event || !props.event.dates || !props.event.dates.start || ! props.event.dates.end) {
             return true;
         }
 
         return props.event.dates.start === props.event.dates.end;
+    });
+
+    const isFullDayEvent = computed(() => {
+        if (!props.event || !props.event.times) {
+            return true;
+        }
+        return props.event.times.start === 0 && props.event.times.end === 0;
     });
 
     const isViewingEvent = computed(() => {

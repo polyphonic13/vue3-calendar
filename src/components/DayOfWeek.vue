@@ -11,7 +11,7 @@
             <div class="half_hours">
                 <div
                     class="half_hour"
-                    :class="{ 'time_slot--selecting': props.isSelecting && ((selectedItems.includes(t) && (selectedItems[0] !== t || (selectedItems[0] === t && !isStartOnSecondHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index))) }"
+                    :class="{ 'time_slot--selecting': isSelectingHours && ((selectedItems.includes(t) && (selectedItems[0] !== t || (selectedItems[0] === t && !isStartOnSecondHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index))) }"
                     @mousedown="onMouseDown(t, false)"
                     @mouseover="onMouseOver(t, true)"
                     @mouseup="onMouseUp(t)"
@@ -23,7 +23,7 @@
                 </div>
                 <div
                     class="half_hour second_half_hour"
-                    :class="{ 'time_slot--selecting': props.isSelecting && ((selectedItems.includes(t) && (selectedItems[selectedItems.length - 1] !== t || (selectedItems[selectedItems.length - 1] === t && !isEndOnFirstHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index))) }"
+                    :class="{ 'time_slot--selecting': isSelectingHours && ((selectedItems.includes(t) && (selectedItems[selectedItems.length - 1] !== t || (selectedItems[selectedItems.length - 1] === t && !isEndOnFirstHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index))) }"
                     @mousedown="onMouseDown(t, true)"
                     @mouseover="onMouseOver(t, false)"
                     @mouseup="onMouseUp(t)"
@@ -56,12 +56,13 @@
 
     import { useEventStore } from '@/stores/events';
     import { TIMES_IN_DAY, useDateUtils } from '@/composables/use-date-utils';
+import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
     const {
         viewEvent,
     } = useEventStore();
 
-    const { convertNumberToTimeString, getIsTimeWithinRange } = useDateUtils();
+    const { convertNumberToTimeString } = useDateUtils();
 
     interface IDayOfWeekProps {
         index: number;
@@ -72,6 +73,7 @@
         isEndOnFirstHalf: boolean;
         selectedItems: number[];
         currentInitiator?: number;
+        currentType: string;
         events: IEvent[];
     }
 
@@ -80,13 +82,8 @@
     const emit = defineEmits([
         'timeOnMouseDown',
         'timeOnMouseOver',
-        'timeOnMouseOut',
         'timeOnMouseUp'
     ]);
-
-    const classes = computed(() => {
-
-    });
 
     interface IFormattedEvent extends IEvent {
         height: number;
@@ -100,16 +97,9 @@
         const formatted: IFormattedEvent[] = props.events.map((event: IEvent, e: number) => {
             count = 0;
             offset = 0;
-            const neighbors = props.events.reduce((count: number, evt: IEvent) => {
-                if (event.id !== evt.id && getIsTimeWithinRange(event.times, evt.times)) {
-                    count++
-                };
-                return count;
-            }, count);
 
             const height = (100/48) * ((event.times.end - event.times.start) * 2);
             const top = (100/48) * (event.times.start * 2);
-            // console.log(`neighbors for ${event.times.start}/${event.times.end} = ${neighbors}, left = ${left}`);
 
             offset = (count === 0) ? 0 : offset + 1;
 
@@ -122,6 +112,10 @@
 
 
         return formatted;
+    });
+
+    const isSelectingHours = computed(() => {
+        return props.isSelecting && props.currentType === MouseSelectionType.HOURLY;
     });
 
     const onMouseDown = (index: number, isSecondHalf: boolean) => {

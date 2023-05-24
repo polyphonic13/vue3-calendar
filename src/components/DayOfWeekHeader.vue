@@ -1,5 +1,10 @@
 <template>
-    <div class="day">
+    <div
+        class="day"
+        @mousedown="onMouseDown"
+        @mouseover="onMouseOver"
+        @mouseup="onMouseUp"
+    >
         <div class="header">
             <span v-if="props.dayName !== ''" class="day_name">{{ props.dayName }}</span>
             <button
@@ -8,21 +13,35 @@
                 @click="$emit('dateClicked')"
             >{{ props.day }}</button>
         </div>
-        <div class="items"></div>
+        <div class="events"></div>
     </div>
 </template>
 
 <script setup lang="ts">
     import { reactive, watch } from 'vue';
 
-    interface IDayOfWeekProps {
+    import type { IEvent } from '@/interfaces';
+
+    interface IDayOfWeekHeaderProps {
+        index: number;
         year: number;
         month: number;
         day: number;
         dayName?: string;
+        isSelecting: boolean;
+        selectedItems: number[];
+        currentInitiator?: number;
+        currentType: string;
+        events: IEvent[];
     }
 
-    const props = defineProps<IDayOfWeekProps>();
+    const props = defineProps<IDayOfWeekHeaderProps>();
+
+    const emit = defineEmits([
+        'dayOnMouseDown',
+        'dayOnMouseOver',
+        'dayOnMouseUp'
+    ]);
 
     const getIsToday = () => {
         const today = new Date();
@@ -41,6 +60,18 @@
         current: getIsToday(),
     });
 
+    const onMouseDown = () => {
+        emit('dayOnMouseDown', props.index);
+    };
+
+    const onMouseOver = () => {
+        emit('dayOnMouseOver', props.index);
+    };
+
+    const onMouseUp = () => {
+        emit('dayOnMouseUp', props.index);
+    };
+
 </script>
 
 <style scoped lang="scss">
@@ -49,6 +80,7 @@
 
     .day {
         width: 100%;
+        min-height: 128px;
 
         box-sizing: border-box;
 
