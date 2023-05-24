@@ -1,7 +1,7 @@
 <template>
     <div
         class="event_modal"
-        @keydown="onKeyDown"
+        @keyup.escape="onCloseClicked"
     >
         <div class="event_modal__header">
             <span></span>
@@ -80,6 +80,7 @@
         viewEvent,
         updateEvent,
         deleteEvent,
+        getisViewingEvent,
     } = eventStore;
 
     const emit = defineEmits(['onClose']);
@@ -88,6 +89,10 @@
     const titleInput = ref<HTMLElement | null>(null);
 
     const props = defineProps<IEventModalProps>();
+
+    watch(() => props.event, () => {
+        console.log(`EventModal/watch event, event = ${JSON.stringify(props.event)}`);
+    });
 
     const isEditingDisabled = computed(() => {
         return !isEditing.value && !props.isNew;
@@ -115,8 +120,12 @@
         return props.event.dates.start === props.event.dates.end;
     });
 
-    watch(() => props.event, () => {
-        console.log(`EventModal/watch event, event = ${JSON.stringify(props.event)}`);
+    const isViewingEvent = computed(() => {
+        return getisViewingEvent();
+    });
+
+    watch(() => isViewingEvent, () => {
+        console.log(`isViewingEvent changed: ${isViewingEvent}`);
     });
 
     const onEditClicked = (event: MouseEvent) => {
@@ -140,8 +149,7 @@
     };
 
     const onSaveClicked = () => {
-        console.log(`save clicked, event = ${JSON.stringify(props.event)}`);
-        const method = (isEditing) ? updateEvent : addEvent;
+        const method = (isEditing.value) ? updateEvent : addEvent;
         method();
         emit('onClose');
     };

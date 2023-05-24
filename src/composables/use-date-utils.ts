@@ -318,7 +318,6 @@ export function useDateUtils() {
 
     const convertYMDToDateString = (year: number, month: number, day: number) => {
         const date = new Date(year, month, day);
-        console.log(`day of week = ${date.getDay()}`);
         return `${DAYS_OF_WEEK[date.getDay()]} ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
     };
 

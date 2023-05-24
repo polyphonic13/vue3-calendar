@@ -78,7 +78,6 @@ export const useEventStore = defineStore('eventStore', () => {
         }
         const event: IEvent = state.value.focusedEvent as IEvent;
         state.value.events.push(event);
-        console.log(`EventStore/addEvent, event = ${JSON.stringify(event)}`);
         save<IEventState>(LOCAL_STORAGE_KEY, state.value);
     };
 

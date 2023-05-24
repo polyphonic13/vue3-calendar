@@ -89,9 +89,6 @@
 
     const {
         createEvent,
-        addEvent,
-        updateEvent,
-        deleteEvent,
         cancelEditEvent,
         getisViewingEvent,
         setisViewingEvent,
