@@ -39,7 +39,7 @@
                     role="button"
                     class="event_card"
                     :style="`height: ${event.height}%; top: ${event.top}%;`"
-                    @click="onEventClicked(e)"
+                    @click.stop="onEventClicked(e)"
                 >
                     <div class="event_card__title"><b>{{ event.title }}</b></div>
                     <div class="event_card__times">{{ convertNumberToTimeString(event.times.start) }} - {{ convertNumberToTimeString(event.times.end) }}</div>
@@ -54,13 +54,12 @@
 
     import type { IEvent } from '@/interfaces';
 
-    import { useEventStore } from '@/stores/events';
     import { TIMES_IN_DAY, useDateUtils } from '@/composables/use-date-utils';
-import { MouseSelectionType } from '@/enum/MouseSelectionType';
+    import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
-    const {
-        viewEvent,
-    } = useEventStore();
+    import { useEventStore } from '@/stores/events';
+
+    const { viewEvent } = useEventStore();
 
     const { convertNumberToTimeString } = useDateUtils();
 
@@ -119,7 +118,7 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
     });
 
     const onMouseDown = (index: number, isSecondHalf: boolean) => {
-        emit('timeOnMouseDown', index, props.index, isSecondHalf);
+        emit('timeOnMouseDown', props.index, index, isSecondHalf);
     };
 
     const onMouseOver = (index: number, isSecondHalf: boolean) => {
@@ -132,7 +131,7 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
     const onEventClicked = (index: number) => {
         if (index > props.events.length) {
-            console.warn(`ERROR: can no edit non-existent event with index ${index}`);
+            console.warn(`ERROR: can not edit non-existent event with index ${index}`);
             return;
         }
         console.log(`DayOfWeek/onEventClicked, index = ${index}\nevent = ${JSON.stringify(props.events[index])}`);
@@ -191,18 +190,8 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
         @include selected_item;
     }
 
-    .time_slot__selection_column {
-        background: #ffeeff;
-        min-width: 10%;
-        flex: 1;
-        height: 100%;
-    }
-
     .time_label {
         min-width: 38px;
-        // margin-left: -10px;
-
-        // transform: rotate(-90deg);
 
         font-size: 0.75em;
         color: $secondary-bg03;
@@ -211,7 +200,6 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
 
     .half_hours {
-        // background-color: aqua;
         width: 100%;
         height: 100%;
         display: flex;
@@ -247,9 +235,11 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
     }
 
     .event_card {
-        border-radius: 8px;
+        position: absolute;
+    z-index: 2;
 
         @include event_card;
+        @include event_card--rounded;
     }
 
     .event_card:hover {
@@ -266,7 +256,7 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
     }
 
     .day_button:hover {
-        $primary-bg01-hover: #eee;
+        background-color: $primary-bg01-hover;
     }
 
     .current {

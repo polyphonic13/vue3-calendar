@@ -1,26 +1,45 @@
 <template>
     <div
         class="day"
-        @mousedown="onMouseDown"
-        @mouseover="onMouseOver"
-        @mouseup="onMouseUp"
     >
         <div class="header">
             <span v-if="props.dayName !== ''" class="day_name">{{ props.dayName }}</span>
             <button
                 class="day_button"
                 :class="classes"
-                @click="$emit('dateClicked')"
+                @click.stop="$emit('dateClicked', props.index)"
             >{{ props.day }}</button>
         </div>
-        <div class="events"></div>
+        <div
+            class="event_cards"
+            :class="{ 'day--selecting': isSelectingDays && props.selectedItems.includes(props.index) }"
+            @mousedown="onMouseDown"
+            @mouseover="onMouseOver"
+            @mouseup="onMouseUp"
+
+        >
+            <div
+                v-for="(event, e) in props.events"
+                :key="event.id"
+                class="event_card"
+                :class="getEventCardClass(e)"
+                @click.stop="onEventClicked(e)"
+            >
+                <div class="event_card__title">{{ event.title }}</div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { reactive, watch } from 'vue';
+    import { reactive, watch, computed, onMounted } from 'vue';
 
     import type { IEvent } from '@/interfaces';
+    import { MouseSelectionType } from '@/enum/MouseSelectionType';
+
+    import { useEventStore } from '@/stores/events';
+
+    const { viewEvent } = useEventStore();
 
     interface IDayOfWeekHeaderProps {
         index: number;
@@ -40,7 +59,8 @@
     const emit = defineEmits([
         'dayOnMouseDown',
         'dayOnMouseOver',
-        'dayOnMouseUp'
+        'dayOnMouseUp',
+        'dateClicked',
     ]);
 
     const getIsToday = () => {
@@ -60,6 +80,32 @@
         current: getIsToday(),
     });
 
+    const isSelectingDays = computed(() => {
+        return props.isSelecting && props.currentType === MouseSelectionType.DAILY;
+    });
+
+    const getEventCardClass = (index: number) => {
+        const dates = props.events[index].dates;
+
+        if (dates.start === dates.end) {
+            return {
+                'event_card--rounded': true,
+            };
+        }
+
+        if (props.events[index].dates.start === props.day) {
+            return {
+                'event_card--left': true,
+            };
+        }
+
+        if (props.events[index].dates.end === props.day) {
+            return {
+                'event_card--right': true,
+            };
+        }
+    };
+
     const onMouseDown = () => {
         emit('dayOnMouseDown', props.index);
     };
@@ -72,6 +118,18 @@
         emit('dayOnMouseUp', props.index);
     };
 
+    const onEventClicked = (index: number) => {
+        if (index > props.events.length) {
+            console.warn(`ERROR: can not edit non-existent event with index ${index}`);
+            return;
+        }
+        console.log(`DayOfWeekHeader/onEventClicked, index = ${index}\nevent = ${JSON.stringify(props.events[index])}`);
+        viewEvent(props.events[index]);
+    };
+
+    // onMounted(() => {
+    //     console.log(`DayOfWeekHeader[ ${props.index} ]/onMounted, events = `, props.events);
+    // })
 </script>
 
 <style scoped lang="scss">
@@ -80,7 +138,7 @@
 
     .day {
         width: 100%;
-        min-height: 128px;
+        // min-height: 128px;
 
         box-sizing: border-box;
 
@@ -107,19 +165,6 @@
         user-select: none;
     }
 
-    .time_slot {
-        min-height: 48px;
-        max-height: 48px;
-
-        padding: 4px;
-        box-sizing: border-box;
-        border-bottom: 1px solid $border-color01;
-
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-    }
-
     .day_name {
         font-size: 0.66em;
         margin-bottom: 4px;
@@ -141,12 +186,6 @@
         @include circle_button--current--hover;
     }
 
-    @media screen and (max-width: 400px) {
-        .day_button {
-            @include circle_button--mobile;
-        }
-    }
-
     .current {
         background-color: $highlighted-color-primary;
     }
@@ -155,8 +194,50 @@
         background-color: $highlighted-color-primary-hover;
     }
 
-    .items {
-        min-height: 32px;
+    .event_cards {
+        min-height: 24px;
+
+        display: flex;
+        flex-direction: column;
+
+        position: relative;
+    }
+
+    .day--selecting {
+        @include selected_item;
+    }
+
+    .event_card {
+        height: 24px;
+        @include event_card;
+    }
+
+    // .event_card:hover {
+    //     @include event_card--hover;
+    // }
+
+    .event_card--rounded {
+        @include event_card--rounded;
+    }
+
+    .event_card--left {
+        @include event_card--rounded_left;
+    }
+
+    .event_card--right {
+        @include event_card--rounded_right;
+    }
+
+    .event_card__title {
+        display: flex;
+        align-content: center;
+        justify-content: flex-start;
+    }
+
+    @media screen and (max-width: 400px) {
+        .day_button {
+            @include circle_button--mobile;
+        }
     }
 
 </style>

@@ -17,7 +17,7 @@ export const useEventStore = defineStore('eventStore', () => {
         const savedState = load<IEventState>(LOCAL_STORAGE_KEY);
 
         if (savedState) {
-            // console.log(`EventStore/createState, savedState events = `, savedState.events);
+            console.log(`EventStore/createState, savedState events = `, savedState.events);
             return savedState;
         }
 
@@ -62,7 +62,7 @@ export const useEventStore = defineStore('eventStore', () => {
             return monthEvents;
         }
 
-        return monthEvents.filter((event: IEvent) => event.dates.start >= startDate && event.dates.end <= endDate).sort((a, b) => { return a.times.start - b.times.start });
+        return monthEvents.filter((event: IEvent) => event.dates.start >= startDate && event.dates.end <= endDate).sort((a, b) => { return a.times.start - b.times.start }).sort((a, b) => { return a.dates.start - b.dates.start });
     };
 
     const createEvent = (payload: Partial<IEvent>) => {

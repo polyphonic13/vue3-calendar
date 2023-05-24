@@ -57,7 +57,7 @@ export function useMouseItemSelect() {
         state.isSelecting = true;
         state.isStartOnSecondHalf = (isSecondHalf) ? isSecondHalf : false;
         state.currentInitiator = (currentInitiator) ? currentInitiator : -1;
-        state.currentType = '';
+        state.currentType = currentType;
         state.selectedItems.length = 0;
         state.selectedItems.push(index);
 
@@ -101,6 +101,7 @@ export function useMouseItemSelect() {
         }
 
         state.isSelecting = false;
+        state.currentType = '';
     };
 
     return {

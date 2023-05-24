@@ -20,6 +20,7 @@
                 @day-on-mouse-down="onDayMouseDown"
                 @day-on-mouse-over="onDayMouseOver"
                 @day-on-mouse-up="onDayMouseUp"
+                @date-clicked="onDateClicked"
             />
         </div>
         <div
@@ -90,7 +91,10 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
     const currentInitiator = toRef(state, 'currentInitiator');
     const currentType = toRef(state, 'currentType');
 
-    const emit = defineEmits(['addEvent']);
+    const emit = defineEmits([
+        'addEvent',
+        'dateClicked',
+    ]);
 
     const initHourIndices = () => {
         initIndices<string>(TIMES_IN_DAY);
@@ -168,7 +172,17 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
     };
 
     const dayEvents = (index: number) => {
-        return weekEvents(index).filter((event) => event.times.start === 0 && event.times.start === 0);
+        const days = props.weekInfo.days;
+        const date = days[index].date;
+        return getEventsForRange(props.year, props.month, days[0].date, days[days.length - 1].date).filter((event) => {
+            if ((event.times.start === 0 && event.times.end === 0) && (event.dates.start <= date && event.dates.end >= date)) {
+                return event;
+            }
+        });
+    };
+
+    const onDateClicked = (index: number) => {
+        emit('dateClicked', { day: props.weekInfo.days[index].date, week: props.weekInfo.weekNumber });
     };
 
     onMounted(() => {
