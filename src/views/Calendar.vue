@@ -1,5 +1,8 @@
 <template>
-    <div v-if="state" class="calendar">
+    <div
+        v-if="state"
+        class="calendar"
+    >
         <div class="header">
             <div class="header__content">
                 <span class="title">{{ headerTitle }}</span>
@@ -53,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed } from 'vue';
+    import { computed, onMounted, onUnmounted } from 'vue';
     import { storeToRefs } from 'pinia';
 
     import { MONTH_NAMES } from '@/composables/use-date-utils';
@@ -91,7 +94,7 @@
         createEvent,
         cancelEditEvent,
         getisViewingEvent,
-        setisViewingEvent,
+        setIsViewingEvent,
         getFocusedEvent,
     } = eventStore;
 
@@ -149,19 +152,26 @@
     };
 
     const onAddEvent = (event: Partial<IEvent>) => {
-        // event = {
-        //     ...event,
-        //     title: '',
-        //     description: '',
-        //     location: '',
-        // } as IEvent;
-        // console.log(`Calendar/onAddEvent, event = ${JSON.stringify(event)}`);
-        // addEvent(event);
-
         resetEventEditing();
         createEvent(event);
         isNewEvent = true;
-        setisViewingEvent(true);
+        setIsViewingEvent(true);
+    };
+
+    const handleEscapeClicked = () => {
+        if (!isViewingEvent) {
+            return;
+        }
+        resetEventEditing();
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+        const key = event.key.toLowerCase();
+
+        if (key !== 'escape') {
+            return;
+        }
+        handleEscapeClicked();
     };
 
     const onEventModalClose = () => {
@@ -169,10 +179,18 @@
     };
 
     const resetEventEditing = () => {
-        setisViewingEvent(false);
+        setIsViewingEvent(false);
         isNewEvent = false;
         cancelEditEvent();
     };
+
+    onMounted(() => {
+        window.addEventListener('keydown', onKeyDown);
+    });
+
+    onUnmounted(() => {
+        window.removeEventListener('keydown', onKeyDown);
+    });
 </script>
 
 <style scoped lang="scss">

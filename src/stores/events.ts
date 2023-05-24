@@ -127,7 +127,7 @@ export const useEventStore = defineStore('eventStore', () => {
         return state.value.isViewingEvent;
     };
 
-    const setisViewingEvent = (value: boolean) => {
+    const setIsViewingEvent = (value: boolean) => {
         state.value.isViewingEvent = value;
     };
 
@@ -145,7 +145,7 @@ export const useEventStore = defineStore('eventStore', () => {
         updateEvent,
         deleteEvent,
         getisViewingEvent,
-        setisViewingEvent,
+        setIsViewingEvent,
         getFocusedEvent,
     };
 });

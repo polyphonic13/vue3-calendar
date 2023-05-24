@@ -1,7 +1,6 @@
 <template>
     <div
         class="event_modal"
-        @keyup.escape="onCloseClicked"
     >
         <div class="event_modal__header">
             <span></span>
@@ -160,7 +159,7 @@
 
     const onKeyDown = (event: KeyboardEvent) => {
         const key = event.key.toLowerCase();
-
+        console.log(`EventModal/onKeyDown, key = ${key}`);
         if (key !== 'escape') {
             return;
         }
