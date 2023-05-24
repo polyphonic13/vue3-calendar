@@ -93,6 +93,7 @@
     const {
         createEvent,
         cancelEditEvent,
+        deleteEvent,
         getisViewingEvent,
         setIsViewingEvent,
         getFocusedEvent,
@@ -165,13 +166,35 @@
         resetEventEditing();
     };
 
+    const handleDeleteClicked = () => {
+        if (!isViewingEvent) {
+            return;
+        }
+
+        if (isNewEvent) {
+            resetEventEditing();
+            return;
+        }
+
+        if (!focusedEvent) {
+            return;
+        }
+
+        deleteEvent();
+    };
+
     const onKeyDown = (event: KeyboardEvent) => {
         const key = event.key.toLowerCase();
 
-        if (key !== 'escape') {
+        if (key === 'escape') {
+            handleEscapeClicked();
             return;
         }
-        handleEscapeClicked();
+
+        if (key === 'delete' || key === 'backspace') {
+            handleDeleteClicked();
+            return;
+        }
     };
 
     const onEventModalClose = () => {
