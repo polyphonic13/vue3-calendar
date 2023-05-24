@@ -86,8 +86,6 @@
     };
 
     const onAddEventForTimes = (index: number) => {
-        onMouseUp();
-
         const times = getTimesFromItems();
         const date = props.weekInfo.days[index].date;
         const { month, year } = props;
@@ -104,6 +102,7 @@
 
         emit('addEvent', event);
 
+        onMouseUp();
     };
 
     watch(() => props.weekInfo, () => {

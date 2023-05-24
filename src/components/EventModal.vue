@@ -31,7 +31,6 @@
                 class="event__title"
                 type="text"
                 placeholder="Add Title"
-                :autofocus="true"
                 :disabled="isEditingDisabled"
                 v-model="props.event!.title"
             />
@@ -59,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, watch } from 'vue';
+    import { ref, computed, watch, onMounted, nextTick } from 'vue';
 
     import type { IEvent } from '@/interfaces';
     import { useEventStore } from '@/stores/events';
@@ -129,18 +128,14 @@
 
     const onEditClicked = (event: MouseEvent) => {
         event.stopPropagation();
-        console.log(`onEditClicked, isEditing = ${isEditing.value}`);
+
         if (isEditing.value || !props.event) {
             return;
         }
         viewEvent(props.event);
         isEditing.value = true;
 
-        if (!titleInput.value) {
-            return;
-        }
-        console.log(`title input = `, titleInput.value);
-        titleInput.value.focus();
+        focusTitleInput();
     };
 
     const onDeleteClicked = () => {
@@ -157,15 +152,23 @@
         emit('onClose');
     };
 
-    const onKeyDown = (event: KeyboardEvent) => {
-        const key = event.key.toLowerCase();
-        console.log(`EventModal/onKeyDown, key = ${key}`);
-        if (key !== 'escape') {
+    const focusTitleInput = async () => {
+        if (!titleInput.value) {
             return;
         }
 
-        emit('onClose');
+        await nextTick();
+
+        titleInput.value.focus();
+
     };
+
+    onMounted(() => {
+        if (!props.isNew) {
+            return;
+        }
+        focusTitleInput();
+    });
 </script>
 
 <style lang="scss">
