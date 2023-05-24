@@ -11,7 +11,7 @@
             <div class="half_hours">
                 <div
                     class="half_hour"
-                    :class="{ 'time_slot--selecting': (selectedItems.includes(t) && (selectedItems[0] !== t || (selectedItems[0] === t && !isStartOnSecondHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index)) }"
+                    :class="{ 'time_slot--selecting': props.isSelecting && ((selectedItems.includes(t) && (selectedItems[0] !== t || (selectedItems[0] === t && !isStartOnSecondHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index))) }"
                     @mousedown="onMouseDown(t, false)"
                     @mouseover="onMouseOver(t, true)"
                     @mouseup="onMouseUp(t)"
@@ -23,7 +23,7 @@
                 </div>
                 <div
                     class="half_hour second_half_hour"
-                    :class="{ 'time_slot--selecting': (selectedItems.includes(t) && (selectedItems[selectedItems.length - 1] !== t || (selectedItems[selectedItems.length - 1] === t && !isEndOnFirstHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index)) }"
+                    :class="{ 'time_slot--selecting': props.isSelecting && ((selectedItems.includes(t) && (selectedItems[selectedItems.length - 1] !== t || (selectedItems[selectedItems.length - 1] === t && !isEndOnFirstHalf)) && (props.currentInitiator === -1 || props.currentInitiator === props.index))) }"
                     @mousedown="onMouseDown(t, true)"
                     @mouseover="onMouseOver(t, false)"
                     @mouseup="onMouseUp(t)"
@@ -133,7 +133,6 @@
     };
 
     const onMouseUp = (index: number) => {
-        console.log(`onMouseUp, index = ${index}`);
         emit('timeOnMouseUp', index);
     };
 

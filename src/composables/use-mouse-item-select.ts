@@ -96,7 +96,7 @@ export function useMouseItemSelect() {
         if (!state.isSelecting) {
             return;
         }
-        console.log(`use mouse item select on mouse up`);
+
         state.isSelecting = false;
     };
 
