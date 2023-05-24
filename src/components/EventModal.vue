@@ -53,6 +53,7 @@
             <span></span>
             <button
                 class="save_button"
+                :disabled="isSaveDisabled"
                 @click="onSaveClicked"
             >SAVE</button>
         </div>
@@ -129,6 +130,10 @@
 
     const isViewingEvent = computed(() => {
         return getisViewingEvent();
+    });
+
+    const isSaveDisabled = computed(() => {
+        return !props.event || !props.event.title || props.event.title === '';
     });
 
     watch(() => isViewingEvent, () => {
@@ -275,6 +280,10 @@
 
     .save_button:hover {
         @include text_button--hover;
+    }
+
+    .save_button:disabled {
+        @include text_button--disabled;
     }
 
     @media screen and (max-width: 400px) {

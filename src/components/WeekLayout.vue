@@ -134,20 +134,22 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
     };
 
     const onDayMouseDown = (day: number) => {
-        console.log(`onDayMouseDown, day = ${day}`);
         onMouseDown(day, day, MouseSelectionType.DAILY);
     }
 
     const onDayMouseOver = (day: number) => {
-        if (!isSelecting) {
+        if (!isSelecting.value) {
             return;
         }
-        console.log(`onDayMouseOver, day = ${day}`);
+
         onMouseOver(day);
     };
 
     const onDayMouseUp = (day: number) => {
-        console.log(`onDayMouseUp, day = ${day}`);
+        if (!isSelecting.value) {
+            return;
+        }
+
         const times = { start: 0, end: 0 };
         const dates = {
             start: props.weekInfo.days[selectedItems.value[0]].date,

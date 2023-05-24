@@ -32,6 +32,11 @@
     opacity: 0.5;
 }
 
+@mixin text_button--disabled {
+    background-color: $greyscale06;
+    opacity: 0.5;
+}
+
 @mixin circle_button {
     @include flex_centered;
     flex-direction: column;
