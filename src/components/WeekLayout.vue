@@ -32,15 +32,16 @@
                 @mouseover="onDayMouseOver(d)"
                 @mouseup="onDayMouseUp(d)"
             ></div>
-            <div
+            <button
                 v-for="(event, e) in dayEvents"
                 :key="event.id"
                 class="event_card"
                 :style="getCardStyle(event, e)"
+                @click.stop="onEventClicked(e)"
             >
                 <div class="event_card__title"><b>{{ event.title }}</b></div>
 
-            </div>
+            </button>
         </div>
         <div
             class="day_container"
@@ -101,7 +102,7 @@
         onMouseUp,
     } = useMouseItemSelect();
 
-    const { getEventsForRange } = useEventStore();
+    const { getEventsForRange, viewEvent } = useEventStore();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -214,6 +215,15 @@
 
     const onDateClicked = (index: number) => {
         emit('dateClicked', { day: props.weekInfo.days[index].date, week: props.weekInfo.weekNumber });
+    };
+
+    const onEventClicked = (index: number) => {
+        if (index > dayEvents.value.length) {
+            console.warn(`ERROR: can not edit non-existent event with index ${index}`);
+            return;
+        }
+        console.log(`DayOfWeek/onEventClicked, index = ${index}\nevent = ${JSON.stringify(dayEvents.value[index])}`);
+        viewEvent(dayEvents.value[index]);
     };
 
     onMounted(() => {
