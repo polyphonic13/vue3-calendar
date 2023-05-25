@@ -255,13 +255,12 @@
 
     }
 
-
     .event_cards {
-        // background-color: rgba(123, 234, 0, 0.24);
+        background-color: rgba(123, 234, 0, 0.24);
 
         width: 100%;
         min-height: 24px;
-        height: 96px;
+        height: 108px;
 
         top: 60px;
 
@@ -269,7 +268,7 @@
 
         position: absolute;
 
-        overflow: scroll
+        overflow: scroll;
     }
 
     .event_card {

@@ -95,10 +95,6 @@
 
     const props = defineProps<IEventModalProps>();
 
-    watch(() => props.event, () => {
-        console.log(`EventModal/watch event, event = ${JSON.stringify(props.event)}`);
-    });
-
     const isEditingDisabled = computed(() => {
         return !isEditing.value && !props.isNew;
     });
@@ -130,14 +126,6 @@
             return true;
         }
         return props.event.times.start === 0 && props.event.times.end === 0;
-    });
-
-    const isViewingEvent = computed(() => {
-        return getisViewingEvent();
-    });
-
-    watch(isViewingEvent, (newValue, oldValue) => {
-        console.log(`isViewingEvent changed: ${newValue}`);
     });
 
     const isSaveDisabled = computed(() => {

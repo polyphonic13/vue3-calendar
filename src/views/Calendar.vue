@@ -128,10 +128,6 @@
         return getisViewingEvent();
     });
 
-    watch(isViewingEvent, () => {
-        console.log(`Calendar isViewingEvent = ${isViewingEvent.value}`);
-    });
-
     const focusedEvent = computed(() => {
         return getFocusedEvent();
     });
