@@ -31,6 +31,9 @@
                 @mousedown="onDayMouseDown(d)"
                 @mouseover="onDayMouseOver(d)"
                 @mouseup="onDayMouseUp(d)"
+                @touchstart="onDayMouseDown(d)"
+                @touchmove="onDayMouseOver(d)"
+                @touchend="onDayMouseUp(d)"
             ></div>
             <button
                 v-for="(event, e) in dayEvents"
@@ -126,6 +129,17 @@
 
     const isSelectingDays = computed(() => {
         return isSelecting && currentType.value === MouseSelectionType.DAILY;
+    });
+
+    const countsPerDay = computed(() => {
+        const counts = [0, 0, 0, 0, 0, 0, 0];
+        const start = props.weekInfo.days[0].date;
+        let days;
+
+        dayEvents.value.forEach((event) => {
+            days = 0;
+        });
+        return counts;
     });
 
     const getCardStyle = (event: IEvent, index: number) => {

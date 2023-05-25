@@ -118,14 +118,23 @@
     });
 
     const onMouseDown = (index: number, isSecondHalf: boolean) => {
+        console.log(`DayOfWeek[ ${props.index} ]/onMouseDown, index = ${index}`);
         emit('timeOnMouseDown', props.index, index, isSecondHalf);
     };
 
     const onMouseOver = (index: number, isSecondHalf: boolean) => {
+        if (!props.isSelecting) {
+            return;
+        }
+        console.log(`DayOfWeek[ ${props.index} ]/onMouseOver, index = ${index}`);
         emit('timeOnMouseOver', index, isSecondHalf);
     };
 
     const onMouseUp = (index: number) => {
+        if (!props.isSelecting) {
+            return;
+        }
+        console.log(`DayOfWeek[ ${props.index} ]/onMouseUp, index = ${index}`);
         emit('timeOnMouseUp', index);
     };
 
