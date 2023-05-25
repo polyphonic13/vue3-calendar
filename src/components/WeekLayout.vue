@@ -16,12 +16,31 @@
                 :selected-items="selectedItems"
                 :current-initiator="currentInitiator"
                 :current-type="currentType"
-                :events="dayEvents(d)"
                 @day-on-mouse-down="onDayMouseDown"
                 @day-on-mouse-over="onDayMouseOver"
                 @day-on-mouse-up="onDayMouseUp"
                 @date-clicked="onDateClicked"
             />
+        </div>
+        <div class="event_cards">
+            <div
+                v-for="(day, d) in DAYS_OF_WEEK"
+                :key="d"
+                class="day_selection_area"
+                :class="{ 'day--selecting': isSelectingDays && selectedItems.includes(d) }"
+                @mousedown="onDayMouseDown(d)"
+                @mouseover="onDayMouseOver(d)"
+                @mouseup="onDayMouseUp(d)"
+            ></div>
+            <div
+                v-for="(event, e) in dayEvents"
+                :key="event.id"
+                class="event_card"
+                :style="getCardStyle(event, e)"
+            >
+                <div class="event_card__title"><b>{{ event.title }}</b></div>
+
+            </div>
         </div>
         <div
             class="day_container"
@@ -51,18 +70,18 @@
 </template>
 
 <script setup lang="ts">
-    import { toRef, watch, onMounted } from 'vue';
+    import { toRef, watch, computed, onMounted } from 'vue';
 
     import type { IEvent, INumberRange, IWeekInfo } from '@/interfaces';
+    import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
-    import { TIMES_IN_DAY } from '@/composables/use-date-utils';
+    import { TIMES_IN_DAY, DAYS_OF_WEEK } from '@/composables/use-date-utils';
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
     import { useEventStore } from '@/stores/events';
 
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
-import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
     interface IWeekProps {
         year: number;
@@ -103,6 +122,19 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
     watch(() => props.weekInfo, () => {
         initHourIndices();
     });
+
+    const isSelectingDays = computed(() => {
+        return isSelecting && currentType.value === MouseSelectionType.DAILY;
+    });
+
+    const getCardStyle = (event: IEvent, index: number) => {
+        const width = (100 / 7) * ((event.dates.end - event.dates.start) + 1);
+        const top = (index * 24) + 20;
+        const leftMultiplier = (event.dates.start < props.weekInfo.days[0].date) ? 0 : (event.dates.start - props.weekInfo.days[0].date)
+        const left = (100 / 7) * leftMultiplier;
+
+        return `width: ${width}%; top: ${top}px; left: ${left}%`;
+    };
 
     const addEvent = (times: INumberRange, dates: INumberRange) => {
         const { month, year } = props;
@@ -171,15 +203,14 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
         return weekEvents(index).filter((event) => event.times.start !== 0 && event.times.end !== 0);
     };
 
-    const dayEvents = (index: number) => {
+    const dayEvents = computed(() => {
         const days = props.weekInfo.days;
-        const date = days[index].date;
         return getEventsForRange(props.year, props.month, days[0].date, days[days.length - 1].date).filter((event) => {
-            if ((event.times.start === 0 && event.times.end === 0) && (event.dates.start <= date && event.dates.end >= date)) {
+            if (event.times.start === 0 && event.times.end === 0) {
                 return event;
             }
         });
-    };
+    });
 
     const onDateClicked = (index: number) => {
         emit('dateClicked', { day: props.weekInfo.days[index].date, week: props.weekInfo.weekNumber });
@@ -192,6 +223,7 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
 <style scoped lang="scss">
     @import '../styles/global.scss';
+    @import '../styles/mixins.scss';
 
     .week {
         height: calc(100% - 98px);
@@ -206,14 +238,69 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
         border-bottom: 1px solid $border-color01;
     }
 
-    @media screen and (max-width: 400px) {
-        .week {
-            height: calc(100% - 144px);
-        }
+    .event_cards {
+        background-color: rgba(123, 234, 0, 0.24);
+
+        width: 100%;
+        min-height: 24px;
+        height: 92px;
+
+        top: 60px;
+
+        display: flex;
+
+        position: absolute;
+
+        overflow: scroll
     }
+
+    .event_card {
+        @include event_card;
+        @include event_card--rounded;
+
+        height: 24px;
+
+        left: 0;
+        position: absolute;
+    }
+
+    .event_card:hover {
+        @include event_card--hover;
+    }
+
+    .event_card--rounded {
+        @include event_card--rounded;
+    }
+
+    .event_card--left {
+        @include event_card--rounded_left;
+    }
+
+    .event_card--right {
+        @include event_card--rounded_right;
+    }
+
+    .event_card__title {
+        display: flex;
+        align-content: center;
+        justify-content: flex-start;
+    }
+
+    .day_selection_area {
+        width: calc(100% / 7);
+        height: 100%;
+    }
+
+    .day--selecting {
+        @include selected_item;
+    }
+
+
+
 
     .day_of_week_headers {
         width: 100%;
+        min-height: 152px;
         display: flex;
 
     }
@@ -290,6 +377,12 @@ import { MouseSelectionType } from '@/enum/MouseSelectionType';
         display: flex;
         align-content: center;
         justify-content: flex-start;
+    }
+
+    @media screen and (max-width: 400px) {
+        .week {
+            height: calc(100% - 144px);
+        }
     }
 
 </style>

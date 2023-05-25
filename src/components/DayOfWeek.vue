@@ -2,12 +2,12 @@
     <div
         class="day"
     >
-        <div
+        <div class="time_slots">
+            <div
             v-for="(time, t) in TIMES_IN_DAY"
             :key="t"
             class="time_slot"
         >
-            <!-- <div class="time_slot__selection_column"></div> -->
             <div class="half_hours">
                 <div
                     class="half_hour"
@@ -32,20 +32,20 @@
                     @touchend="onMouseUp(t)"
                 ></div>
             </div>
-            <div class="event_cards">
-                <div
+        </div>
+        </div>
+        <div class="event_cards">
+                <button
                     v-for="(event, e) in formattedEvents"
                     :key="event.id"
-                    role="button"
                     class="event_card"
                     :style="`height: ${event.height}%; top: ${event.top}%;`"
                     @click.stop="onEventClicked(e)"
                 >
                     <div class="event_card__title"><b>{{ event.title }}</b></div>
                     <div class="event_card__times">{{ convertNumberToTimeString(event.times.start) }} - {{ convertNumberToTimeString(event.times.end) }}</div>
-                </div>
+                </button>
             </div>
-        </div>
     </div>
 </template>
 
@@ -160,20 +160,6 @@
         cursor: pointer;
     }
 
-    .header {
-        padding: 8px;
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
-
-        font-size: 1.5em;
-        text-align: center;
-        user-select: none;
-    }
-
     .time_slot {
         width: 100%;
         min-height: 56px;
@@ -236,10 +222,14 @@
 
     .event_card {
         position: absolute;
-    z-index: 2;
+        z-index: 2;
 
         @include event_card;
         @include event_card--rounded;
+    }
+
+    .event_card:focus {
+        outline: blue 1px solid;
     }
 
     .event_card:hover {

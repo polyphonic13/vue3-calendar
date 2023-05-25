@@ -33,6 +33,7 @@
                 placeholder="Add Title"
                 :disabled="isEditingDisabled"
                 v-model="props.event!.title"
+                @keydown.stop
             />
             <div class="event__date_and_time">
                 <div>
@@ -47,6 +48,7 @@
                 placeholder="Description"
                 :disabled="isEditingDisabled"
                 v-model="props.event!.description"
+                @keydown.stop
             />
         </div>
         <div class="event_model__footer">
