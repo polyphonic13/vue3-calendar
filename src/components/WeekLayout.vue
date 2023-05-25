@@ -130,7 +130,7 @@
 
     const getCardStyle = (event: IEvent, index: number) => {
         const width = (100 / 7) * ((event.dates.end - event.dates.start) + 1);
-        const top = (index * 24) + 20;
+        const top = (index * 24) + 24;
         const leftMultiplier = (event.dates.start < props.weekInfo.days[0].date) ? 0 : (event.dates.start - props.weekInfo.days[0].date)
         const left = (100 / 7) * leftMultiplier;
 
@@ -222,7 +222,7 @@
             console.warn(`ERROR: can not edit non-existent event with index ${index}`);
             return;
         }
-        console.log(`DayOfWeek/onEventClicked, index = ${index}\nevent = ${JSON.stringify(dayEvents.value[index])}`);
+
         viewEvent(dayEvents.value[index]);
     };
 
@@ -248,12 +248,20 @@
         border-bottom: 1px solid $border-color01;
     }
 
+    .day_of_week_headers {
+        width: 100%;
+        min-height: 168px;
+        display: flex;
+
+    }
+
+
     .event_cards {
-        background-color: rgba(123, 234, 0, 0.24);
+        // background-color: rgba(123, 234, 0, 0.24);
 
         width: 100%;
         min-height: 24px;
-        height: 92px;
+        height: 96px;
 
         top: 60px;
 
@@ -303,16 +311,6 @@
 
     .day--selecting {
         @include selected_item;
-    }
-
-
-
-
-    .day_of_week_headers {
-        width: 100%;
-        min-height: 152px;
-        display: flex;
-
     }
 
     .day_container {

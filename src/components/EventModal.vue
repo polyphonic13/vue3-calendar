@@ -5,8 +5,9 @@
         <div class="event_modal__header">
             <span></span>
             <button
-                v-if="!props.isNew"
+                v-if="!props.isNew && !isEditing"
                 class="circle_button edit_button"
+                ref="editButton"
                 @click="onEditClicked"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
@@ -90,6 +91,7 @@
 
     const isEditing = ref(false);
     const titleInput = ref<HTMLElement | null>(null);
+    const editButton = ref<HTMLElement | null>(null);
 
     const props = defineProps<IEventModalProps>();
 
@@ -134,12 +136,12 @@
         return getisViewingEvent();
     });
 
-    const isSaveDisabled = computed(() => {
-        return !props.event || !props.event.title || props.event.title === '';
+    watch(isViewingEvent, (newValue, oldValue) => {
+        console.log(`isViewingEvent changed: ${newValue}`);
     });
 
-    watch(() => isViewingEvent, () => {
-        console.log(`isViewingEvent changed: ${isViewingEvent}`);
+    const isSaveDisabled = computed(() => {
+        return !props.event || !props.event.title || props.event.title === '';
     });
 
     const onEditClicked = (event: MouseEvent) => {
@@ -179,8 +181,19 @@
 
     };
 
+    const focusEditButton = async () => {
+        if (!editButton.value) {
+            return;
+        }
+
+        await nextTick();
+
+        editButton.value.focus();
+    }
+
     onMounted(() => {
         if (!props.isNew) {
+            focusEditButton();
             return;
         }
         focusTitleInput();

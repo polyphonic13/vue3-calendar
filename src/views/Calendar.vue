@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted, onUnmounted } from 'vue';
+    import { computed, onMounted, onUnmounted, watch } from 'vue';
     import { storeToRefs } from 'pinia';
 
     import { MONTH_NAMES } from '@/composables/use-date-utils';
@@ -126,6 +126,10 @@
 
     const isViewingEvent = computed(() => {
         return getisViewingEvent();
+    });
+
+    watch(isViewingEvent, () => {
+        console.log(`Calendar isViewingEvent = ${isViewingEvent.value}`);
     });
 
     const focusedEvent = computed(() => {
