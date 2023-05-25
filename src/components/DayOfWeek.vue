@@ -2,8 +2,7 @@
     <div
         class="day"
     >
-        <div class="time_slots">
-            <div
+        <div
             v-for="(time, t) in TIMES_IN_DAY"
             :key="t"
             class="time_slot"
@@ -33,11 +32,11 @@
                 ></div>
             </div>
         </div>
-        </div>
         <div class="event_cards">
                 <button
                     v-for="(event, e) in formattedEvents"
                     :key="event.id"
+                    role="button"
                     class="event_card"
                     :style="`height: ${event.height}%; top: ${event.top}%;`"
                     @click.stop="onEventClicked(e)"
@@ -46,6 +45,7 @@
                     <div class="event_card__times">{{ convertNumberToTimeString(event.times.start) }} - {{ convertNumberToTimeString(event.times.end) }}</div>
                 </button>
             </div>
+
     </div>
 </template>
 
@@ -118,23 +118,14 @@
     });
 
     const onMouseDown = (index: number, isSecondHalf: boolean) => {
-        console.log(`DayOfWeek[ ${props.index} ]/onMouseDown, index = ${index}`);
         emit('timeOnMouseDown', props.index, index, isSecondHalf);
     };
 
     const onMouseOver = (index: number, isSecondHalf: boolean) => {
-        if (!props.isSelecting) {
-            return;
-        }
-        console.log(`DayOfWeek[ ${props.index} ]/onMouseOver, index = ${index}`);
         emit('timeOnMouseOver', index, isSecondHalf);
     };
 
     const onMouseUp = (index: number) => {
-        if (!props.isSelecting) {
-            return;
-        }
-        console.log(`DayOfWeek[ ${props.index} ]/onMouseUp, index = ${index}`);
         emit('timeOnMouseUp', index);
     };
 
@@ -167,6 +158,20 @@
         position: relative;
 
         cursor: pointer;
+    }
+
+    .header {
+        padding: 8px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+
+        font-size: 1.5em;
+        text-align: center;
+        user-select: none;
     }
 
     .time_slot {
@@ -231,14 +236,10 @@
 
     .event_card {
         position: absolute;
-        z-index: 2;
+    z-index: 2;
 
         @include event_card;
         @include event_card--rounded;
-    }
-
-    .event_card:focus {
-        outline: blue 1px solid;
     }
 
     .event_card:hover {
