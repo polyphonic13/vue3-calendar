@@ -5,13 +5,13 @@
             ref="headerEl"
         >
             <DayOfWeekHeader
-                v-for="(day, d) in props.weekInfo.days"
-                :key="`${props.year}${day.month}${day.date}${d}`"
+                v-for="(dayInfo, d) in props.weekInfo.days"
+                :key="`${props.year}${dayInfo.month}${dayInfo.day}${d}`"
                 :index="d"
                 :year="props.year"
-                :month="day.month"
-                :day="day.date"
-                :day-name="day.dayName"
+                :month="dayInfo.month"
+                :day="dayInfo.day"
+                :day-name="dayInfo.dayName"
                 :is-selecting="isSelecting"
                 :selected-items="selectedItems"
                 :current-initiator="currentInitiator"
@@ -30,10 +30,10 @@
                 :class="{ 'day--selecting': isSelectingDays && selectedItems.includes(d) }"
                 @mousedown="onDayMouseDown(d)"
                 @mouseover="onDayMouseOver(d)"
-                @mouseup="onDayMouseUp(d)"
+                @mouseup="onDayMouseUp()"
                 @touchstart="onDayMouseDown(d)"
                 @touchmove="onDayMouseOver(d)"
-                @touchend="onDayMouseUp(d)"
+                @touchend="onDayMouseUp()"
             ></div>
             <button
                 v-for="(event, e) in dayEvents"
@@ -53,7 +53,7 @@
             <div class="day_list">
                 <DayOfWeek
                     v-for="(day, d2) in props.weekInfo.days"
-                    :key="`${props.year}${props.month}${day.date}${d2}`"
+                    :key="`${props.year}${props.month}${day.day}${d2}`"
                     :index="(d2 + 1)"
                     :day-name="`${(day.dayName) ? day.dayName : ''}`"
                     :is-include-time-label="(d2 === 0)"
@@ -76,7 +76,14 @@
 <script setup lang="ts">
     import { toRef, watch, computed, onMounted } from 'vue';
 
-    import type { IEvent, INumberRange, IWeekInfo } from '@/interfaces';
+    import type {
+        IEvent,
+        INumberRange,
+        IWeekInfo,
+        IYearMonthDay,
+        IYearMonthDayTime,
+    } from '@/interfaces';
+
     import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
     import { TIMES_IN_DAY, DAYS_OF_WEEK } from '@/composables/use-date-utils';
@@ -105,7 +112,11 @@
         onMouseUp,
     } = useMouseItemSelect();
 
-    const { getEventsForRange, viewEvent } = useEventStore();
+    const {
+        getEventsForRange,
+        createEventStartAndEnd,
+        viewEvent,
+    } = useEventStore();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -115,7 +126,7 @@
     const currentType = toRef(state, 'currentType');
 
     const emit = defineEmits([
-        'addEvent',
+        'createEvent',
         'dateClicked',
     ]);
 
@@ -133,7 +144,7 @@
 
     const countsPerDay = computed(() => {
         const counts = [0, 0, 0, 0, 0, 0, 0];
-        const start = props.weekInfo.days[0].date;
+        const start = props.weekInfo.days[0].day;
         let days;
 
         dayEvents.value.forEach((event) => {
@@ -143,25 +154,27 @@
     });
 
     const getCardStyle = (event: IEvent, index: number) => {
-        const width = (100 / 7) * ((event.dates.end - event.dates.start) + 1);
+        const width = (100 / 7) * ((event.end.day - event.start.day) + 1);
         const top = (index * 24) + 24;
-        const leftMultiplier = (event.dates.start < props.weekInfo.days[0].date) ? 0 : (event.dates.start - props.weekInfo.days[0].date)
+        const leftMultiplier = (event.start.day < props.weekInfo.days[0].day) ? 0 : (event.start.day - props.weekInfo.days[0].day)
         const left = (100 / 7) * leftMultiplier;
 
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
     };
 
-    const addEvent = (times: INumberRange, dates: INumberRange) => {
-        const { month, year } = props;
-
-        const event: Partial<IEvent> = {
-            times,
-            dates,
-            month,
-            year,
+    const createEvent = (times: INumberRange, startYMD: IYearMonthDay, endYMD: IYearMonthDay) => {
+        const seed = {
+            start: {
+                ...startYMD,
+                time: times.start,
+            },
+            end: {
+                ...endYMD,
+                time: times.end,
+            },
         };
 
-        emit('addEvent', event);
+        emit('createEvent', seed);
 
         onMouseUp();
     };
@@ -177,11 +190,24 @@
         onMouseOver(hour, isSecondHalf)
     };
 
-    const onTimeMouseUp = (day: number) => {
+    const onTimeMouseUp = (dayIndex: number) => {
         const times = getTimesFromItems();
-        const date = props.weekInfo.days[day].date;
 
-        addEvent(times, { start: date, end: date });
+        const { day, year, month } = props.weekInfo.days[dayIndex];
+
+        const startYMD = {
+            year,
+            month,
+            day,
+        };
+
+        const endYMD = {
+            year,
+            month,
+            day,
+        };
+
+        createEvent(times, startYMD, endYMD);
     };
 
     const onDayMouseDown = (day: number) => {
@@ -196,39 +222,40 @@
         onMouseOver(day);
     };
 
-    const onDayMouseUp = (day: number) => {
+    const onDayMouseUp = () => {
         if (!isSelecting.value) {
             return;
         }
 
         const times = { start: 0, end: 0 };
-        const dates = {
-            start: props.weekInfo.days[selectedItems.value[0]].date,
-            end: props.weekInfo.days[selectedItems.value[selectedItems.value.length - 1]].date,
-        };
-        addEvent(times, dates);
+
+        const startDay = props.weekInfo.days[selectedItems.value[0]];
+        const endDay = props.weekInfo.days[selectedItems.value[selectedItems.value.length - 1]];
+
+        console.log(`onDayMouseUp, times = ${JSON.stringify(startDay)}, dates = ${JSON.stringify(endDay)}`);
+        createEvent(times, startDay, endDay);
     };
 
     const weekEvents = (index: number) => {
         const days = props.weekInfo.days;
-        return getEventsForRange(props.year, props.month, days[index].date, days[index].date);
+        return getEventsForRange(props.year, props.month, days[index].day, days[index].day);
     };
 
     const hourlyEvents = (index: number) => {
-        return weekEvents(index).filter((event) => event.times.start !== 0 && event.times.end !== 0);
+        return weekEvents(index).filter((event) => event.start.time !== 0 && event.end.time !== 0);
     };
 
     const dayEvents = computed(() => {
         const days = props.weekInfo.days;
-        return getEventsForRange(props.year, props.month, days[0].date, days[days.length - 1].date).filter((event) => {
-            if (event.times.start === 0 && event.times.end === 0) {
+        return getEventsForRange(props.year, props.month, days[0].day, days[days.length - 1].day).filter((event) => {
+            if (event.start.time === 0 && event.end.time === 0) {
                 return event;
             }
         });
     });
 
     const onDateClicked = (index: number) => {
-        emit('dateClicked', { day: props.weekInfo.days[index].date, week: props.weekInfo.weekNumber });
+        emit('dateClicked', { day: props.weekInfo.days[index].day, week: props.weekInfo.weekNumber });
     };
 
     const onEventClicked = (index: number) => {
@@ -312,9 +339,7 @@
     }
 
     .event_card__title {
-        display: flex;
-        align-content: center;
-        justify-content: flex-start;
+        @include event_card__title;
     }
 
     .day_selection_area {

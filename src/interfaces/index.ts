@@ -10,6 +10,7 @@ import type ISavedAppData from './ISavedAppData';
 import type IUIState from './IUIState';
 import type IWeekInfo from './IWeekInfo';
 import type IYearMonthDay from './IYearMonthDay';
+import type IYearMonthDayTime from './IYearMonthDayTime';
 
 export type {
     IBaseCalendarState,
@@ -24,4 +25,5 @@ export type {
     IUIState,
     IWeekInfo,
     IYearMonthDay,
+    IYearMonthDayTime,
 };

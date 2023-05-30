@@ -29,7 +29,7 @@
             :month="state.month"
             :month-info="state.monthInfo"
             @date-clicked="onDateClicked"
-            @add-event="onAddEvent"
+            @create-event="onCreateEvent"
         />
         <WeekLayout
             v-if="state.layout === CalendarLayout.WEEK && state.monthInfo"
@@ -38,13 +38,13 @@
             :index="state.week"
             :week-info="state.monthInfo.weeks[state.week]"
             @date-clicked="onDateClicked"
-            @add-event="onAddEvent"
+            @create-event="onCreateEvent"
         />
         <DayLayout
             v-if="state.layout === CalendarLayout.DAY && state.monthInfo"
             :year="state.year"
             :day-info="state.monthInfo.weeks[state.week].days[state.day]"
-            @add-event="onAddEvent"
+            @create-event="onCreateEvent"
         />
         <EventModal
             v-if="isViewingEvent"
@@ -152,7 +152,7 @@
         setDay(indices);
     };
 
-    const onAddEvent = (event: Partial<IEvent>) => {
+    const onCreateEvent = (event: Partial<IEvent>) => {
         resetEventEditing();
         createEvent(event);
         isNewEvent = true;

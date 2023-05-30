@@ -124,7 +124,7 @@ export function useDateUtils() {
             weekInfo = monthInfo.weeks[i];
             for (let j = 0; j < weekInfo.days.length; j++) {
                 // // console.log(`\tweek ${i}, day ${j} date = ${weekInfo.days[j].date}`);
-                if (weekInfo.days[j].date === thisDate && weekInfo.days[j].month === thisMonth) {
+                if (weekInfo.days[j].day === thisDate && weekInfo.days[j].month === thisMonth) {
                     return { month: thisMonth, week: i, day: j };
                 }
             }
@@ -167,7 +167,7 @@ export function useDateUtils() {
             for (let i = 0; i < weekInfo.days.length; i++) {
                 dayInfo = weekInfo.days[i];
 
-                if (dayInfo.month === month && dayInfo.date >= lastDayOfMonth) {
+                if (dayInfo.month === month && dayInfo.day >= lastDayOfMonth) {
                     currentLastMonth++;
                     break;
                 }
@@ -179,7 +179,7 @@ export function useDateUtils() {
 
             lastDayInfo = weekInfo.days[weekInfo.days.length - 1];
 
-            currentWeekStart = lastDayInfo.date + 1;
+            currentWeekStart = lastDayInfo.day + 1;
             currentLastMonth = lastDayInfo.month;
         }
 
@@ -194,18 +194,18 @@ export function useDateUtils() {
         return monthInfo;
     }
 
-    const getDatesForWeeks = (year: number, month: number, date: number): IWeekInfo => {
+    const getDatesForWeeks = (year: number, month: number, day: number): IWeekInfo => {
         // console.log(`>>>>> getDatesForWeeks, args = ${year}, ${month}, ${date}`);
-        const target = new Date(year, month, date);
+        const target = new Date(year, month, day);
         const dayOfWeek = target.getDay();
         let days: IDayInfo[] = [];
         const endOfMonth = getDaysInMonth(year, month);
-        const weekNumber = getWeekNumber(year, month, date);
+        const weekNumber = getWeekNumber(year, month, day);
         // console.log(`\ttarget = `, target);
         // console.log(`\tdayOfWeek = ${dayOfWeek}\n\tendOfMonth = ${endOfMonth}\n\tweekNumber = ${weekNumber}`);
 
         if (dayOfWeek > 0) {
-            if (date === 1) {
+            if (day === 1) {
                 // pad week from previous month
                 const previousMonth = (month > 0) ? month - 1 : MONTH_NAMES.length - 1;
                 const endDayOfPreviousMonth = getDaysInMonth(year, previousMonth);
@@ -214,44 +214,48 @@ export function useDateUtils() {
 
                 while (date < (endDayOfPreviousMonth + 1)) {
                     days.push({
-                        date,
+                        day,
                         month: previousMonth,
+                        year,
                     });
                     date++;
                     // console.log(`\tdate now ${date}`);
                 }
             } else {
                 // pad beginning of week with past days
-                let start = date - dayOfWeek;
-                while (start < date) {
+                let start = day - dayOfWeek;
+                while (start < day) {
                     days.push({
-                        date: start,
+                        day: start,
                         month,
+                        year,
                     })
                     start++;
                 }
             }
         }
         // // console.log(`\tdate = ${date}`);
-        while (date < (endOfMonth + 1) && days.length < 7) {
+        while (day < (endOfMonth + 1) && days.length < 7) {
             days.push({
-                date,
+                day,
                 month,
+                year,
             });
-            date++;
+            day++;
         }
 
         if (days.length < 7) {
             // add beginning days from next month
             const nextMonth = (month < MONTH_NAMES.length - 1) ? month + 1 : 0;
-            date = 1;
+            day = 1;
 
             while (days.length < 7) {
                 days.push({
-                    date,
+                    day,
                     month: nextMonth,
+                    year,
                 });
-                date++;
+                day++;
             }
         }
 
@@ -259,6 +263,7 @@ export function useDateUtils() {
             return {
                 ...day,
                 dayName: SHORT_DAY_NAMES[d],
+                year,
             };
         });
 
@@ -318,7 +323,7 @@ export function useDateUtils() {
 
     const convertYMDToDateString = (year: number, month: number, day: number) => {
         const date = new Date(year, month, day);
-        return `${DAYS_OF_WEEK[date.getDay()]} ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
+        return `${DAYS_OF_WEEK[date.getDay()]}, ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
     };
 
     const getIsTimeWithinRange = (source: INumberRange, test: INumberRange) => {

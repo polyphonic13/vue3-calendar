@@ -1,11 +1,9 @@
-import type { INumberRange } from '.';
+import type { IYearMonthDayTime } from '.';
 
 export default interface IEvent {
     id: number;
-    times: INumberRange;
-    dates: INumberRange;
-    month: number;
-    year: number;
+    start: IYearMonthDayTime;
+    end: IYearMonthDayTime;
     title: string;
     description: string;
     location: string;

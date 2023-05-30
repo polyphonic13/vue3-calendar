@@ -1,17 +1,17 @@
 <template>
     <div v-if="props.dayInfo" class="week">
         <div class="day_of_week_headers">
-            <DayOfWeekHeader
+            <!-- <DayOfWeekHeader
                 :year="props.year"
                 :month="props.dayInfo.month"
                 :day="props.dayInfo.date"
                 :day-name="dayName"
                 @mousedown="onAddEventForDay"
-            />
+            /> -->
         </div>
         <div class="day_container">
             <div class="day_list">
-                <DayOfWeek
+                <!-- <DayOfWeek
                     :index="0"
                     :day-name="dayName"
                     :is-include-time-label="true"
@@ -24,7 +24,7 @@
                     @time-on-mouse-down="onMouseDown"
                     @time-on-mouse-over="onMouseOver"
                     @time-on-mouse-up="onAddEventForTimes"
-                />
+                /> -->
             </div>
         </div>
     </div>
@@ -76,13 +76,18 @@
         const year = props.year;
 
         const event: Partial<IEvent> = {
-            times,
-            dates: {
-                start: date,
-                end: date,
+            start: {
+                year,
+                month,
+                day: date,
+                time: times.start,
             },
-            month,
-            year,
+            end: {
+                year,
+                month,
+                day: date,
+                time: times.end,
+            },
         };
 
         emit('addEvent', event);

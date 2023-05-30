@@ -6,6 +6,8 @@ import { useLocalStorage } from '@/composables/use-local-storage';
 import type {
     IEvent,
     IEventState,
+    INumberRange,
+    IYearMonthDayTime,
 } from '@/interfaces/';
 
 const LOCAL_STORAGE_KEY = 'calendarAppEventData';
@@ -30,23 +32,25 @@ export const useEventStore = defineStore('eventStore', () => {
 
     const state = ref<IEventState>(createState());
 
-    const eventFactory = (base: Partial<IEvent>) => {
+    const eventFactory = (seed: Partial<IEvent>) => {
         const event: IEvent = {
             id: Date.now(),
             title: '',
             description: '',
             location: '',
-            times: {
-                start: 0,
-                end: 0,
+            start: {
+                year: 0,
+                month: 0,
+                day: 0,
+                time: 0,
             },
-            year: 1900,
-            month: 0,
-            dates: {
-                start: 1,
-                end: 1,
+            end: {
+                year: 1900,
+                month: 0,
+                day: 0,
+                time: 0,
             },
-            ...base,
+            ...seed,
         };
         return event;
     };
@@ -56,18 +60,51 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getEventsForRange = (year: number, month: number, startDate?: number, endDate?: number): IEvent[] => {
-        const monthEvents = state.value.events.filter((event: IEvent) => event.year === year && event.month === month);
+        const monthEvents = state.value.events.filter((event: IEvent) => {
+            if ((event.start.year === year && event.start.month) || (event.end.year === year && event.end.month === month)) {
+                return event;
+            }
+        });
 
         if (!startDate || !endDate) {
             return monthEvents;
         }
 
-        return monthEvents.filter((event: IEvent) => event.dates.start >= startDate && event.dates.end <= endDate).sort((a, b) => { return a.times.start - b.times.start }).sort((a, b) => { return a.dates.start - b.dates.start });
+        return monthEvents.filter((event: IEvent) => event.start.day >= startDate && event.end.day <= endDate).sort((a, b) => { return a.start.time - b.start.time }).sort((a, b) => { return a.start.day - b.start.day });
     };
 
     const createEvent = (payload: Partial<IEvent>) => {
         state.value.focusedEvent = eventFactory(payload);
-    }
+        console.log(`state.value.focusedEvent now = ${JSON.stringify(state.value.focusedEvent)}`);
+    };
+
+    const createEventStartAndEnd = (times: INumberRange, day: number, month: number, year: number, dates?: INumberRange, months?: INumberRange, years?: INumberRange) => {
+        if (!state.value.focusedEvent) {
+            console.warn(`ERROR: can not init start/end on undefined focusedEvent`);
+            return;
+        }
+
+        const start: IYearMonthDayTime = {
+            year: (years) ? years.start : year,
+            month: (months) ? months.start : month,
+            day: (dates) ? dates.start : day,
+            time: times.start,
+        };
+
+        const end: IYearMonthDayTime = {
+            year: (years) ? years.end : year,
+            month: (months) ? months.end : month,
+            day: (dates) ? dates.end : day,
+            time: times.start,
+        };
+
+        const event: Partial<IEvent> = {
+            start,
+            end,
+        };
+
+        return event;
+    };
 
     const addEvent = () => {
         state.value.isViewingEvent = false;
@@ -76,7 +113,7 @@ export const useEventStore = defineStore('eventStore', () => {
             console.warn(`ERROR: can not add new event`);
             return;
         }
-        const event: IEvent = state.value.focusedEvent as IEvent;
+        const event: IEvent = eventFactory(state.value.focusedEvent);
         state.value.events.push(event);
         save<IEventState>(LOCAL_STORAGE_KEY, state.value);
     };
@@ -131,7 +168,7 @@ export const useEventStore = defineStore('eventStore', () => {
         state.value.isViewingEvent = value;
     };
 
-    const getFocusedEvent = () => {
+    const getFocusedEvent = (): Partial<IEvent> | null => {
         return state.value.focusedEvent;
     }
 
@@ -139,6 +176,7 @@ export const useEventStore = defineStore('eventStore', () => {
         getEvents,
         getEventsForRange,
         createEvent,
+        createEventStartAndEnd,
         addEvent,
         viewEvent,
         cancelEditEvent,

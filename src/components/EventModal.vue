@@ -33,7 +33,7 @@
                 type="text"
                 placeholder="Add Title"
                 :disabled="isEditingDisabled"
-                v-model="props.event!.title"
+                v-model="props.event.title"
                 @keydown.stop
             />
             <div class="event__date_and_time">
@@ -41,14 +41,14 @@
                     <span>{{ startDay }}</span>
                     <span v-if="!isSameDayEvent"> - {{ endDay }}</span>
                 </div>
-                <span v-if="!isFullDayEvent">{{ convertNumberToTimeString(props.event!.times!.start) }} - {{ convertNumberToTimeString(props.event!.times!.end) }}</span>
+                <span v-if="!isFullDayEvent">{{ convertNumberToTimeString(props.event.start.time) }} - {{ convertNumberToTimeString(props.event.end.time) }}</span>
             </div>
             <textarea
                 class="event__description"
                 rows="5"
                 placeholder="Description"
                 :disabled="isEditingDisabled"
-                v-model="props.event!.description"
+                v-model="props.event.description"
                 @keydown.stop
             />
         </div>
@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, watch, onMounted, nextTick } from 'vue';
+    import { ref, computed, onMounted, nextTick } from 'vue';
 
     import type { IEvent } from '@/interfaces';
     import { useEventStore } from '@/stores/events';
@@ -84,7 +84,6 @@
         viewEvent,
         updateEvent,
         deleteEvent,
-        getisViewingEvent,
     } = eventStore;
 
     const emit = defineEmits(['onClose']);
@@ -100,32 +99,34 @@
     });
 
     const startDay = computed(() => {
-        if (!props.event || !props.event.year || !props.event.month || !props.event.dates) {
+        if (!props.event) {
             return '';
         }
-        return convertYMDToDateString(props.event.year, props.event.month, props.event.dates.start);
+
+        return convertYMDToDateString(props.event.start!.year, props.event.start!.month, props.event.start!.day);
     });
 
     const endDay = computed(() => {
-        if (!props.event || !props.event.year || !props.event.month || !props.event.dates) {
+        if (!props.event) {
             return '';
         }
-        return convertYMDToDateString(props.event.year, props.event.month, props.event.dates.end);
+
+        return convertYMDToDateString(props.event.end!.year, props.event.end!.month, props.event.end!.day);
     });
 
     const isSameDayEvent = computed(() => {
-        if (!props.event || !props.event.dates || !props.event.dates.start || ! props.event.dates.end) {
+        if (!props.event) {
             return true;
         }
 
-        return props.event.dates.start === props.event.dates.end;
+        return (props.event.start!.year === props.event.end!.year) && (props.event.start!.month === props.event.end!.month) && (props.event.start!.day === props.event.end!.day);
     });
 
     const isFullDayEvent = computed(() => {
-        if (!props.event || !props.event.times) {
+        if (!props.event) {
             return true;
         }
-        return props.event.times.start === 0 && props.event.times.end === 0;
+        return props.event.start!.time === 0 && props.event.end!.time === 0;
     });
 
     const isSaveDisabled = computed(() => {

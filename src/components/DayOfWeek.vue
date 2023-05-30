@@ -41,8 +41,12 @@
                     :style="`height: ${event.height}%; top: ${event.top}%;`"
                     @click.stop="onEventClicked(e)"
                 >
-                    <div class="event_card__title"><b>{{ event.title }}</b></div>
-                    <div class="event_card__times">{{ convertNumberToTimeString(event.times.start) }} - {{ convertNumberToTimeString(event.times.end) }}</div>
+                    <div class="event_card__title">
+                        <span>
+                            <b>{{ event.title }}</b>
+                        </span>
+                    </div>
+                    <div class="event_card__times">{{ convertNumberToTimeString(event.start.time) }} - {{ convertNumberToTimeString(event.end.time) }}</div>
                 </button>
             </div>
 
@@ -97,8 +101,8 @@
             count = 0;
             offset = 0;
 
-            const height = (100/48) * ((event.times.end - event.times.start) * 2);
-            const top = (100/48) * (event.times.start * 2);
+            const height = (100/48) * ((event.end.time - event.start.time) * 2);
+            const top = (100/48) * (event.start.time * 2);
 
             offset = (count === 0) ? 0 : offset + 1;
 
@@ -134,7 +138,7 @@
             console.warn(`ERROR: can not edit non-existent event with index ${index}`);
             return;
         }
-        console.log(`DayOfWeek/onEventClicked, index = ${index}\nevent = ${JSON.stringify(props.events[index])}`);
+
         viewEvent(props.events[index]);
     };
 </script>
@@ -236,7 +240,7 @@
 
     .event_card {
         position: absolute;
-    z-index: 2;
+        z-index: 2;
 
         @include event_card;
         @include event_card--rounded;
@@ -244,6 +248,10 @@
 
     .event_card:hover {
         @include event_card--hover;
+    }
+
+    .event_card__title {
+        @include event_card__title;
     }
 
     .day_name {
