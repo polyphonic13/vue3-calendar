@@ -165,7 +165,7 @@
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
     };
 
-    const createEvent = (times: INumberRange, startYMD: IYearMonthDay, endYMD: IYearMonthDay) => {
+    const emitCreateEvent = (times: INumberRange, startYMD: IYearMonthDay, endYMD: IYearMonthDay) => {
         const seed = {
             start: {
                 ...startYMD,
@@ -178,8 +178,6 @@
         };
 
         emit('createEvent', seed);
-
-        onMouseUp();
     };
 
     const onTimeMouseDown = (day: number, hour: number, isSecondHalf?: boolean) => {
@@ -210,7 +208,8 @@
             day,
         };
 
-        createEvent(times, startYMD, endYMD);
+        emitCreateEvent(times, startYMD, endYMD);
+        onMouseUp();
     };
 
     const onDayMouseDown = (day: number) => {
@@ -235,8 +234,8 @@
         const startDay = props.weekInfo.days[selectedItems.value[0]];
         const endDay = props.weekInfo.days[selectedItems.value[selectedItems.value.length - 1]];
 
-        console.log(`onDayMouseUp, times = ${JSON.stringify(startDay)}, dates = ${JSON.stringify(endDay)}`);
-        createEvent(times, startDay, endDay);
+        emitCreateEvent(times, startDay, endDay);
+        onMouseUp();
     };
 
     const weekEvents = computed(() => {
