@@ -254,9 +254,7 @@
     };
 
     const dayEvents = computed(() => {
-        const events = weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
-        console.log(`weekEvents = `, weekEvents.value, `\n\tdayEvents = `, events);
-        return events;
+        return weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
     });
 
     const onDateClicked = (index: number) => {
@@ -273,7 +271,6 @@
     };
 
     onMounted(() => {
-        console.log(`WeekLayout/onMounted, weekInfo = `, props.weekInfo, `\n\tweekEvents = `, weekEvents.value);
         initHourIndices();
     });
 </script>
