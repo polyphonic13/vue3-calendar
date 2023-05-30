@@ -8,13 +8,14 @@ import type {
     IEvent,
     IEventState,
     INumberRange,
+    IYearMonthDay,
     IYearMonthDayTime,
 } from '@/interfaces/';
 
 const LOCAL_STORAGE_KEY = 'calendarAppEventData';
 
 const { load, save } = useLocalStorage();
-const { getDifferenceInDays } = useDateUtils();
+const { getDifferenceInDays, getAreDatesWithinRange } = useDateUtils();
 
 export const useEventStore = defineStore('eventStore', () => {
     const createState = (): IEventState => {
@@ -61,18 +62,14 @@ export const useEventStore = defineStore('eventStore', () => {
         return state.value.events;
     };
 
-    const getEventsForRange = (year: number, month: number, startDate?: number, endDate?: number): IEvent[] => {
-        const monthEvents = state.value.events.filter((event: IEvent) => {
-            if ((event.start.year === year && event.start.month) || (event.end.year === year && event.end.month === month)) {
+    const getEventsForRange = (startDate: IYearMonthDay, endDate: IYearMonthDay): IEvent[] => {
+        const events = state.value.events.filter((event: IEvent) => {
+            if (getAreDatesWithinRange(event.start, event.end, startDate, endDate)) {
                 return event;
             }
         });
 
-        if (!startDate || !endDate) {
-            return monthEvents;
-        }
-
-        return monthEvents.filter((event: IEvent) => event.start.day >= startDate && event.end.day <= endDate).sort((a, b) => { return a.start.time - b.start.time }).sort((a, b) => { return a.start.day - b.start.day });
+        return events;
     };
 
     const createEvent = (payload: Partial<IEvent>) => {
@@ -110,14 +107,17 @@ export const useEventStore = defineStore('eventStore', () => {
 
     const addEvent = () => {
         state.value.isViewingEvent = false;
-
+        console.log(`event store \`addEvent\`, focusedEvent = ${JSON.stringify(state.value.focusedEvent)}`);
         if (!state.value.focusedEvent) {
             console.warn(`ERROR: can not add new event`);
             return;
         }
         const event: IEvent = eventFactory(state.value.focusedEvent);
+        console.log(`\tnew event = ${JSON.stringify}`);
         state.value.events.push(event);
+        console.log(`\tadded new devent to the state's events array`);
         save<IEventState>(LOCAL_STORAGE_KEY, state.value);
+        console.log(`\tsaved even in local storage`);
     };
 
     const viewEvent = (payload: Partial<IEvent>) => {
@@ -202,14 +202,6 @@ export const useEventStore = defineStore('eventStore', () => {
         return (focusedEvent.start.year === focusedEvent.end.year) &&
             (focusedEvent.start.month === focusedEvent.end.month) &&
             (focusedEvent.start.day === focusedEvent.end.day);
-    };
-
-    const getStartDay = (event: IEvent) => {
-
-    };
-
-    const getEndDay = (event: IEvent) => {
-
     };
 
     const getDaysInEventCount = (event: IEvent) => {

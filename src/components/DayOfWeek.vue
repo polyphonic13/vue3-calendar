@@ -252,6 +252,8 @@
 
     .event_card__title {
         @include event_card__title;
+
+        margin-bottom: 4px;
     }
 
     .day_name {

@@ -158,7 +158,8 @@
         const daysInEvent = getDaysInEventCount(event);
         const width = (100 / 7) * (daysInEvent + 1);
         const top = (index * 24) + 24;
-        const leftMultiplier = (event.start.day < props.weekInfo.days[0].day) ? 0 : (event.start.day - props.weekInfo.days[0].day)
+
+        const leftMultiplier = props.weekInfo.days.findIndex((dayInfo) => dayInfo.day === event.start.day);
         const left = (100 / 7) * leftMultiplier;
 
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
@@ -238,22 +239,24 @@
         createEvent(times, startDay, endDay);
     };
 
-    const weekEvents = (index: number) => {
+    const weekEvents = computed(() => {
         const days = props.weekInfo.days;
-        return getEventsForRange(props.year, props.month, days[index].day, days[index].day);
-    };
+        return getEventsForRange(days[0], days[days.length - 1]);
+    });
 
     const hourlyEvents = (index: number) => {
-        return weekEvents(index).filter((event) => event.start.time !== 0 && event.end.time !== 0);
-    };
-
-    const dayEvents = computed(() => {
-        const days = props.weekInfo.days;
-        return getEventsForRange(props.year, props.month, days[0].day, days[days.length - 1].day).filter((event) => {
-            if (event.start.time === 0 && event.end.time === 0) {
+        const day = props.weekInfo.days[index].day;
+        return weekEvents.value.filter((event) => {
+            if(event.start.day === day && event.start.time !== 0 && event.end.time !== 0) {
                 return event;
             }
         });
+    };
+
+    const dayEvents = computed(() => {
+        const events = weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
+        console.log(`weekEvents = `, weekEvents.value, `\n\tdayEvents = `, events);
+        return events;
     });
 
     const onDateClicked = (index: number) => {
@@ -270,6 +273,7 @@
     };
 
     onMounted(() => {
+        console.log(`WeekLayout/onMounted, weekInfo = `, props.weekInfo, `\n\tweekEvents = `, weekEvents.value);
         initHourIndices();
     });
 </script>
@@ -342,6 +346,8 @@
 
     .event_card__title {
         @include event_card__title;
+
+        padding-left: 4px;
     }
 
     .day_selection_area {

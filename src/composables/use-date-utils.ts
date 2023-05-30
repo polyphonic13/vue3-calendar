@@ -329,8 +329,13 @@ export function useDateUtils() {
         return `${DAYS_OF_WEEK[date.getDay()]}, ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
     };
 
-    const getIsTimeWithinRange = (source: INumberRange, test: INumberRange) => {
-        return (test.start >= source.start && test.start <= source.end) || (test.end >= source.start && test.end <= source.end);
+    const getAreDatesWithinRange = (startDate: IYearMonthDay, endDate: IYearMonthDay, rangeStart: IYearMonthDay, rangeEnd: IYearMonthDay) => {
+        const rStart = new Date(rangeStart.year, rangeStart.month, rangeStart.day).getTime();
+        const rEnd = new Date(rangeEnd.year, rangeEnd.month, rangeEnd.day).getTime();
+        const vStart = new Date(startDate.year, startDate.month, startDate.day).getTime();
+        const vEnd = new Date(endDate.year, endDate.month, endDate.day).getTime();
+
+        return (vStart >= rStart && vEnd <= rEnd);
     };
 
     const getDifferenceInDays = (start: IYearMonthDay, end: IYearMonthDay) => {
@@ -355,7 +360,7 @@ export function useDateUtils() {
         convertDateToYMD,
         convertNumberToTimeString,
         convertYMDToDateString,
-        getIsTimeWithinRange,
+        getAreDatesWithinRange,
         getDifferenceInDays,
     };
 
