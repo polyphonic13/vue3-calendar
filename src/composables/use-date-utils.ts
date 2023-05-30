@@ -94,6 +94,8 @@ export const TIMES_IN_DAY = [
     '11 PM',
 ];
 
+const MILLISECONDS_IN_DAY = 86400000;
+
 export function useDateUtils() {
     const getDaysInMonth = (year: number, month: number) => {
         if (month !== 1) {
@@ -321,13 +323,26 @@ export function useDateUtils() {
         return `${hour}:${minute} ${suffix}`;
     };
 
-    const convertYMDToDateString = (year: number, month: number, day: number) => {
+    const convertYMDToDateString = (value: IYearMonthDay) => {
+        const { year, month, day } = value;
         const date = new Date(year, month, day);
         return `${DAYS_OF_WEEK[date.getDay()]}, ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
     };
 
     const getIsTimeWithinRange = (source: INumberRange, test: INumberRange) => {
         return (test.start >= source.start && test.start <= source.end) || (test.end >= source.start && test.end <= source.end);
+    };
+
+    const getDifferenceInDays = (start: IYearMonthDay, end: IYearMonthDay) => {
+        if (start.year === end.year && start.month === end.month) {
+            return end.day - start.day;
+        }
+
+        const startDate = new Date(start.year, start.month, start.day).getTime();
+        const endDate = new Date(end.year, end.month, end.day).getTime();
+        const msDiff = endDate - startDate;
+
+        return (msDiff / MILLISECONDS_IN_DAY);
     };
 
     return {
@@ -341,6 +356,7 @@ export function useDateUtils() {
         convertNumberToTimeString,
         convertYMDToDateString,
         getIsTimeWithinRange,
+        getDifferenceInDays,
     };
 
 }

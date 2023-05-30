@@ -116,6 +116,7 @@
         getEventsForRange,
         createEventStartAndEnd,
         viewEvent,
+        getDaysInEventCount,
     } = useEventStore();
 
     const selectedItems = toRef(state, 'selectedItems');
@@ -154,7 +155,8 @@
     });
 
     const getCardStyle = (event: IEvent, index: number) => {
-        const width = (100 / 7) * ((event.end.day - event.start.day) + 1);
+        const daysInEvent = getDaysInEventCount(event);
+        const width = (100 / 7) * (daysInEvent + 1);
         const top = (index * 24) + 24;
         const leftMultiplier = (event.start.day < props.weekInfo.days[0].day) ? 0 : (event.start.day - props.weekInfo.days[0].day)
         const left = (100 / 7) * leftMultiplier;

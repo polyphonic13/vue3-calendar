@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 
 import { useLocalStorage } from '@/composables/use-local-storage';
+import { useDateUtils } from '@/composables/use-date-utils';
 
 import type {
     IEvent,
@@ -13,6 +14,7 @@ import type {
 const LOCAL_STORAGE_KEY = 'calendarAppEventData';
 
 const { load, save } = useLocalStorage();
+const { getDifferenceInDays } = useDateUtils();
 
 export const useEventStore = defineStore('eventStore', () => {
     const createState = (): IEventState => {
@@ -172,6 +174,51 @@ export const useEventStore = defineStore('eventStore', () => {
         return state.value.focusedEvent;
     }
 
+    const getIsFullDayEvent = () => {
+        if (!state.value.focusedEvent) {
+            return true;
+        }
+
+        const focusedEvent: Partial<IEvent> = state.value.focusedEvent;
+
+        if (!focusedEvent.start || !focusedEvent.end) {
+            return true;
+        }
+
+        return focusedEvent.start.time === 0 && focusedEvent.end.time === 0;
+    };
+
+    const getIsSameDayEvent = () => {
+        if (!state.value.focusedEvent) {
+            return true;
+        }
+
+        const focusedEvent: Partial<IEvent> = state.value.focusedEvent;
+
+        if (!focusedEvent.start || !focusedEvent.end) {
+            return true;
+        }
+
+        return (focusedEvent.start.year === focusedEvent.end.year) &&
+            (focusedEvent.start.month === focusedEvent.end.month) &&
+            (focusedEvent.start.day === focusedEvent.end.day);
+    };
+
+    const getStartDay = (event: IEvent) => {
+
+    };
+
+    const getEndDay = (event: IEvent) => {
+
+    };
+
+    const getDaysInEventCount = (event: IEvent) => {
+        const start = event.start;
+        const end = event.end;
+
+        return getDifferenceInDays(start, end);
+    };
+
     return {
         getEvents,
         getEventsForRange,
@@ -185,5 +232,8 @@ export const useEventStore = defineStore('eventStore', () => {
         getisViewingEvent,
         setIsViewingEvent,
         getFocusedEvent,
+        getIsFullDayEvent,
+        getIsSameDayEvent,
+        getDaysInEventCount,
     };
 });
