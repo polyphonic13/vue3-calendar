@@ -74,7 +74,6 @@ export const useEventStore = defineStore('eventStore', () => {
 
     const createEvent = (payload: Partial<IEvent>) => {
         state.value.focusedEvent = eventFactory(payload);
-        console.log(`state.value.focusedEvent now = ${JSON.stringify(state.value.focusedEvent)}`);
     };
 
     const createEventStartAndEnd = (times: INumberRange, day: number, month: number, year: number, dates?: INumberRange, months?: INumberRange, years?: INumberRange) => {

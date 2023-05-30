@@ -81,12 +81,11 @@
         INumberRange,
         IWeekInfo,
         IYearMonthDay,
-        IYearMonthDayTime,
     } from '@/interfaces';
 
     import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
-    import { TIMES_IN_DAY, DAYS_OF_WEEK } from '@/composables/use-date-utils';
+    import { TIMES_IN_DAY, DAYS_OF_WEEK, useDateUtils } from '@/composables/use-date-utils';
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
     import { useEventStore } from '@/stores/events';
@@ -114,10 +113,11 @@
 
     const {
         getEventsForRange,
-        createEventStartAndEnd,
         viewEvent,
         getDaysInEventCount,
     } = useEventStore();
+
+    const { getAreDatesWithinRange } = useDateUtils();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -145,13 +145,38 @@
 
     const countsPerDay = computed(() => {
         const counts = [0, 0, 0, 0, 0, 0, 0];
-        const start = props.weekInfo.days[0].day;
-        let days;
+        let days: number;
 
-        dayEvents.value.forEach((event) => {
+        props.weekInfo.days.forEach((dayInfo, d) => {
             days = 0;
+            dayEvents.value.forEach((event) => {
+                if (getAreDatesWithinRange({ ...dayInfo }, { ...dayInfo }, event.start, event.end)) {
+                    days++;
+                }
+            });
+
+            counts[d] = days;
         });
+
         return counts;
+    });
+
+    const weekEvents = computed(() => {
+        const days = props.weekInfo.days;
+        return getEventsForRange(days[0], days[days.length - 1]);
+    });
+
+    const hourlyEvents = (index: number) => {
+        const day = props.weekInfo.days[index].day;
+        return weekEvents.value.filter((event) => {
+            if(event.start.day === day && event.start.time !== 0 && event.end.time !== 0) {
+                return event;
+            }
+        });
+    };
+
+    const dayEvents = computed(() => {
+        return weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
     });
 
     const getCardStyle = (event: IEvent, index: number) => {
@@ -238,24 +263,6 @@
         onMouseUp();
     };
 
-    const weekEvents = computed(() => {
-        const days = props.weekInfo.days;
-        return getEventsForRange(days[0], days[days.length - 1]);
-    });
-
-    const hourlyEvents = (index: number) => {
-        const day = props.weekInfo.days[index].day;
-        return weekEvents.value.filter((event) => {
-            if(event.start.day === day && event.start.time !== 0 && event.end.time !== 0) {
-                return event;
-            }
-        });
-    };
-
-    const dayEvents = computed(() => {
-        return weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
-    });
-
     const onDateClicked = (index: number) => {
         emit('dateClicked', { day: props.weekInfo.days[index].day, week: props.weekInfo.weekNumber });
     };
@@ -270,6 +277,7 @@
     };
 
     onMounted(() => {
+        console.log(`WeekLayout/onMounted, counts per day = ${countsPerDay.value}`);
         initHourIndices();
     });
 </script>
