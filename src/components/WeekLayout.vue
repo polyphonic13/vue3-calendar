@@ -177,6 +177,7 @@
     });
 
     const isCardsExpanded = ref(false);
+
     const isEventCardsExpanded = computed(() => {
         return isCardsExpanded.value;
     });
@@ -187,12 +188,14 @@
 
     const eventCardsStyle = computed(() => {
         const sorted = [...eventRows.value].sort((a, b) => b - a);
-        return (isEventCardsExpanded.value) ? `height: ${(((sorted[0] + 1) * 24) + 24)}px` : 'height: 100px';
+        return (isEventCardsExpanded.value) ? `height: ${(((sorted[0] + 1) * 24) + 28)}px` : 'height: 96px';
     });
 
     const weekEvents = computed(() => {
         const days = props.weekInfo.days;
-        return getEventsForRange(days[0], days[days.length - 1]);
+        const events = getEventsForRange(days[0], days[days.length - 1]);
+        console.log(`weekEvents = `, events);
+        return events;
     });
 
     const hourlyEvents = (index: number) => {
@@ -347,10 +350,10 @@
     .event_cards {
         @include event_cards;
 
-        // background-color: rgba(123, 234, 0, 0.24);
-
         width: 100%;
+
         box-sizing: border-box;
+
         display: flex;
 
         position: relative;
@@ -363,7 +366,7 @@
     }
 
     .event_cards__controls {
-        top: 4px;
+        bottom: 4px;
         left: 4px;
         position: absolute;
     }
@@ -372,6 +375,10 @@
         @include circle_button;
 
         z-index: 1000;
+    }
+
+    .event_cards__controls__toggle_btn:hover {
+        @include circle_button--hover;
     }
 
     .event_card {
@@ -426,7 +433,7 @@
         border-top: 1px solid $border-color01;
         box-sizing: border-box;
 
-        overflow-y: scroll;
+        overflow-y: hidden;
 
     }
 

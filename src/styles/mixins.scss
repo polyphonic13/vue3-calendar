@@ -81,7 +81,8 @@
 @mixin event_cards {
     // position: absolute;
 
-    overflow: scroll;
+    // overflow: scroll;
+    overflow: hidden;
 }
 
 @mixin event_cards--expanded {

@@ -63,14 +63,20 @@ export const useEventStore = defineStore('eventStore', () => {
         return state.value.events;
     };
 
-    const getEventsForRange = (startDate: IYearMonthDay, endDate: IYearMonthDay): IEvent[] => {
+    const getEventsForRange = (startDate: IYearMonthDay, endDate: IYearMonthDay, isSorted: boolean = true): IEvent[] => {
         const events = state.value.events.filter((event: IEvent) => {
             if (getAreDatesWithinRange(event.start, event.end, startDate, endDate)) {
                 return event;
             }
         });
 
-        return events;
+        if (!isSorted) {
+            return events;
+        }
+        console.log(`about to return sorted`);
+        return [...events].sort((a, b) => {
+            return new Date(a.start.year, a.start.month, a.start.day).getTime() - new Date(b.start.year, b.start.month, b.start.day).getTime();
+        });
     };
 
     const createEvent = (payload: Partial<IEvent>) => {
