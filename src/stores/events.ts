@@ -114,7 +114,7 @@ export const useEventStore = defineStore('eventStore', () => {
         const event: IEvent = eventFactory(state.value.focusedEvent);
         state.value.events.push(event);
         event.dayCount = getDaysInEventCount(event);
-        console.log(`\tnew event = ${JSON.stringify(event)}`);
+        // console.log(`\tnew event = ${JSON.stringify(event)}`);
         save<IEventState>(LOCAL_STORAGE_KEY, state.value);
     };
 

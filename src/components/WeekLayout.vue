@@ -22,7 +22,20 @@
                 @date-clicked="onDateClicked"
             />
         </div>
-        <div class="event_cards">
+        <div
+            class="event_cards"
+            :class="eventCardsClasses"
+            :style="eventCardsStyle"
+        >
+            <div
+                v-if="isEventCardsControlsVisible"
+                class="event_cards__controls"
+            >
+                <button class="event_cards__controls__toggle_btn" @click="onToggleEventCardsExpandedClicked">
+                    <svg v-if="isEventCardsExpanded" class="up_arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg>
+                    <svg v-else class="down_arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+                </button>
+            </div>
             <div
                 v-for="(day, d) in DAYS_OF_WEEK"
                 :key="d"
@@ -76,6 +89,7 @@
 <script setup lang="ts">
     // external
     import {
+        ref,
         toRef,
         watch,
         computed,
@@ -96,7 +110,6 @@
     import {
         TIMES_IN_DAY,
         DAYS_OF_WEEK,
-        useDateUtils,
     } from '@/composables/use-date-utils';
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
@@ -133,8 +146,6 @@
         getDaysInEventCount,
     } = useEventStore();
 
-    const { getAreDatesWithinRange } = useDateUtils();
-
     const { getRowsForEvents } = useCalculateEventCardRows();
 
     const selectedItems = toRef(state, 'selectedItems');
@@ -161,6 +172,24 @@
         return isSelecting && currentType.value === MouseSelectionType.DAILY;
     });
 
+    const isEventCardsControlsVisible = computed(() => {
+        return [...eventRows.value].sort((a, b) => b - a)[0] > 2;
+    });
+
+    const isCardsExpanded = ref(false);
+    const isEventCardsExpanded = computed(() => {
+        return isCardsExpanded.value;
+    });
+
+    const eventCardsClasses = computed(() => ({
+        'event_cards--expanded': (isCardsExpanded.value)
+    }));
+
+    const eventCardsStyle = computed(() => {
+        const sorted = [...eventRows.value].sort((a, b) => b - a);
+        return (isEventCardsExpanded.value) ? `height: ${(((sorted[0] + 1) * 24) + 24)}px` : 'height: 100px';
+    });
+
     const weekEvents = computed(() => {
         const days = props.weekInfo.days;
         return getEventsForRange(days[0], days[days.length - 1]);
@@ -178,35 +207,6 @@
     const dayEvents = computed(() => {
         return weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
     });
-
-    const populateGridForEvent = (grid: boolean[][], event: IEvent, dayIndex: number, rows: number[]) => {
-        const duration = event.dayCount;
-        let isFree: boolean;
-        console.log(`\tdayIndex = ${dayIndex}, duration = ${duration}`);
-        for (let i = 0; i < grid.length; i++) {
-            isFree = true;
-            for (let j = dayIndex; j < (duration + dayIndex); j++) {
-                console.log(`\tgrid[ ${i} ][ ${j} ] = ${grid[i][j]}`);
-                if (grid[i][j]) {
-                    console.log(`\t\t${i} is unavailable`);
-                    isFree = false;
-                    break;
-                }
-            }
-
-            if (isFree) {
-                console.log(`\tfound free space at ${i}`);
-                for (let k = dayIndex; k < (duration + dayIndex); k++) {
-                    console.log(`\t\tpopulating [ ${i} ][ ${k} ] with true`);
-                    grid[i][k] = true;
-                }
-                rows.push(i);
-                break;
-            }
-        }
-
-        return grid;
-    };
 
     const eventRows = computed(() => {
         return getRowsForEvents(dayEvents.value, props.weekInfo.days);
@@ -309,8 +309,11 @@
         viewEvent(dayEvents.value[index]);
     };
 
+    const onToggleEventCardsExpandedClicked = () => {
+        isCardsExpanded.value = !isCardsExpanded.value;
+    }
+
     onMounted(() => {
-        console.log(`WeekLayout/onMounted, eventRows = [${eventRows.value}]`);
         initHourIndices();
     });
 </script>
@@ -334,26 +337,41 @@
 
     .day_of_week_headers {
         width: 100%;
-        min-height: 168px;
+        height: 64px;
         display: flex;
 
+        box-sizing: border-box;
+        border-right: 1px solid $border-color01;
     }
 
     .event_cards {
         @include event_cards;
 
+        // background-color: rgba(123, 234, 0, 0.24);
+
         width: 100%;
-        min-height: 24px;
-        height: 108px;
-
-        top: 60px;
-
+        box-sizing: border-box;
         display: flex;
+
+        position: relative;
+
+        border-right: 1px solid $border-color01;
     }
 
     .event_cards--expanded {
-        background-color: $greyscale01;
-        overflow-y: visible;
+        @include event_cards--expanded;
+    }
+
+    .event_cards__controls {
+        top: 4px;
+        left: 4px;
+        position: absolute;
+    }
+
+    .event_cards__controls__toggle_btn {
+        @include circle_button;
+
+        z-index: 1000;
     }
 
     .event_card {
@@ -391,6 +409,7 @@
     .day_selection_area {
         width: calc(100% / 7);
         height: 100%;
+
     }
 
     .day--selecting {
@@ -405,7 +424,7 @@
         flex-direction: column;
 
         border-top: 1px solid $border-color01;
-        box-sizing: border-mouseBox;
+        box-sizing: border-box;
 
         overflow-y: scroll;
 
@@ -439,7 +458,7 @@
 
     .week_number, .time_slot {
         padding: 4px;
-        box-sizing: border-mouseBox;
+        box-sizing: border-box;
 
         display: flex;
         align-items: center;
@@ -461,7 +480,7 @@
         max-height: 32px;
 
         padding: 8px;
-        box-sizing: border-mouseBox;
+        box-sizing: border-box;
 
         background-color: #eef;
 
@@ -476,8 +495,8 @@
             height: calc(100% - 144px);
         }
 
-        .event_cards {
-            @include event_cards--mobile;
+        .event_card {
+            @include event_card--mobile;
         }
     }
 
