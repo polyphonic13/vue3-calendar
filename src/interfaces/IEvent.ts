@@ -7,4 +7,5 @@ export default interface IEvent {
     title: string;
     description: string;
     location: string;
+    dayCount: number;
 }

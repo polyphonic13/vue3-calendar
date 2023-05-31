@@ -182,7 +182,7 @@
 
     const save = () => {
         const method = (isEditing.value) ? updateEvent : addEvent;
-        console.log(`EventModal/onSaveClicked, isEditing = ${isEditing.value}\nevent = ${JSON.stringify(props.event)}`);
+        // console.log(`EventModal/onSaveClicked, isEditing = ${isEditing.value}\nevent = ${JSON.stringify(props.event)}`);
         method();
         emit('onClose');
     };

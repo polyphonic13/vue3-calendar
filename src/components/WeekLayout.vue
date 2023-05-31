@@ -161,29 +161,74 @@
         return weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
     });
 
-    const countsPerDay = computed(() => {
-        const counts = [0, 0, 0, 0, 0, 0, 0];
-        let days: number;
+    interface IEventPositionMeta {
+        duration: number;
+        startDay: number;
+    }
 
-        props.weekInfo.days.forEach((dayInfo, d) => {
-            days = 0;
-            dayEvents.value.forEach((event) => {
-                if (getAreDatesWithinRange({ ...dayInfo }, { ...dayInfo }, event.start, event.end)) {
-                    days++;
+    const populateGridForEvent = (grid: boolean[][], event: IEvent, dayIndex: number, rows: number[]) => {
+        const duration = event.dayCount;
+        let isFree: boolean;
+        console.log(`\tdayIndex = ${dayIndex}, duration = ${duration}`);
+        for (let i = 0; i < grid.length; i++) {
+            isFree = true;
+            for (let j = dayIndex; j < (duration + dayIndex); j++) {
+                console.log(`\tgrid[ ${i} ][ ${j} ] = ${grid[i][j]}`);
+                if (grid[i][j]) {
+                    console.log(`\t\t${i} is unavailable`);
+                    isFree = false;
+                    break;
+                }
+            }
+
+            if (isFree) {
+                console.log(`\tfound free space at ${i}`);
+                for (let k = dayIndex; k < (duration + dayIndex); k++) {
+                    console.log(`\t\tpopulating [ ${i} ][ ${k} ] with true`);
+                    grid[i][k] = true;
+                }
+                rows.push(i);
+                break;
+            }
+        }
+
+        return grid;
+    };
+
+    const eventPositionMeta = computed(() => {
+        const rows: number[] = [];
+
+        let grid: boolean[][] = [];
+
+        for (let i = 0; i < dayEvents.value.length; i++) {
+            grid[i] = [];
+            for (let j = 0; j < props.weekInfo.days.length; j++) {
+                grid[i][j] = false;
+            }
+        }
+
+        console.log(`grid = `, grid);
+
+        dayEvents.value.forEach((event) => {
+            console.log(`event[ ${event.id} ] duration = ${event.dayCount}`);
+
+            props.weekInfo.days.forEach((dayInfo, d) => {
+                if (dayInfo.day === event.start.day) {
+                    grid = populateGridForEvent(grid, event, d, rows);
+                    // console.log(`\tgrid now = ${JSON.stringify(grid)}`);
                 }
             });
-
-            counts[d] = days;
         });
 
-        return counts;
+        console.log(`rows = ${rows}`);
+        return rows;
     });
 
     const getCardStyle = (event: IEvent, index: number) => {
         const daysInEvent = getDaysInEventCount(event);
-        const width = (100 / 7) * (daysInEvent + 1);
-        const top = (index * 24) + 24;
-
+        const width = (100 / 7) * daysInEvent;
+        // const top = (index * 24) + 24;
+        const top = (eventPositionMeta.value[index]) * 24;
         const leftMultiplier = props.weekInfo.days.findIndex((dayInfo) => dayInfo.day === event.start.day);
         const left = (100 / 7) * leftMultiplier;
 
@@ -277,7 +322,7 @@
     };
 
     onMounted(() => {
-        console.log(`WeekLayout/onMounted, counts per day = ${countsPerDay.value}`);
+        console.log(`WeekLayout/onMounted, row per day = ${eventPositionMeta.value}`);
         initHourIndices();
     });
 </script>
@@ -351,7 +396,7 @@
     .event_card__title {
         @include event_card__title;
 
-        padding-left: 4px;
+        padding: 2px 0 0 2px;
     }
 
     .day_selection_area {

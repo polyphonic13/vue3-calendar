@@ -53,6 +53,7 @@ export const useEventStore = defineStore('eventStore', () => {
                 day: 0,
                 time: 0,
             },
+            dayCount: 0,
             ...seed,
         };
         return event;
@@ -106,17 +107,15 @@ export const useEventStore = defineStore('eventStore', () => {
 
     const addEvent = () => {
         state.value.isViewingEvent = false;
-        console.log(`event store \`addEvent\`, focusedEvent = ${JSON.stringify(state.value.focusedEvent)}`);
         if (!state.value.focusedEvent) {
             console.warn(`ERROR: can not add new event`);
             return;
         }
         const event: IEvent = eventFactory(state.value.focusedEvent);
-        console.log(`\tnew event = ${JSON.stringify}`);
         state.value.events.push(event);
-        console.log(`\tadded new devent to the state's events array`);
+        event.dayCount = getDaysInEventCount(event);
+        console.log(`\tnew event = ${JSON.stringify(event)}`);
         save<IEventState>(LOCAL_STORAGE_KEY, state.value);
-        console.log(`\tsaved even in local storage`);
     };
 
     const viewEvent = (payload: Partial<IEvent>) => {
@@ -144,6 +143,10 @@ export const useEventStore = defineStore('eventStore', () => {
             console.warn(`ERROR: can not update event`);
             return;
         }
+
+        state.value.focusedEvent.dayCount = getDaysInEventCount(state.value.focusedEvent as IEvent);
+        console.log(`\tupdated event = ${JSON.stringify(state.value.focusedEvent)}`);
+
         state.value.events = state.value.events.map((event: IEvent) => {
             return (event.id === state.value.focusedEvent!.id) ? { ...event, ...state.value.focusedEvent! } : event;
         });
@@ -207,7 +210,7 @@ export const useEventStore = defineStore('eventStore', () => {
         const start = event.start;
         const end = event.end;
 
-        return getDifferenceInDays(start, end);
+        return getDifferenceInDays(start, end) + 1;
     };
 
     return {
