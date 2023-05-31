@@ -156,8 +156,8 @@
         display: flex;
         flex-direction: column;
 
-        border-right: 1px solid $border-color01;
-        border-bottom: 1px solid $border-color01;
+        border-right: 1px solid $borderColor01;
+        border-bottom: 1px solid $borderColor01;
 
         position: relative;
 
@@ -241,6 +241,8 @@
         bottom: 0;
         left: 0;
         right: 16px;
+
+        position: absolute;
     }
 
     .event_card {

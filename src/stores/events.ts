@@ -73,9 +73,9 @@ export const useEventStore = defineStore('eventStore', () => {
         if (!isSorted) {
             return events;
         }
-        console.log(`about to return sorted`);
+
         return [...events].sort((a, b) => {
-            return new Date(a.start.year, a.start.month, a.start.day).getTime() - new Date(b.start.year, b.start.month, b.start.day).getTime();
+            return new Date(b.start.year, b.start.month, b.start.day).getTime() - new Date(a.start.year, a.start.month, a.start.day).getTime();
         });
     };
 

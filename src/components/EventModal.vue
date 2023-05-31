@@ -38,8 +38,13 @@
             />
             <div class="event__date_and_time">
                 <div>
-                    <span>{{ startDateString }}</span>
-                    <span v-if="!isSameDayEvent"> - {{ endDateString }}</span>
+                    <button class="date_selector__btn" :class="dateSelectorBtnClasses">{{ startDateString }}</button>
+                    <span v-if="!isSameDayEvent"> - </span>
+                    <button
+                        v-if="!isSameDayEvent"
+                        class="date_selector__btn"
+                        :class="dateSelectorBtnClasses"
+                    >{{ endDateString }}</button>
                 </div>
                 <span v-if="!isFullDayEvent">{{ convertNumberToTimeString(props.event!.start!.time) }} - {{ convertNumberToTimeString(props.event!.end!.time) }}</span>
             </div>
@@ -126,12 +131,17 @@
         return !props.event || !props.event.title || props.event.title === '';
     });
 
+    const dateSelectorBtnClasses = computed(() => ({
+        'date_selector__btn--enabled': (!isEditingDisabled.value),
+    }));
+
     const onEditClicked = (event: MouseEvent) => {
         event.stopPropagation();
 
         if (isEditing.value || !props.event) {
             return;
         }
+
         viewEvent(props.event);
         isEditing.value = true;
 
@@ -147,7 +157,7 @@
     };
 
     const onCloseClicked = () => {
-        emit('onClose');
+        close();
     };
 
     const onInputKeyDown = (event: KeyboardEvent) => {
@@ -167,7 +177,12 @@
             return;
         }
 
-        if (props.isNew) {
+        close();
+    };
+
+    const close = () => {
+        console.log(`close, isEditingDisabled = ${isEditingDisabled.value}`);
+        if (isEditingDisabled.value) {
             emit('onClose');
             return;
         }
@@ -182,7 +197,7 @@
 
     const save = () => {
         const method = (isEditing.value) ? updateEvent : addEvent;
-        // console.log(`EventModal/onSaveClicked, isEditing = ${isEditing.value}\nevent = ${JSON.stringify(props.event)}`);
+
         method();
         emit('onClose');
     };
@@ -316,6 +331,21 @@
 
     .save_button:disabled {
         @include text_button--disabled;
+    }
+
+    .date_selector__btn {
+        background-color: $transparentGrey01;
+
+        padding: 4px 8px;
+        border: none;
+        box-sizing: border-box;
+
+        cursor: pointer;
+    }
+
+    .date_selector__btn--enabled {
+        background-color: $transparentGrey02;
+        border-bottom: 1px solid $borderColor01;
     }
 
     @media screen and (max-width: 400px) {

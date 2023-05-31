@@ -132,7 +132,7 @@
         display: flex;
         flex-direction: column;
 
-        border-left: 1px solid $border-color01;
+        border-left: 1px solid $borderColor01;
     }
 
     .week {

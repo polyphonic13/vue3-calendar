@@ -214,7 +214,7 @@
         margin: 0 4px 0 4px;
 
         border: 1px solid;
-        border-color: $border-color01;
+        border-color: $borderColor01;
 
         box-sizing: border-box;
 

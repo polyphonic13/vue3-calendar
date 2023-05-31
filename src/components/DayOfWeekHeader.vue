@@ -57,8 +57,8 @@
         display: flex;
         flex-direction: column;
 
-        // border-right: 1px solid $border-color01;
-        border-top: 1px solid $border-color01;
+        // border-right: 1px solid $borderColor01;
+        border-top: 1px solid $borderColor01;
 
         cursor: pointer;
     }

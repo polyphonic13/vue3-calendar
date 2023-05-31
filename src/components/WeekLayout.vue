@@ -193,9 +193,7 @@
 
     const weekEvents = computed(() => {
         const days = props.weekInfo.days;
-        const events = getEventsForRange(days[0], days[days.length - 1]);
-        console.log(`weekEvents = `, events);
-        return events;
+        return getEventsForRange(days[0], days[days.length - 1]);
     });
 
     const hourlyEvents = (index: number) => {
@@ -334,8 +332,8 @@
 
         position: relative;
 
-        border-left: 1px solid $border-color01;
-        border-bottom: 1px solid $border-color01;
+        border-left: 1px solid $borderColor01;
+        border-bottom: 1px solid $borderColor01;
     }
 
     .day_of_week_headers {
@@ -344,7 +342,7 @@
         display: flex;
 
         box-sizing: border-box;
-        border-right: 1px solid $border-color01;
+        border-right: 1px solid $borderColor01;
     }
 
     .event_cards {
@@ -358,7 +356,7 @@
 
         position: relative;
 
-        border-right: 1px solid $border-color01;
+        border-right: 1px solid $borderColor01;
     }
 
     .event_cards--expanded {
@@ -430,10 +428,10 @@
         display: flex;
         flex-direction: column;
 
-        border-top: 1px solid $border-color01;
+        border-top: 1px solid $borderColor01;
         box-sizing: border-box;
 
-        overflow-y: hidden;
+        overflow-y: scroll;
 
     }
 
@@ -471,8 +469,8 @@
         align-items: center;
         justify-content: flex-end;
         /* border: 1px solid #eee; */
-        border-right: 1px solid $border-color01;
-        /* border-bottom: 1px solid $border-color01; */
+        border-right: 1px solid $borderColor01;
+        /* border-bottom: 1px solid $borderColor01; */
 
         color: $greyscale01;
     }

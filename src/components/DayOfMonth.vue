@@ -106,8 +106,8 @@
 
         background-color: $primary-bg01;
 
-        border-right: 1px solid $border-color01;
-        border-bottom: 1px solid $border-color01;
+        border-right: 1px solid $borderColor01;
+        border-bottom: 1px solid $borderColor01;
 
         cursor: pointer;
     }
