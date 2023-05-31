@@ -124,7 +124,7 @@ export const useEventStore = defineStore('eventStore', () => {
             console.warn(`ERROR: can not edit event without value id\n${JSON.stringify(payload)}`);
             return;
         }
-        state.value.focusedEvent = payload;
+        state.value.focusedEvent = JSON.parse(JSON.stringify(payload));
         state.value.isViewingEvent = true;
     };
 

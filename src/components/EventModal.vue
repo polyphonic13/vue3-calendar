@@ -34,7 +34,7 @@
                 placeholder="Add Title"
                 :disabled="isEditingDisabled"
                 v-model="props.event!.title"
-                @keydown.stop
+                @keydown.stop="onInputKeyDown"
             />
             <div class="event__date_and_time">
                 <div>
@@ -143,13 +143,47 @@
     };
 
     const onSaveClicked = () => {
-        const method = (isEditing.value) ? updateEvent : addEvent;
-        console.log(`EventModal/onSaveClicked, isEditing = ${isEditing.value}\nevent = ${JSON.stringify(props.event)}`);
-        method();
-        emit('onClose');
+        save();
     };
 
     const onCloseClicked = () => {
+        emit('onClose');
+    };
+
+    const onInputKeyDown = (event: KeyboardEvent) => {
+        const key = event.key.toLowerCase();
+
+        if (key !== 'enter' && key !== 'return' && key !== 'escape' && key !== 'delete') {
+            return;
+        }
+
+        if (key === 'delete') {
+            deleteEvent();
+            return;
+        }
+
+        if (key !== 'escape') {
+            save();
+            return;
+        }
+
+        if (props.isNew) {
+            emit('onClose');
+            return;
+        }
+
+        const isConfirmed = confirm('Discard unsaved changes?');
+
+        if (!isConfirmed) {
+            return;
+        }
+        emit('onClose');
+    };
+
+    const save = () => {
+        const method = (isEditing.value) ? updateEvent : addEvent;
+        console.log(`EventModal/onSaveClicked, isEditing = ${isEditing.value}\nevent = ${JSON.stringify(props.event)}`);
+        method();
         emit('onClose');
     };
 

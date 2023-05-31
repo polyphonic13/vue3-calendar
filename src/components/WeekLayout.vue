@@ -143,24 +143,6 @@
         return isSelecting && currentType.value === MouseSelectionType.DAILY;
     });
 
-    const countsPerDay = computed(() => {
-        const counts = [0, 0, 0, 0, 0, 0, 0];
-        let days: number;
-
-        props.weekInfo.days.forEach((dayInfo, d) => {
-            days = 0;
-            dayEvents.value.forEach((event) => {
-                if (getAreDatesWithinRange({ ...dayInfo }, { ...dayInfo }, event.start, event.end)) {
-                    days++;
-                }
-            });
-
-            counts[d] = days;
-        });
-
-        return counts;
-    });
-
     const weekEvents = computed(() => {
         const days = props.weekInfo.days;
         return getEventsForRange(days[0], days[days.length - 1]);
@@ -177,6 +159,24 @@
 
     const dayEvents = computed(() => {
         return weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
+    });
+
+    const countsPerDay = computed(() => {
+        const counts = [0, 0, 0, 0, 0, 0, 0];
+        let days: number;
+
+        props.weekInfo.days.forEach((dayInfo, d) => {
+            days = 0;
+            dayEvents.value.forEach((event) => {
+                if (getAreDatesWithinRange({ ...dayInfo }, { ...dayInfo }, event.start, event.end)) {
+                    days++;
+                }
+            });
+
+            counts[d] = days;
+        });
+
+        return counts;
     });
 
     const getCardStyle = (event: IEvent, index: number) => {
