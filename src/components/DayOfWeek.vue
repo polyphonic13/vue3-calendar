@@ -236,6 +236,11 @@
 
     .event_cards {
         @include event_cards;
+
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 16px;
     }
 
     .event_card {

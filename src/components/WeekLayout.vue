@@ -74,8 +74,15 @@
 </template>
 
 <script setup lang="ts">
-    import { toRef, watch, computed, onMounted } from 'vue';
+    // external
+    import {
+        toRef,
+        watch,
+        computed,
+        onMounted,
+    } from 'vue';
 
+    // interfaces, types and enums
     import type {
         IEvent,
         INumberRange,
@@ -85,11 +92,20 @@
 
     import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
-    import { TIMES_IN_DAY, DAYS_OF_WEEK, useDateUtils } from '@/composables/use-date-utils';
+    // composables
+    import {
+        TIMES_IN_DAY,
+        DAYS_OF_WEEK,
+        useDateUtils,
+    } from '@/composables/use-date-utils';
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
+    import { useCalculateEventCardRows } from '@/composables/use-calculate-event-card-rows';
+
+    // stores
     import { useEventStore } from '@/stores/events';
 
+    // components
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
 
@@ -118,6 +134,8 @@
     } = useEventStore();
 
     const { getAreDatesWithinRange } = useDateUtils();
+
+    const { getRowsForEvents } = useCalculateEventCardRows();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -161,11 +179,6 @@
         return weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
     });
 
-    interface IEventPositionMeta {
-        duration: number;
-        startDay: number;
-    }
-
     const populateGridForEvent = (grid: boolean[][], event: IEvent, dayIndex: number, rows: number[]) => {
         const duration = event.dayCount;
         let isFree: boolean;
@@ -195,40 +208,15 @@
         return grid;
     };
 
-    const eventPositionMeta = computed(() => {
-        const rows: number[] = [];
-
-        let grid: boolean[][] = [];
-
-        for (let i = 0; i < dayEvents.value.length; i++) {
-            grid[i] = [];
-            for (let j = 0; j < props.weekInfo.days.length; j++) {
-                grid[i][j] = false;
-            }
-        }
-
-        console.log(`grid = `, grid);
-
-        dayEvents.value.forEach((event) => {
-            console.log(`event[ ${event.id} ] duration = ${event.dayCount}`);
-
-            props.weekInfo.days.forEach((dayInfo, d) => {
-                if (dayInfo.day === event.start.day) {
-                    grid = populateGridForEvent(grid, event, d, rows);
-                    // console.log(`\tgrid now = ${JSON.stringify(grid)}`);
-                }
-            });
-        });
-
-        console.log(`rows = ${rows}`);
-        return rows;
+    const eventRows = computed(() => {
+        return getRowsForEvents(dayEvents.value, props.weekInfo.days);
     });
 
     const getCardStyle = (event: IEvent, index: number) => {
         const daysInEvent = getDaysInEventCount(event);
         const width = (100 / 7) * daysInEvent;
-        // const top = (index * 24) + 24;
-        const top = (eventPositionMeta.value[index]) * 24;
+        // add extra 24 to include white space at top for new event creation
+        const top = ((eventRows.value[index]) * 24) + 24;
         const leftMultiplier = props.weekInfo.days.findIndex((dayInfo) => dayInfo.day === event.start.day);
         const left = (100 / 7) * leftMultiplier;
 
@@ -322,7 +310,7 @@
     };
 
     onMounted(() => {
-        console.log(`WeekLayout/onMounted, row per day = ${eventPositionMeta.value}`);
+        console.log(`WeekLayout/onMounted, eventRows = [${eventRows.value}]`);
         initHourIndices();
     });
 </script>
@@ -352,7 +340,7 @@
     }
 
     .event_cards {
-        background-color: rgba(123, 234, 0, 0.24);
+        @include event_cards;
 
         width: 100%;
         min-height: 24px;
@@ -361,10 +349,11 @@
         top: 60px;
 
         display: flex;
+    }
 
-        position: absolute;
-
-        overflow: scroll;
+    .event_cards--expanded {
+        background-color: $greyscale01;
+        overflow-y: visible;
     }
 
     .event_card {
@@ -485,6 +474,10 @@
     @media screen and (max-width: 400px) {
         .week {
             height: calc(100% - 144px);
+        }
+
+        .event_cards {
+            @include event_cards--mobile;
         }
     }
 
