@@ -32,20 +32,24 @@ export const DAYS_IN_MONTH = [
     31,
 ];
 
-export const MONTH_NAMES = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-];
+// export const MONTH_NAMES = [
+//     'January',
+//     'February',
+//     'March',
+//     'April',
+//     'May',
+//     'June',
+//     'July',
+//     'August',
+//     'September',
+//     'October',
+//     'November',
+//     'December'
+// ];
+
+export const MONTH_NAMES = Array.from({ length: 12 }, (_, i) => {
+    return new Date(0, i).toLocaleString('en-US', { month: 'long' });
+});
 
 export const DAY_NAMES = [
     'Sunday',

@@ -181,17 +181,17 @@
     };
 
     const close = () => {
-        console.log(`close, isEditingDisabled = ${isEditingDisabled.value}`);
+        // console.log(`close, isEditingDisabled = ${isEditingDisabled.value}`);
         if (isEditingDisabled.value) {
             emit('onClose');
             return;
         }
 
-        const isConfirmed = confirm('Discard unsaved changes?');
+        // const isConfirmed = confirm('Discard unsaved changes?');
 
-        if (!isConfirmed) {
-            return;
-        }
+        // if (!isConfirmed) {
+        //     return;
+        // }
         emit('onClose');
     };
 
@@ -281,13 +281,15 @@
         flex-direction: column;
 
         > * {
-            padding: 8px;
+            padding: 8px 0;
             margin-bottom: 16px;
         }
     }
 
     .event__title {
         font-size: 1.5em;
+
+        padding: 8px;
 
         border: none;
         border-bottom: 1px solid #ddd;
@@ -304,7 +306,10 @@
     }
 
     .event__description {
+
         font-family: $mainFont;
+
+        padding: 8px;
     }
 
     .event__description:disabled {
@@ -334,7 +339,7 @@
     }
 
     .date_selector__btn {
-        background-color: $transparentGrey01;
+        background-color: transparent;
 
         padding: 4px 8px;
         border: none;

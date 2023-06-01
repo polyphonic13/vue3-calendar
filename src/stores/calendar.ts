@@ -65,7 +65,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         const savedMonth = months.find((monthInfo) => monthInfo.year === year && monthInfo.month === month);
 
         if (savedMonth) {
-            console.log(`month previously saved`);
+            console.log(`month previously stored`);
             state.value.monthInfo = savedMonth;
             return;
         }

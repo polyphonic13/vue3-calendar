@@ -315,6 +315,7 @@
     }
 
     onMounted(() => {
+        console.log(`WeekLayoutonMounted, weekInfo = `, props.weekInfo);
         initHourIndices();
     });
 </script>
