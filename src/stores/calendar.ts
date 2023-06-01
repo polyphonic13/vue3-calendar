@@ -13,6 +13,7 @@ import type {
     IMonthInfo,
     IYearData,
 } from '@/interfaces';
+import type { Dictionary } from '@/@types';
 
 const LOCAL_STORAGE_KEY = 'calendarAppCalendarData';
 
@@ -27,7 +28,9 @@ export const useCalendarStore = defineStore('calendar', () => {
         const savedState = load<IBaseCalendarState>(LOCAL_STORAGE_KEY);
         const now = new Date();
         const year = now.getFullYear();
-        const yearData = [getYearData(year)];
+        const yearData: Dictionary<IYearData> = {};
+
+        yearData[year] = getYearData(year);
 
         let monthInfo;
 
@@ -45,7 +48,18 @@ export const useCalendarStore = defineStore('calendar', () => {
 
         monthInfo = getMonthInfo(year, month);
         months.push(monthInfo);
-        const { week, day } = monthInfo.todayIndices;
+
+        let week: number = 0;
+        let day: number = 0;
+
+        yearData[year].weeks.forEach((wk, w) => {
+            wk.forEach((dy, d) => {
+                if (dy.getMonth() === now.getMonth() && dy.getDate() === now.getDate()) {
+                    week = w;
+                    day = d;
+                }
+            })
+        });
 
         return {
             layout: CalendarLayout.WEEK,

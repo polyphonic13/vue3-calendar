@@ -6,7 +6,7 @@
         <div class="header">
             <div class="header__content">
                 <span class="title">{{ headerTitle }}</span>
-                <span v-if="state.layout === CalendarLayout.WEEK && state.monthInfo">WEEK {{ state.monthInfo.weeks[state.week].weekNumber }}</span>
+                <span v-if="state.layout === CalendarLayout.WEEK && state.monthInfo">WEEK {{ state.month + 1 }}</span>
             </div>
             <div class="controls">
                 <button class="control__btn arrow_btn" @click="onPrevClicked">
@@ -36,7 +36,7 @@
             :year="state.year"
             :month="state.month"
             :index="state.week"
-            :week-info="state.monthInfo.weeks[state.week]"
+            :week-info="state.yearData[state.year].weeks[state.week]"
             @date-clicked="onDateClicked"
             @create-event="onCreateEvent"
         />
@@ -66,10 +66,7 @@
     import { useCalendarStore } from '@/stores/calendar';
     import { useEventStore } from '@/stores/events';
 
-    import type {
-        IDayInfo,
-        IEvent,
-    } from '../interfaces';
+    import type { IEvent } from '../interfaces';
 
     import MonthLayout from '@/components/MonthLayout.vue';
     import WeekLayout from '@/components/WeekLayout.vue';
@@ -110,12 +107,13 @@
             return `${MONTH_NAMES[state.value.month]} ${state.value.year}`;
         }
         // console.log(`updating headerTitle`);
-        const weekInfo = state.value.monthInfo.weeks[state.value.week];
         const monthIndices: number[] = [];
+        let month;
 
-        weekInfo.days.forEach((day: IDayInfo) => {
-            if (monthIndices.indexOf(day.month) === -1) {
-                monthIndices.push(day.month);
+        state.value.yearData[state.value.year].weeks[state.value.week].forEach((day) => {
+            month = day.getMonth();
+            if (!monthIndices.includes(month)) {
+                monthIndices.push(month);
             }
         });
 

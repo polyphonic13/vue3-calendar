@@ -44,10 +44,19 @@ export function useCalculateEventCardRows() {
         return grid;
     };
 
-    const getRowsForEvents = (events: IEvent[], dayInfos: IDayInfo[]) => {
-        const rows: number[] = [];
+    const getDayInfoFromDate = (date: Date): IDayInfo => {
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+        };
+    };
 
-        let grid: boolean[][] = createGrid(events.length, dayInfos.length);
+    const getRowsForEvents = (events: IEvent[], dates: Date[]) => {
+        const rows: number[] = [];
+        const dayInfos = dates.map((date) => getDayInfoFromDate(date));
+
+        let grid: boolean[][] = createGrid(events.length, dates.length);
 
         events.forEach((event) => {
             // console.log(`event[ ${event.id} ] duration = ${event.dayCount}`);
@@ -65,5 +74,6 @@ export function useCalculateEventCardRows() {
 
     return {
         getRowsForEvents,
+        getDayInfoFromDate,
     };
 }

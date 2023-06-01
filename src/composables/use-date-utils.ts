@@ -122,7 +122,6 @@ export function useDateUtils() {
         }
 
         if (!weeks[weeks.length - 1][DAYS_OF_WEEK.length - 1]) {
-            console.log(`need to pad last week`);
             const lastWeekIndex = weeks.length - 1;
             const nextYear = weeks[lastWeekIndex][0].getFullYear() + 1;
             const nextYearBeginning = new Date(nextYear, 0, 1);

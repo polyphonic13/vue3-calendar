@@ -5,13 +5,13 @@
             ref="headerEl"
         >
             <DayOfWeekHeader
-                v-for="(dayInfo, d) in props.weekInfo.days"
-                :key="`${props.year}${dayInfo.month}${dayInfo.day}${d}`"
+                v-for="(dayInfo, d) in props.weekInfo"
+                :key="`${props.year}${dayInfo.getMonth()}${dayInfo.getDate()}${d}`"
                 :index="d"
                 :year="props.year"
-                :month="dayInfo.month"
-                :day="dayInfo.day"
-                :day-name="dayInfo.dayName"
+                :month="dayInfo.getMonth()"
+                :day="dayInfo.getDate()"
+                :day-name="DAYS_OF_WEEK[dayInfo.getDay()]"
                 :is-selecting="isSelecting"
                 :selected-items="selectedItems"
                 :current-initiator="currentInitiator"
@@ -65,10 +65,10 @@
         >
             <div class="day_list">
                 <DayOfWeek
-                    v-for="(day, d2) in props.weekInfo.days"
-                    :key="`${props.year}${props.month}${day.day}${d2}`"
+                    v-for="(day, d2) in props.weekInfo"
+                    :key="`${props.year}${props.month}${day.getDate()}${d2}`"
                     :index="(d2 + 1)"
-                    :day-name="`${(day.dayName) ? day.dayName : ''}`"
+                    :day-name="`${(DAYS_OF_WEEK[day.getDay()]) ? DAYS_OF_WEEK[day.getDay()] : ''}`"
                     :is-include-time-label="(d2 === 0)"
                     :is-selecting="isSelecting"
                     :is-start-on-second-half="isStartOnSecondHalf"
@@ -100,7 +100,6 @@
     import type {
         IEvent,
         INumberRange,
-        IWeekInfo,
         IYearMonthDay,
     } from '@/interfaces';
 
@@ -126,7 +125,7 @@
         year: number;
         month: number;
         index: number;
-        weekInfo: IWeekInfo;
+        weekInfo: Date[];
     }
 
     const props: IWeekProps = defineProps<IWeekProps>();
@@ -146,7 +145,7 @@
         getDaysInEventCount,
     } = useEventStore();
 
-    const { getRowsForEvents } = useCalculateEventCardRows();
+    const { getRowsForEvents, getDayInfoFromDate } = useCalculateEventCardRows();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -192,12 +191,12 @@
     });
 
     const weekEvents = computed(() => {
-        const days = props.weekInfo.days;
+        const days = props.weekInfo;
         return getEventsForRange(days[0], days[days.length - 1]);
     });
 
     const hourlyEvents = (index: number) => {
-        const day = props.weekInfo.days[index].day;
+        const day = props.weekInfo[index].getDate();
         return weekEvents.value.filter((event) => {
             if(event.start.day === day && event.start.time !== 0 && event.end.time !== 0) {
                 return event;
@@ -210,7 +209,7 @@
     });
 
     const eventRows = computed(() => {
-        return getRowsForEvents(dayEvents.value, props.weekInfo.days);
+        return getRowsForEvents(dayEvents.value, props.weekInfo);
     });
 
     const getCardStyle = (event: IEvent, index: number) => {
@@ -218,7 +217,7 @@
         const width = (100 / 7) * daysInEvent;
         // add extra 24 to include white space at top for new event creation
         const top = ((eventRows.value[index]) * 24) + 24;
-        const leftMultiplier = props.weekInfo.days.findIndex((dayInfo) => dayInfo.day === event.start.day);
+        const leftMultiplier = props.weekInfo.findIndex((date) => date.getDate() === event.start.day);
         const left = (100 / 7) * leftMultiplier;
 
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
@@ -253,7 +252,7 @@
     const onTimeMouseUp = (dayIndex: number) => {
         const times = getTimesFromItems();
 
-        const { day, year, month } = props.weekInfo.days[dayIndex];
+        const { day, year, month } = getDayInfoFromDate(props.weekInfo[dayIndex]);
 
         const startYMD = {
             year,
@@ -290,15 +289,15 @@
 
         const times = { start: 0, end: 0 };
 
-        const startDay = props.weekInfo.days[selectedItems.value[0]];
-        const endDay = props.weekInfo.days[selectedItems.value[selectedItems.value.length - 1]];
+        const startDay = getDayInfoFromDate(props.weekInfo[selectedItems.value[0]]);
+        const endDay = getDayInfoFromDate(props.weekInfo[selectedItems.value[selectedItems.value.length - 1]]);
 
         emitCreateEvent(times, startDay, endDay);
         onMouseUp();
     };
 
     const onDateClicked = (index: number) => {
-        emit('dateClicked', { day: props.weekInfo.days[index].day, week: props.weekInfo.weekNumber });
+        emit('dateClicked', { day: props.weekInfo[index].getDate(), week: props.index });
     };
 
     const onEventClicked = (index: number) => {
@@ -315,7 +314,6 @@
     }
 
     onMounted(() => {
-        console.log(`WeekLayoutonMounted, weekInfo = `, props.weekInfo);
         initHourIndices();
     });
 </script>

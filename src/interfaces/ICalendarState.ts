@@ -9,7 +9,9 @@ export interface IBaseCalendarState {
     day: number;
 }
 
+export type Dictionary<T> = { [key: string]: T; };
+
 export default interface ICalendarState extends IBaseCalendarState {
     monthInfo: IMonthInfo;
-    yearData: IYearData[];
+    yearData: Dictionary<IYearData>;
 }
