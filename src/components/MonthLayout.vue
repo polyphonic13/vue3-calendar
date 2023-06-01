@@ -37,6 +37,7 @@
         year: number;
         month: number;
         monthData: IMonthData;
+        weekData: Date[][];
     }
 
     const props: IMonthProps = defineProps<IMonthProps>();
