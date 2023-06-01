@@ -79,14 +79,10 @@
 }
 
 @mixin event_cards {
-    // position: absolute;
-
-    // overflow: scroll;
     overflow: hidden;
 }
 
 @mixin event_cards--expanded {
-    // background-color: $greyscale01;
     overflow: visible;
 }
 

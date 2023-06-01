@@ -34,7 +34,7 @@
                 placeholder="Add Title"
                 :disabled="isEditingDisabled"
                 v-model="props.event!.title"
-                @keydown.stop="onInputKeyDown"
+                @keydown.stop="onTitleInputKeydown"
             />
             <div class="event__date_and_time">
                 <div>
@@ -71,7 +71,7 @@
 <script setup lang="ts">
     import { ref, computed, onMounted, nextTick } from 'vue';
 
-    import type { IEvent, IYearMonthDay } from '@/interfaces';
+    import type { IEvent } from '@/interfaces';
     import { useEventStore } from '@/stores/events';
     import { useDateUtils } from '@/composables/use-date-utils';
 
@@ -160,7 +160,7 @@
         close();
     };
 
-    const onInputKeyDown = (event: KeyboardEvent) => {
+    const onTitleInputKeydown = (event: KeyboardEvent) => {
         const key = event.key.toLowerCase();
 
         if (key !== 'enter' && key !== 'return' && key !== 'escape' && key !== 'delete') {
@@ -291,12 +291,14 @@
 
         padding: 8px;
 
+        background-color: $transparentGrey01;
         border: none;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid $borderColor01;
         outline: none;
     }
 
     .event__title:disabled {
+        background-color: transparent;
         border: none;
     }
 

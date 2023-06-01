@@ -130,9 +130,8 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const setInfoToToday = () => {
-        // state.value.todayIndices = getTodayIndices(state.value.yearData[state.value.year]);
         const { month, week, day } = state.value.todayIndices;
-        console.log(`todayIndices = ${JSON.stringify(state.value.todayIndices)}`);
+
         state.value = {
             ...state.value,
             month,
