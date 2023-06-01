@@ -1,5 +1,5 @@
 import type { CalendarLayout } from '@/enum/CalendarLayout';
-import type { IMonthInfo, IYearData } from '.';
+import type { IDateIndices, IMonthInfo, IYearData } from '.';
 
 export interface IBaseCalendarState {
     layout: CalendarLayout;
@@ -12,6 +12,6 @@ export interface IBaseCalendarState {
 export type Dictionary<T> = { [key: string]: T; };
 
 export default interface ICalendarState extends IBaseCalendarState {
-    monthInfo: IMonthInfo;
+    todayIndices: IDateIndices;
     yearData: Dictionary<IYearData>;
 }

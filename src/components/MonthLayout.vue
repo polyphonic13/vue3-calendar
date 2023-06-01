@@ -1,21 +1,21 @@
 <template>
-    <div v-if="props.monthInfo" class="month">
+    <div v-if="props.monthData" class="month">
         <DaysOfWeekNames />
         <div class="week">
             <DayOfMonth
-                v-for="(day, i) in props.monthInfo.days"
-                :key="`${props.year}${props.month}${day.date}${i}`"
+                v-for="(day, i) in props.monthData.days"
+                :key="`${props.year}${props.month}${day.getDate()}${i}`"
                 :index="i"
                 :year="props.year"
-                :month="day.month"
+                :month="day.getMonth()"
                 :currentMonth="props.month"
-                :day="day.date"
+                :day="day.getDate()"
                 :is-selecting="isSelecting"
                 :is-selected="selectedItems.includes(i)"
                 @date-clicked="onDateClicked(i)"
                 @day-on-mouse-down="onMouseDown"
                 @day-on-mouse-over="onMouseOver"
-                @day-on-mouse-up="onAddEventForDay(i)"
+                @day-on-mouse-up="onAddEventForDay"
             />
         </div>
     </div>
@@ -24,22 +24,19 @@
 <script setup lang="ts">
     import { toRef, watch, onMounted } from 'vue';
 
-    import type {
-        IDayInfo,
-        IEvent,
-        IMonthInfo,
-    } from '@/interfaces';
+    import type { IEvent, IMonthData, IYearMonthDayTime } from '@/interfaces';
 
     import DayOfMonth from './DayOfMonth.vue';
     import DaysOfWeekNames from './DaysOfWeekNames.vue';
 
     import { TIMES_IN_DAY } from '@/composables/use-date-utils';
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
+    import { useCalendarStore } from '@/stores/calendar';
 
     interface IMonthProps {
         year: number;
         month: number;
-        monthInfo: IMonthInfo | undefined;
+        monthData: IMonthData;
     }
 
     const props: IMonthProps = defineProps<IMonthProps>();
@@ -52,35 +49,39 @@
         onMouseUp,
     } = useMouseItemSelect();
 
+    const { getWeekForDate } = useCalendarStore();
+
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
 
     const emit = defineEmits(['addEvent', 'dateClicked']);
 
     const initAllDays = () => {
-        if (!props.monthInfo) {
+        if (!props.monthData) {
             return;
         }
-        initIndices<IDayInfo>(props.monthInfo.days);
+        initIndices<Date>(props.monthData.days);
     };
 
-    const onAddEventForDay = (index: number) => {
-        if (!props.monthInfo) {
+    const getYearMonthDateTime = (date: Date, time: number): IYearMonthDayTime => {
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+            time,
+        };
+    };
+
+    const onAddEventForDay = () => {
+        if (!props.monthData) {
             return;
         }
-        const times = { start: 0, end: TIMES_IN_DAY.length - 1 };
-        const start = props.monthInfo.days[selectedItems.value[0]].date;
-        const end = props.monthInfo.days[selectedItems.value[selectedItems.value.length - 1]].date;
-        const { month, year } = props;
+        const start = getYearMonthDateTime(props.monthData.days[selectedItems.value[0]], 0);
+        const end = getYearMonthDateTime(props.monthData.days[selectedItems.value[selectedItems.value.length - 1]], TIMES_IN_DAY.length - 1);
 
         const event: Partial<IEvent> = {
-            times,
-            dates: {
-                start,
-                end,
-            },
-            month,
-            year,
+            start,
+            end,
         };
 
         emit('addEvent', event);
@@ -89,22 +90,14 @@
     };
 
     const onDateClicked = (index: number) => {
-        if (!props.monthInfo) {
+        if (!props.monthData) {
             console.warn(`WARNING: no month info present`);
             return;
         }
 
-        const date = props.monthInfo.days[index].date;
-        let week = -1;
-        let day = -1;
-        for (let w = 0; w < props.monthInfo.weeks.length; w++) {
-            for (let d = 0; d < props.monthInfo.weeks[w].days.length; d++) {
-                if (props.monthInfo.weeks[w].days[d].date === date) {
-                    week = w;
-                    day = d;
-                }
-            }
-        }
+        const target = props.monthData.days[index];
+        const day = target.getDate();
+        const week = getWeekForDate(target);
 
         if (week === -1 || day === -1) {
             console.warn(`WARNING: could not find week containing date ${day}`);

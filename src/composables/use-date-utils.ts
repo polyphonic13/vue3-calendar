@@ -87,7 +87,7 @@ export const TIMES_IN_DAY = [
 const MILLISECONDS_IN_DAY = 86400000;
 
 export function useDateUtils() {
-    const getWeeksForYear = (months: IMonthData[]) => {
+    const getWeekData = (months: IMonthData[]) => {
         const weeks: Date[][] = [];
 
         let week: Date[] = Array.from({ length: DAYS_OF_WEEK.length });
@@ -138,7 +138,7 @@ export function useDateUtils() {
         return weeks;
     };
 
-    const getAllDaysInMonth = (month: number, year: number) => {
+    const getMonthData = (month: number, year: number) => {
         return Array.from(
             { length: new Date(year, month, 0).getDate() },
             (_, i) => new Date(year, month - 1, i + 1)
@@ -147,14 +147,13 @@ export function useDateUtils() {
 
     const getYearData = (year: number): IYearData => {
         const months: IMonthData[] = [];
-        MONTH_NAMES.forEach((name, m) => {
+        MONTH_NAMES.forEach((_, m) => {
             months.push({
-                name,
-                days: getAllDaysInMonth(m + 1, year),
+                days: getMonthData(m + 1, year),
             });
         });
 
-        const weeks = getWeeksForYear(months);
+        const weeks = getWeekData(months);
 
         return {
             year,
@@ -163,193 +162,32 @@ export function useDateUtils() {
         };
     };
 
-    const getDaysInMonth = (year: number, month: number) => {
-        if (month !== 1) {
-            return DAYS_IN_MONTH[month];
-        }
-
-        // february
-        return (year % 4 === 0) ? 29 : 28;
-    }
-
-    const getTodayIndices = (monthInfo: IMonthInfo, year: number): IDateIndices => {
+    const getTodayIndices = (yearData: IYearData): IDateIndices => {
         const today = new Date();
-        if (year !== today.getFullYear()) {
-            // // console.log(`not the right year`);
-            return { month: -1, week: -1, day: -1 };
-        }
-
-        if (MONTH_NAMES[today.getMonth()] !== monthInfo.monthName) {
-            // // console.log(`not the right month`);
-            return { month: -1, week: -1, day: -1 };
-        }
-
-        let weekInfo: IWeekInfo;
-        const thisDate = today.getDate();
-        const thisMonth = today.getMonth();
-
-        for (let i = 0; i < monthInfo.weeks.length; i++) {
-            weekInfo = monthInfo.weeks[i];
-            for (let j = 0; j < weekInfo.days.length; j++) {
-                // // console.log(`\tweek ${i}, day ${j} date = ${weekInfo.days[j].date}`);
-                if (weekInfo.days[j].day === thisDate && weekInfo.days[j].month === thisMonth) {
-                    return { month: thisMonth, week: i, day: j };
-                }
-            }
-        }
-
-        return { month: -1, week: -1, day: -1 };
-    };
-
-    const getMonthInfoForToday = (): IMonthInfo => {
-        const today = new Date();
-        return getMonthInfo(today.getFullYear(), today.getMonth());
-    };
-
-    const getMonthInfo = (year: number, month: number): IMonthInfo => {
-        const monthInfo: IMonthInfo = {
-            year,
-            month,
-            monthName: MONTH_NAMES[month],
-            days: [],
-            weeks: [],
-            todayIndices: {
-                month: -1,
-                week: -1,
-                day: -1,
-            },
+        let todayIndices = {
+            month: -1,
+            week: -1,
+            day: -1,
         };
 
-        const lastDayOfMonth = getDaysInMonth(year, month);
-
-        let currentWeekStart = 1;
-        let currentLastMonth = month;
-        let weekInfo: IWeekInfo;
-        let lastDayInfo: IDayInfo;
-        let dayInfo: IDayInfo;
-
-        while (currentLastMonth === month) {
-            weekInfo = getDatesForWeeks(year, month, currentWeekStart);
-            monthInfo.weeks.push(weekInfo);
-
-            for (let i = 0; i < weekInfo.days.length; i++) {
-                dayInfo = weekInfo.days[i];
-
-                if (dayInfo.month === month && dayInfo.day >= lastDayOfMonth) {
-                    currentLastMonth++;
-                    break;
-                }
-            }
-
-            if (currentLastMonth > month) {
-                break;
-            }
-
-            lastDayInfo = weekInfo.days[weekInfo.days.length - 1];
-
-            currentWeekStart = lastDayInfo.day + 1;
-            currentLastMonth = lastDayInfo.month;
+        if (yearData.year !== today.getFullYear()) {
+            return todayIndices;
         }
 
-        monthInfo.todayIndices = getTodayIndices(monthInfo, year);
-
-        monthInfo.weeks.forEach((week) => {
-            week.days.forEach((day) => {
-                monthInfo.days.push(day);
+        yearData.weeks.forEach((week, w) => {
+            week.forEach((day) => {
+                if (day.getMonth() === today.getMonth() && day.getDate() === today.getDate()) {
+                    todayIndices = {
+                        month: day.getMonth(),
+                        week: w,
+                        day: day.getDay(),
+                    };
+                }
             });
         });
 
-        return monthInfo;
-    }
-
-    const getDatesForWeeks = (year: number, month: number, day: number): IWeekInfo => {
-        // console.log(`>>>>> getDatesForWeeks, args = ${year}, ${month}, ${date}`);
-        const target = new Date(year, month, day);
-        const dayOfWeek = target.getDay();
-        let days: IDayInfo[] = [];
-        const endOfMonth = getDaysInMonth(year, month);
-        const weekNumber = getWeekNumber(year, month, day);
-        // console.log(`\ttarget = `, target);
-        // console.log(`\tdayOfWeek = ${dayOfWeek}\n\tendOfMonth = ${endOfMonth}\n\tweekNumber = ${weekNumber}`);
-
-        if (dayOfWeek > 0) {
-            if (day === 1) {
-                // pad week from previous month
-                const previousMonth = (month > 0) ? month - 1 : MONTH_NAMES.length - 1;
-                const endDayOfPreviousMonth = getDaysInMonth(year, previousMonth);
-                let date = (endDayOfPreviousMonth - (dayOfWeek - 1));
-                // console.log(`\tendDayOfPreviousMonth = ${endDayOfPreviousMonth}, date now = ${date}`);
-
-                while (date < (endDayOfPreviousMonth + 1)) {
-                    days.push({
-                        day,
-                        month: previousMonth,
-                        year,
-                    });
-                    date++;
-                    // console.log(`\tdate now ${date}`);
-                }
-            } else {
-                // pad beginning of week with past days
-                let start = day - dayOfWeek;
-                while (start < day) {
-                    days.push({
-                        day: start,
-                        month,
-                        year,
-                    })
-                    start++;
-                }
-            }
-        }
-        // // console.log(`\tdate = ${date}`);
-        while (day < (endOfMonth + 1) && days.length < 7) {
-            days.push({
-                day,
-                month,
-                year,
-            });
-            day++;
-        }
-
-        if (days.length < 7) {
-            // add beginning days from next month
-            const nextMonth = (month < MONTH_NAMES.length - 1) ? month + 1 : 0;
-            day = 1;
-
-            while (days.length < 7) {
-                days.push({
-                    day,
-                    month: nextMonth,
-                    year,
-                });
-                day++;
-            }
-        }
-
-        days = days.map((day: IDayInfo, d: number) => {
-            return {
-                ...day,
-                dayName: SHORT_DAY_NAMES[d],
-                year,
-            };
-        });
-
-        // console.log(`\tdays.length = ${days.length}, days = ${JSON.stringify(days)}`);
-        const weekInfo: IWeekInfo = {
-            days,
-            weekNumber,
-        };
-
-        return weekInfo;
-    }
-
-    const getWeekNumber = (year: number, month: number, day: number) => {
-        const target = new Date(year, month, day);
-        const startOfYear = new Date(target.getFullYear(), 0, 1);
-        const week = Math.ceil((((target.getTime() - startOfYear.getTime()) / 86400000) + startOfYear.getDay() + 1) / 7);
-        return week;
-    }
+        return todayIndices;
+    };
 
     const getPrevWeek = (y: number, m: number, d: number): IYearMonthDay => {
         const current = new Date(y, m, d);
@@ -418,10 +256,7 @@ export function useDateUtils() {
 
     return {
         getYearData,
-        getMonthInfo,
-        getMonthInfoForToday,
-        getDatesForWeeks,
-        getWeekNumber,
+        getTodayIndices,
         getNextWeek,
         getPrevWeek,
         convertDateToYMD,

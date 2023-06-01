@@ -6,7 +6,7 @@
         <div class="header">
             <div class="header__content">
                 <span class="title">{{ headerTitle }}</span>
-                <span v-if="state.layout === CalendarLayout.WEEK && state.monthInfo">WEEK {{ state.month + 1 }}</span>
+                <span v-if="state.layout === CalendarLayout.WEEK">WEEK {{ state.week + 1 }}</span>
             </div>
             <div class="controls">
                 <button class="control__btn arrow_btn" @click="onPrevClicked">
@@ -24,15 +24,15 @@
         </div>
 
         <MonthLayout
-            v-if="state.layout === CalendarLayout.MONTH && state.monthInfo"
+            v-if="state.layout === CalendarLayout.MONTH"
             :year="state.year"
             :month="state.month"
-            :month-info="state.monthInfo"
+            :month-data="state.yearData[state.year].months[state.month]"
             @date-clicked="onDateClicked"
             @create-event="onCreateEvent"
         />
         <WeekLayout
-            v-if="state.layout === CalendarLayout.WEEK && state.monthInfo"
+            v-if="state.layout === CalendarLayout.WEEK"
             :year="state.year"
             :month="state.month"
             :index="state.week"
@@ -41,9 +41,9 @@
             @create-event="onCreateEvent"
         />
         <DayLayout
-            v-if="state.layout === CalendarLayout.DAY && state.monthInfo"
+            v-if="state.layout === CalendarLayout.DAY"
             :year="state.year"
-            :day-info="state.monthInfo.weeks[state.week].days[state.day]"
+            :day-info="state.yearData[state.year].weeks[state.week][state.day]"
             @create-event="onCreateEvent"
         />
         <EventModal

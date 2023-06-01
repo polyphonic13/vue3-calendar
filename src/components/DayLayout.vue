@@ -38,12 +38,12 @@
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
 
-    import { TIMES_IN_DAY } from '@/composables/use-date-utils';
+    import { DAYS_OF_WEEK, TIMES_IN_DAY } from '@/composables/use-date-utils';
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
 
     interface IDayLayoutProps {
         year: number;
-        dayInfo: IDayInfo;
+        dayInfo: Date;
     }
 
     const props: IDayLayoutProps = defineProps<IDayLayoutProps>();
@@ -65,14 +65,15 @@
 
     const emit = defineEmits(['addEvent']);
 
-    const dayName = computed(() => (props.dayInfo.dayName) ? props.dayInfo.dayName : '');
+    const dayName = computed(() => DAYS_OF_WEEK[props.dayInfo.getDay()]);
 
     const initHourIndices = () => {
         initIndices<string>(TIMES_IN_DAY);
     };
 
     const addEvent = (times: { start: number, end: number }) => {
-        const { date, month } = props.dayInfo;
+        const date = props.dayInfo.getDate();
+        const month = props.dayInfo.getMonth();
         const year = props.year;
 
         const event: Partial<IEvent> = {
