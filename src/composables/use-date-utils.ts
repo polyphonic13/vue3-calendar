@@ -1,9 +1,10 @@
 import type {
     IDateIndices,
     IDayInfo,
+    IMonthData,
     IMonthInfo,
-    INumberRange,
     IWeekInfo,
+    IYearData,
     IYearMonthDay,
 } from '../interfaces';
 
@@ -31,21 +32,6 @@ export const DAYS_IN_MONTH = [
     30,
     31,
 ];
-
-// export const MONTH_NAMES = [
-//     'January',
-//     'February',
-//     'March',
-//     'April',
-//     'May',
-//     'June',
-//     'July',
-//     'August',
-//     'September',
-//     'October',
-//     'November',
-//     'December'
-// ];
 
 export const MONTH_NAMES = Array.from({ length: 12 }, (_, i) => {
     return new Date(0, i).toLocaleString('en-US', { month: 'long' });
@@ -101,6 +87,83 @@ export const TIMES_IN_DAY = [
 const MILLISECONDS_IN_DAY = 86400000;
 
 export function useDateUtils() {
+    const getWeeksForYear = (months: IMonthData[]) => {
+        const weeks: Date[][] = [];
+
+        let week: Date[] = Array.from({ length: DAYS_OF_WEEK.length });
+        let day: Date;
+
+        for (let m = 0; m < months.length; m++) {
+            for (let d = 0; d < months[m].days.length; d++) {
+                day = months[m].days[d];
+                if (day.getDay() === 0 && d > 0) {
+                    weeks.push(week);
+                    week = Array.from({ length: DAYS_OF_WEEK.length });
+                }
+                week[day.getDay()] = day;
+            }
+        }
+
+        if (week[0]) {
+            weeks.push(week);
+        }
+
+        if (!weeks[0][0]) {
+            const previousYear = weeks[1][0].getFullYear() - 1;
+            const previousYearEnd = new Date(previousYear, MONTH_NAMES.length, 0);
+            let endOfYearDate = previousYearEnd.getDate();
+            const endOfYearDay = previousYearEnd.getDay();
+
+            for (let i = endOfYearDay; i >= 0; i--) {
+                day = new Date(previousYear, MONTH_NAMES.length - 1, endOfYearDate);
+                weeks[0][i] = day;
+                endOfYearDate--;
+            }
+        }
+
+        if (!weeks[weeks.length - 1][DAYS_OF_WEEK.length - 1]) {
+            console.log(`need to pad last week`);
+            const lastWeekIndex = weeks.length - 1;
+            const nextYear = weeks[lastWeekIndex][0].getFullYear() + 1;
+            const nextYearBeginning = new Date(nextYear, 0, 1);
+            let beginningOfYearDate = 1;
+            const beginningOfYearDay = nextYearBeginning.getDay();
+
+            for (let i = beginningOfYearDay; i < DAYS_OF_WEEK.length; i++) {
+                day = new Date(nextYear, 0, beginningOfYearDate);
+                weeks[lastWeekIndex][i] = day;
+                beginningOfYearDate++;
+            }
+
+        }
+        return weeks;
+    };
+
+    const getAllDaysInMonth = (month: number, year: number) => {
+        return Array.from(
+            { length: new Date(year, month, 0).getDate() },
+            (_, i) => new Date(year, month - 1, i + 1)
+        );
+    };
+
+    const getYearData = (year: number): IYearData => {
+        const months: IMonthData[] = [];
+        MONTH_NAMES.forEach((name, m) => {
+            months.push({
+                name,
+                days: getAllDaysInMonth(m + 1, year),
+            });
+        });
+
+        const weeks = getWeeksForYear(months);
+
+        return {
+            year,
+            months,
+            weeks,
+        };
+    };
+
     const getDaysInMonth = (year: number, month: number) => {
         if (month !== 1) {
             return DAYS_IN_MONTH[month];
@@ -355,6 +418,7 @@ export function useDateUtils() {
     };
 
     return {
+        getYearData,
         getMonthInfo,
         getMonthInfoForToday,
         getDatesForWeeks,

@@ -4,18 +4,20 @@ import { defineStore } from 'pinia';
 import { CalendarLayout } from '@/enum/CalendarLayout';
 
 import { useLocalStorage } from '@/composables/use-local-storage';
-import { useDateUtils, MONTH_NAMES } from '@/composables/use-date-utils';
+import { useDateUtils, MONTH_NAMES, DAYS_OF_WEEK } from '@/composables/use-date-utils';
 
 import type {
     IBaseCalendarState,
     ICalendarState,
+    IMonthData,
     IMonthInfo,
+    IYearData,
 } from '@/interfaces';
 
 const LOCAL_STORAGE_KEY = 'calendarAppCalendarData';
 
 const { load, save } = useLocalStorage();
-const { getMonthInfo, getMonthInfoForToday } = useDateUtils();
+const { getMonthInfo, getMonthInfoForToday, getYearData } = useDateUtils();
 
 export const useCalendarStore = defineStore('calendar', () => {
 
@@ -23,6 +25,10 @@ export const useCalendarStore = defineStore('calendar', () => {
 
     const createState = (): ICalendarState => {
         const savedState = load<IBaseCalendarState>(LOCAL_STORAGE_KEY);
+        const now = new Date();
+        const year = now.getFullYear();
+        const yearData = [getYearData(year)];
+
         let monthInfo;
 
         if (savedState) {
@@ -31,11 +37,10 @@ export const useCalendarStore = defineStore('calendar', () => {
             return {
                 ...savedState,
                 monthInfo,
+                yearData,
             };
         }
 
-        const now = new Date();
-        const year = now.getFullYear();
         const month = now.getMonth();
 
         monthInfo = getMonthInfo(year, month);
@@ -49,10 +54,12 @@ export const useCalendarStore = defineStore('calendar', () => {
             week,
             day,
             monthInfo,
+            yearData,
         }
     };
 
     const state = ref<ICalendarState>(createState());
+    console.log(`calendar state = `, state.value);
 
     const saveState = () => {
         const { year, month, week, day, layout } = state.value;
