@@ -17,7 +17,7 @@
                 @day-on-mouse-over="onMouseOver"
                 @day-on-mouse-up="onAddEventForDay"
             />
-        </div> -->
+        </div>
     </div>
 </template>
 

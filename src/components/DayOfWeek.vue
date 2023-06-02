@@ -269,11 +269,11 @@
         margin-bottom: 4px;
     }
 
-    .day_button {
+    .day_btn {
         @include circle_button;
     }
 
-    .day_button:hover {
+    .day_btn:hover {
         background-color: $primaryBg01Hover;
     }
 
@@ -298,7 +298,7 @@
             font-size: 0.75em;
         }
 
-        .day_button {
+        .day_btn {
             min-width: 24px;
             min-height: 24px;
 

@@ -5,7 +5,7 @@
         <div class="header">
             <span v-if="props.dayName !== ''" class="day_name">{{ props.dayName }}</span>
             <button
-                class="day_button"
+                class="day_btn"
                 :class="classes"
                 @click.stop="$emit('dateClicked', props.index)"
             >{{ props.day }}</button>
@@ -79,11 +79,11 @@
         margin-bottom: 4px;
     }
 
-    .day_button {
+    .day_btn {
         @include circle_button;
     }
 
-    .day_button:hover {
+    .day_btn:hover {
         @include circle_button--hover;
     }
 
@@ -104,7 +104,7 @@
     }
 
     @media screen and (max-width: 400px) {
-        .day_button {
+        .day_btn {
             @include circle_button--mobile;
         }
     }

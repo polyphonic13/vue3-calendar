@@ -5,7 +5,7 @@
     >
         <div class="day__header">
             <button
-                class="day_button"
+                class="day_btn"
                 :class="dayButtonClasses"
                 @click="$emit('dateClicked')"
             >{{ props.day }}</button>
@@ -142,11 +142,11 @@
         flex: 1;
     }
 
-    .day_button {
+    .day_btn {
         @include circle_button;
     }
 
-    .day_button:hover {
+    .day_btn:hover {
         @include circle_button--hover;
     }
 
@@ -159,7 +159,7 @@
     }
 
     @media screen and (max-width: 400px) {
-        .day_button {
+        .day_btn {
             @include circle_button--mobile;
         }
     }

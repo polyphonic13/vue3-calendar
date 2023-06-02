@@ -109,6 +109,7 @@
     import {
         TIMES_IN_DAY,
         DAYS_OF_WEEK,
+        useDateUtils,
     } from '@/composables/use-date-utils';
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
@@ -145,7 +146,9 @@
         getDaysInEventCount,
     } = useEventStore();
 
-    const { getRowsForEvents, getDayInfoFromDate } = useCalculateEventCardRows();
+    const { getRowsForEvents } = useCalculateEventCardRows();
+
+    const { getDayInfoFromDate } = useDateUtils();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');

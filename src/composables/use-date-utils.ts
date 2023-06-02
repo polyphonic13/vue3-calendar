@@ -87,6 +87,14 @@ export const TIMES_IN_DAY = [
 const MILLISECONDS_IN_DAY = 86400000;
 
 export function useDateUtils() {
+    const getDayInfoFromDate = (date: Date): IDayInfo => {
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+        };
+    };
+
     const getWeekData = (months: IMonthData[]) => {
         const weeks: Date[][] = [];
 
@@ -255,6 +263,7 @@ export function useDateUtils() {
     };
 
     return {
+        getDayInfoFromDate,
         getYearData,
         getTodayIndices,
         getNextWeek,

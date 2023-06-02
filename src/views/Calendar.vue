@@ -216,6 +216,7 @@
 
 <style scoped lang="scss">
     @import '../styles/global.scss';
+    @import '../styles/mixins.scss';
 
     .calendar {
         height: 100%;
@@ -286,18 +287,7 @@
     }
 
     .control__btn {
-        background: none;
-        border: none;
-
-        box-sizing: border-box;
-
-        margin: 0 4px 0 4px;
-
-        display: flex;
-        align-content: center;
-        justify-content: center;
-
-        cursor: pointer;
+        @include control__btn;
     }
 
     .arrow_btn {

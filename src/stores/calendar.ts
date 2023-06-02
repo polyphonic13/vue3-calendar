@@ -20,7 +20,7 @@ const { load, save } = useLocalStorage();
 
 export const useCalendarStore = defineStore('calendar', () => {
 
-    const getCurrentMonth = (month: number, yearData: IYearData) => {
+    const getDaysForMonth = (month: number, yearData: IYearData) => {
         const days: Date[] = [];
 
         yearData.weeks.forEach((week) => {
@@ -45,7 +45,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         yearData[year] = getYearData(year);
 
         const todayIndices = getTodayIndices(yearData[year]);
-        const currentMonth = getCurrentMonth(month, yearData[year]);
+        const currentMonth = getDaysForMonth(month, yearData[year]);
 
 
         if (savedState) {
@@ -117,7 +117,7 @@ export const useCalendarStore = defineStore('calendar', () => {
 
     const setMonth = (index: number) => {
         state.value.month = index;
-        state.value.currentMonth = getCurrentMonth(index, getCurrentYear());
+        state.value.currentMonth = getDaysForMonth(index, getCurrentYear());
         saveState();
     };
 
@@ -126,7 +126,7 @@ export const useCalendarStore = defineStore('calendar', () => {
             state.value.yearData[year] = getYearData(year);
         }
 
-        return state.value.yearData[year].months[month];
+        return getDaysForMonth(month, state.value.yearData[year]);
     };
 
     const setWeek = (index: number) => {

@@ -1,6 +1,8 @@
 import type { IDayInfo, IEvent } from '@/interfaces';
+import { useDateUtils } from './use-date-utils';
 
 export function useCalculateEventCardRows() {
+    const { getDayInfoFromDate } = useDateUtils();
 
     const createGrid = (x: number, y: number) => {
         const grid: boolean[][] = [];
@@ -44,14 +46,6 @@ export function useCalculateEventCardRows() {
         return grid;
     };
 
-    const getDayInfoFromDate = (date: Date): IDayInfo => {
-        return {
-            year: date.getFullYear(),
-            month: date.getMonth(),
-            day: date.getDate(),
-        };
-    };
-
     const getRowsForEvents = (events: IEvent[], dates: Date[]) => {
         const rows: number[] = [];
         const dayInfos = dates.map((date) => getDayInfoFromDate(date));
@@ -74,6 +68,5 @@ export function useCalculateEventCardRows() {
 
     return {
         getRowsForEvents,
-        getDayInfoFromDate,
     };
 }

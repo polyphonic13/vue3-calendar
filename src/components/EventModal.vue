@@ -37,14 +37,18 @@
                 @keydown.stop="onTitleInputKeydown"
             />
             <div class="event__date_and_time">
-                <div>
-                    <button class="date_selector__btn" :class="dateSelectorBtnClasses">{{ startDateString }}</button>
+                <div class="event__date">
+                    <DateSelector
+                        :is-editing="isEditing"
+                        :value="props.event!.start!"
+                        @date-selected="onStartDateSelected"
+                    />
                     <span v-if="!isSameDayEvent"> - </span>
-                    <button
-                        v-if="!isSameDayEvent"
-                        class="date_selector__btn"
-                        :class="dateSelectorBtnClasses"
-                    >{{ endDateString }}</button>
+                    <DateSelector
+                        :is-editing="isEditing"
+                        :value="props.event!.end!"
+                        @date-selected="onEndDateSelected"
+                    />
                 </div>
                 <span v-if="!isFullDayEvent">{{ convertNumberToTimeString(props.event!.start!.time) }} - {{ convertNumberToTimeString(props.event!.end!.time) }}</span>
             </div>
@@ -76,7 +80,9 @@
     import { useEventStore } from '@/stores/events';
     import { useDateUtils } from '@/composables/use-date-utils';
 
-    const { convertNumberToTimeString, convertYMDToDateString } = useDateUtils();
+    import DateSelector from './fields/DateSelector.vue';
+
+    const { convertNumberToTimeString, getDayInfoFromDate } = useDateUtils();
 
     interface IEventModalProps {
         event?: Partial<IEvent> | null;
@@ -106,20 +112,6 @@
         return !isEditing.value && !props.isNew;
     });
 
-    const startDateString = computed(() => {
-        if (!props.event || !props.event.start) {
-            return '';
-        }
-        return convertYMDToDateString(props.event.start);
-    });
-
-    const endDateString = computed(() => {
-        if (!props.event || !props.event.end) {
-            return '';
-        }
-        return convertYMDToDateString(props.event.end);
-    });
-
     const isSameDayEvent = computed(() => {
         return getIsSameDayEvent();
     });
@@ -131,10 +123,6 @@
     const isSaveDisabled = computed(() => {
         return !props.event || !props.event.title || props.event.title === '';
     });
-
-    const dateSelectorBtnClasses = computed(() => ({
-        'date_selector__btn--enabled': (!isEditingDisabled.value),
-    }));
 
     const onEditClicked = (event: MouseEvent) => {
         event.stopPropagation();
@@ -155,6 +143,33 @@
 
     const onSaveClicked = () => {
         save();
+    };
+
+    const onStartDateSelected = (date: Date) => {
+        if (!props.event || !props.event.start) {
+            return;
+        }
+
+        const dayInfo = getDayInfoFromDate(date);
+
+        props.event.start = {
+            ...props.event.start,
+            ...dayInfo,
+        };
+    };
+
+    const onEndDateSelected = (date: Date) => {
+        if (!props.event || !props.event.end) {
+            return;
+        }
+
+        const dayInfo = getDayInfoFromDate(date);
+
+        props.event.end = {
+            ...props.event.end,
+            ...dayInfo,
+        };
+        console.log(`onEndDateSelected, new end = ${JSON.stringify(props.event.end)}`);
     };
 
     const onCloseClicked = () => {
@@ -304,8 +319,18 @@
     }
 
     .event__date_and_time {
+        width: 100%;
         display: flex;
         justify-content: space-between;
+    }
+
+    .event__date {
+        display: flex;
+        align-items: center;
+
+        > * {
+            padding-right: 8px;
+        }
     }
 
     .event__description {
