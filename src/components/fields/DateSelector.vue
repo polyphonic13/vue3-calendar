@@ -59,13 +59,15 @@
 </script>
 
 <style scoped lang="scss">
-    @import "../../styles/variables.scss";
+    @import "../../styles/global.scss";
 
     .day_selector {
         width: 378px;
         height: 378px;
 
-        background-color: $greyscale01;
+        background-color: $primaryBg01;
+
+        box-shadow: $boxShadow01;
 
         position: absolute;
         z-index: 10000;

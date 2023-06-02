@@ -104,7 +104,7 @@
         display: flex;
         flex-direction: column;
 
-        background-color: $primary-bg01;
+        background-color: $primaryBg01;
 
         border-right: 1px solid $borderColor01;
         border-bottom: 1px solid $borderColor01;
@@ -113,7 +113,7 @@
     }
 
     .day__other_month {
-        background-color: $inactive-bg01;
+        background-color: $inactiveBg01;
     }
 
     .day__selecting {

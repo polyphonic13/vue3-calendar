@@ -38,9 +38,9 @@
     @import '../styles/global.scss';
 
     .control_center {
-        color: $secondary-color01;
-        background-color: $highlighted-color-primary;
-        box-shadow: $box-shadow02;
+        color: $secondaryColor01;
+        background-color: $highlightedColorPrimary;
+        box-shadow: $boxShadow02;
 
         padding: 8px;
         box-sizing: border-box;

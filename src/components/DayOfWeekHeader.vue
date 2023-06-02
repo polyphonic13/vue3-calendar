@@ -96,11 +96,11 @@
     }
 
     .current {
-        background-color: $highlighted-color-primary;
+        background-color: $highlightedColorPrimary;
     }
 
     .current:hover {
-        background-color: $highlighted-color-primary-hover;
+        background-color: $highlightedColorPrimaryHover;
     }
 
     @media screen and (max-width: 400px) {

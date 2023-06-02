@@ -2,28 +2,28 @@
 
 $borderColor01: $greyscale02;
 
-$primary-bg01: $greyscale01;
-$primary-bg01-hover: $transparentGrey04;
+$primaryBg01: $greyscale01;
+$primaryBg01Hover: $transparentGrey04;
 
-$secondary-bg01: $blue04;
-$secondary-bg02: $greyscale07;
-$secondary-bg03: $greyscale06;
+$secondaryBg01: $blue04;
+$secondaryBg02: $greyscale07;
+$secondaryBg03: $greyscale06;
 
-$secondary-color01: $blue06;
+$secondaryColor01: $blue06;
 
-$inactive-bg01: $transparentGrey02;
+$inactiveBg01: $transparentGrey02;
 
-$highlighted-color-primary: $blue01;
-$highlighted-color-primary-hover: $blue02;
+$highlightedColorPrimary: $blue01;
+$highlightedColorPrimaryHover: $blue02;
 
-$selecting-color-primary: $blue03;
+$selectingColorPrimary: $blue03;
 
 /* offset-x | offset-y | blur-radius | spread-radius | color */
-// layout selector, day of week event
-$box-shadow01: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+// layout selector, day of week event, date selector
+$boxShadow01: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
 // control center
-$box-shadow02: 0 3px 5px -1px rgba(18, 52, 86, 0.5), 0 6px 10px 0 rgba(18, 52, 86, 0.14),
+$boxShadow02: 0 3px 5px -1px rgba(18, 52, 86, 0.5), 0 6px 10px 0 rgba(18, 52, 86, 0.14),
     0 1px 18px 0 rgba(18, 52, 86, 0.12);
 // event modal
-$box-shadow03: 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12),
+$boxShadow03: 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12),
     0 11px 15px -7px rgba(0, 0, 0, 0.2);

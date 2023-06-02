@@ -1,7 +1,7 @@
 @import "./variables.scss";
 
 @mixin selected_item {
-    background-color: $selecting-color-primary;
+    background-color: $selectingColorPrimary;
 }
 
 @mixin flex_centered {
@@ -66,15 +66,15 @@
 }
 
 @mixin circle_button--hover {
-    background-color: $primary-bg01-hover;
+    background-color: $primaryBg01Hover;
 }
 
 @mixin circle_button--current {
-    background-color: $highlighted-color-primary;
+    background-color: $highlightedColorPrimary;
 }
 
 @mixin circle_button--current--hover {
-    background-color: $highlighted-color-primary-hover;
+    background-color: $highlightedColorPrimaryHover;
 }
 
 @mixin event_cards {
@@ -111,7 +111,7 @@
 }
 
 @mixin event_card--hover {
-    box-shadow: $box-shadow01;
+    box-shadow: $boxShadow01;
     background-color: $transparentGrey04;
 
     z-index: 100;

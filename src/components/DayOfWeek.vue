@@ -198,7 +198,7 @@
         min-width: 38px;
 
         font-size: 0.75em;
-        color: $secondary-bg03;
+        color: $secondaryBg03;
         user-select: none;
     }
 
@@ -274,20 +274,20 @@
     }
 
     .day_button:hover {
-        background-color: $primary-bg01-hover;
+        background-color: $primaryBg01Hover;
     }
 
     .current {
-        background-color: $highlighted-color-primary;
+        background-color: $highlightedColorPrimary;
     }
 
     .current:hover {
-        background-color: $highlighted-color-primary-hover;
+        background-color: $highlightedColorPrimaryHover;
 
     }
 
     .inactive {
-        color: $secondary-bg02;
+        color: $secondaryBg02;
         background-color: rgba(238, 238, 238, 0.5);
     }
 

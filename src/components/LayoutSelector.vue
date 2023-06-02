@@ -176,7 +176,7 @@
     }
 
     .layout_selector__list {
-        background-color: $primary-bg01;
+        background-color: $primaryBg01;
 
         width: 224px;
 
@@ -186,7 +186,7 @@
         padding: 8px;
         box-sizing: border-box;
 
-        box-shadow: $box-shadow01;
+        box-shadow: $boxShadow01;
 
         position: absolute;
         z-index: 100;
@@ -208,7 +208,7 @@
 
     .list__btn {
         min-width: 90px;
-        background-color: $primary-bg01;
+        background-color: $primaryBg01;
 
         padding: 8px;
         margin: 0 4px 0 4px;
@@ -230,7 +230,7 @@
     }
 
     .layout__btn {
-        background: $primary-bg01;
+        background: $primaryBg01;
         border: transparent;
 
         text-align: left;
@@ -239,7 +239,7 @@
     }
 
     .list__btn:hover, .layout__btn:hover {
-        background-color: $primary-bg01-hover;
+        background-color: $primaryBg01Hover;
     }
 
 </style>

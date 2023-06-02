@@ -187,10 +187,10 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        /* border: 1px solid #eee; */
+
         border-right: 1px solid $borderColor01;
 
-        color: $greyscale01;
+        color: $primaryBg01;
     }
 
     .day_list {

@@ -239,8 +239,8 @@
     @import '../styles/mixins.scss';
 
     .event_modal {
-        width: 500px;
-        height: 500px;
+        width: 512px;
+        height: 512px;
 
         left: 0;
         right: 0;
@@ -249,7 +249,7 @@
         margin: auto;
 
         background-color: $greyscale01;
-        box-shadow: $box-shadow03;
+        box-shadow: $boxShadow03;
 
         padding: 8px;
         box-sizing: border-box;
