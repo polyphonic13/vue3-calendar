@@ -6,12 +6,13 @@ export interface IBaseCalendarState {
     year: number;
     month: number;
     week: number;
-    day: number;
+    dayOfWeek: number;
 }
 
 export type Dictionary<T> = { [key: string]: T; };
 
 export default interface ICalendarState extends IBaseCalendarState {
     todayIndices: IDateIndices;
+    currentMonth: Date[];
     yearData: Dictionary<IYearData>;
 }

@@ -71,14 +71,11 @@
         align-items: center;
         justify-content: center;
 
-
-        font-size: 1.5em;
         text-align: center;
         user-select: none;
     }
 
     .day_name {
-        font-size: 0.66em;
         margin-bottom: 4px;
     }
 

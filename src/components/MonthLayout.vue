@@ -1,23 +1,23 @@
 <template>
-    <div v-if="props.monthData" class="month">
+    <div v-if="props.currentMonth" class="month">
         <DaysOfWeekNames />
         <div class="week">
             <DayOfMonth
-                v-for="(day, i) in props.monthData.days"
-                :key="`${props.year}${props.month}${day.getDate()}${i}`"
-                :index="i"
+                v-for="(day, d) in currentMonth"
+                :key="`${props.year}${props.month}${day.getDate()}${d}`"
+                :index="d"
                 :year="props.year"
                 :month="day.getMonth()"
                 :currentMonth="props.month"
                 :day="day.getDate()"
                 :is-selecting="isSelecting"
-                :is-selected="selectedItems.includes(i)"
-                @date-clicked="onDateClicked(i)"
+                :is-selected="selectedItems.includes(d)"
+                @date-clicked="onDateClicked(d)"
                 @day-on-mouse-down="onMouseDown"
                 @day-on-mouse-over="onMouseOver"
                 @day-on-mouse-up="onAddEventForDay"
             />
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -36,8 +36,7 @@
     interface IMonthProps {
         year: number;
         month: number;
-        monthData: IMonthData;
-        weekData: Date[][];
+        currentMonth: Date[];
     }
 
     const props: IMonthProps = defineProps<IMonthProps>();
@@ -58,10 +57,10 @@
     const emit = defineEmits(['addEvent', 'dateClicked']);
 
     const initAllDays = () => {
-        if (!props.monthData) {
+        if (!props.currentMonth) {
             return;
         }
-        initIndices<Date>(props.monthData.days);
+        initIndices<Date>(props.currentMonth);
     };
 
     const getYearMonthDateTime = (date: Date, time: number): IYearMonthDayTime => {
@@ -74,36 +73,31 @@
     };
 
     const onAddEventForDay = () => {
-        if (!props.monthData) {
+        if (!props.currentMonth) {
             return;
         }
-        const start = getYearMonthDateTime(props.monthData.days[selectedItems.value[0]], 0);
-        const end = getYearMonthDateTime(props.monthData.days[selectedItems.value[selectedItems.value.length - 1]], TIMES_IN_DAY.length - 1);
+        // const start = getYearMonthDateTime(props.currentMonth[selectedItems.value[0]], 0);
+        // const end = getYearMonthDateTime(props.currentMonth[selectedItems.value[selectedItems.value.length - 1]], TIMES_IN_DAY.length - 1);
 
-        const event: Partial<IEvent> = {
-            start,
-            end,
-        };
+        // const event: Partial<IEvent> = {
+        //     start,
+        //     end,
+        // };
 
-        emit('addEvent', event);
+        // emit('addEvent', event);
 
         onMouseUp();
     };
 
     const onDateClicked = (index: number) => {
-        if (!props.monthData) {
+        if (!props.currentMonth) {
             console.warn(`WARNING: no month info present`);
             return;
         }
 
-        const target = props.monthData.days[index];
+        const target = props.currentMonth[index];
         const day = target.getDate();
         const week = getWeekForDate(target);
-
-        if (week === -1 || day === -1) {
-            console.warn(`WARNING: could not find week containing date ${day}`);
-            return;
-        }
 
         emit('dateClicked', { day, week });
     };

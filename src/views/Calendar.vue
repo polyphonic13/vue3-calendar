@@ -27,7 +27,7 @@
             v-if="state.layout === CalendarLayout.MONTH"
             :year="state.year"
             :month="state.month"
-            :month-data="state.yearData[state.year].months[state.month]"
+            :current-month="state.currentMonth"
             @date-clicked="onDateClicked"
             @create-event="onCreateEvent"
         />
@@ -43,7 +43,7 @@
         <DayLayout
             v-if="state.layout === CalendarLayout.DAY"
             :year="state.year"
-            :day-info="state.yearData[state.year].weeks[state.week][state.day]"
+            :day-info="state.yearData[state.year].weeks[state.week][state.dayOfWeek]"
             @create-event="onCreateEvent"
         />
         <EventModal
