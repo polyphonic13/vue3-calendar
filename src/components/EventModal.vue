@@ -60,6 +60,7 @@
         <div class="event_model__footer">
             <span></span>
             <button
+                v-if="isEditing"
                 class="save_button"
                 :disabled="isSaveDisabled"
                 @click="onSaveClicked"

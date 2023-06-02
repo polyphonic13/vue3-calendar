@@ -121,6 +121,14 @@ export const useCalendarStore = defineStore('calendar', () => {
         saveState();
     };
 
+    const getMonthForYear = (year: number, month: number) => {
+        if (!state.value.yearData[year]) {
+            state.value.yearData[year] = getYearData(year);
+        }
+
+        return state.value.yearData[year].months[month];
+    };
+
     const setWeek = (index: number) => {
         state.value.week = index;
         saveState();
@@ -332,6 +340,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         state,
         setLayout,
         setMonth,
+        getMonthForYear,
         setWeek,
         getWeekForDate,
         setDay,
