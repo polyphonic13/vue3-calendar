@@ -317,6 +317,7 @@
     }
 
     onMounted(() => {
+        console.log(`WeekLayout/onMounded, weekEvents = `, weekEvents.value);
         initHourIndices();
     });
 </script>

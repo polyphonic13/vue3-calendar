@@ -77,7 +77,7 @@ export const useEventStore = defineStore('eventStore', () => {
         };
 
         const events = state.value.events.filter((event: IEvent) => {
-            if (getAreDatesWithinRange(event.start, event.end, start, end)) {
+            if (getAreDatesWithinRange(event.start, event.end, start, end, true)) {
                 return event;
             }
         });

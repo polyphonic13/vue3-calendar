@@ -241,13 +241,17 @@ export function useDateUtils() {
         return `${DAYS_OF_WEEK[date.getDay()]}, ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
     };
 
-    const getAreDatesWithinRange = (startDate: IYearMonthDay, endDate: IYearMonthDay, rangeStart: IYearMonthDay, rangeEnd: IYearMonthDay) => {
-        const rStart = new Date(rangeStart.year, rangeStart.month, rangeStart.day).getTime();
-        const rEnd = new Date(rangeEnd.year, rangeEnd.month, rangeEnd.day).getTime();
+    const getAreDatesWithinRange = (startDate: IYearMonthDay, endDate: IYearMonthDay, rangeStart: IYearMonthDay, rangeEnd: IYearMonthDay, isGreedy: boolean = false) => {
         const vStart = new Date(startDate.year, startDate.month, startDate.day).getTime();
         const vEnd = new Date(endDate.year, endDate.month, endDate.day).getTime();
+        const rStart = new Date(rangeStart.year, rangeStart.month, rangeStart.day).getTime();
+        const rEnd = new Date(rangeEnd.year, rangeEnd.month, rangeEnd.day).getTime();
 
-        return (vStart >= rStart && vEnd <= rEnd);
+        if (!isGreedy) {
+            return (vStart >= rStart && vEnd <= rEnd);
+        }
+
+        return ((vEnd >= rStart && vEnd <= rEnd) || (vStart <= rEnd && vStart >= rStart));
     };
 
     const getDifferenceInDays = (start: IYearMonthDay, end: IYearMonthDay) => {
