@@ -143,12 +143,12 @@
     const {
         getEventsForRange,
         viewEvent,
-        getDaysInEventCount,
+        getDaysInEventInDateRangeCount,
     } = useEventStore();
 
     const { getRowsForEvents } = useCalculateEventCardRows();
 
-    const { getDayInfoFromDate } = useDateUtils();
+    const { getYMDFromDate } = useDateUtils();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -216,11 +216,15 @@
     });
 
     const getCardStyle = (event: IEvent, index: number) => {
-        const daysInEvent = getDaysInEventCount(event);
+        const daysInEvent = getDaysInEventInDateRangeCount(event, props.weekInfo[0], props.weekInfo[props.weekInfo.length -1]);
+        console.log(`days in event for ${event.title} = ${daysInEvent}`);
         const width = (100 / 7) * daysInEvent;
         // add extra 24 to include white space at top for new event creation
         const top = ((eventRows.value[index]) * 24) + 24;
-        const leftMultiplier = props.weekInfo.findIndex((date) => date.getDate() === event.start.day);
+        let leftMultiplier = props.weekInfo.findIndex((date) => date.getDate() === event.start.day);
+        if (leftMultiplier === -1) {
+            leftMultiplier = 0;
+        }
         const left = (100 / 7) * leftMultiplier;
 
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
@@ -255,7 +259,7 @@
     const onTimeMouseUp = (dayIndex: number) => {
         const times = getTimesFromItems();
 
-        const { day, year, month } = getDayInfoFromDate(props.weekInfo[dayIndex]);
+        const { day, year, month } = getYMDFromDate(props.weekInfo[dayIndex]);
 
         const startYMD = {
             year,
@@ -292,8 +296,8 @@
 
         const times = { start: 0, end: 0 };
 
-        const startDay = getDayInfoFromDate(props.weekInfo[selectedItems.value[0]]);
-        const endDay = getDayInfoFromDate(props.weekInfo[selectedItems.value[selectedItems.value.length - 1]]);
+        const startDay = getYMDFromDate(props.weekInfo[selectedItems.value[0]]);
+        const endDay = getYMDFromDate(props.weekInfo[selectedItems.value[selectedItems.value.length - 1]]);
 
         emitCreateEvent(times, startDay, endDay);
         onMouseUp();
@@ -317,7 +321,6 @@
     }
 
     onMounted(() => {
-        console.log(`WeekLayout/onMounded, weekEvents = `, weekEvents.value);
         initHourIndices();
     });
 </script>

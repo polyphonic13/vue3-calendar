@@ -87,7 +87,7 @@ export const TIMES_IN_DAY = [
 const MILLISECONDS_IN_DAY = 86400000;
 
 export function useDateUtils() {
-    const getDayInfoFromDate = (date: Date): IDayInfo => {
+    const getYMDFromDate = (date: Date): IYearMonthDay => {
         return {
             year: date.getFullYear(),
             month: date.getMonth(),
@@ -254,20 +254,27 @@ export function useDateUtils() {
         return ((vEnd >= rStart && vEnd <= rEnd) || (vStart <= rEnd && vStart >= rStart));
     };
 
-    const getDifferenceInDays = (start: IYearMonthDay, end: IYearMonthDay) => {
-        if (start.year === end.year && start.month === end.month) {
-            return end.day - start.day;
+    const getDifferenceInDays = (start: Date, end: Date, rStart?: Date, rEnd?: Date) => {
+        const startTime = start.getTime();
+        const endTime = end.getTime();
+
+        if (!rStart && !rEnd) {
+            const msDiff = end.getTime() - start.getTime();
+
+            return (msDiff / MILLISECONDS_IN_DAY);
         }
 
-        const startDate = new Date(start.year, start.month, start.day).getTime();
-        const endDate = new Date(end.year, end.month, end.day).getTime();
-        const msDiff = endDate - startDate;
+        const rStartTime = rStart!.getTime();
+        const rEndTime = rEnd!.getTime();
 
-        return (msDiff / MILLISECONDS_IN_DAY);
+        const s = (startTime > rStartTime) ? startTime : rStartTime;
+        const e = (endTime < rEndTime) ? endTime : rEndTime;
+
+        return ((e - s) / MILLISECONDS_IN_DAY);
     };
 
     return {
-        getDayInfoFromDate,
+        getYMDFromDate,
         getYearData,
         getTodayIndices,
         getNextWeek,

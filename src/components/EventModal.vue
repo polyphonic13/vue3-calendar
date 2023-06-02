@@ -82,7 +82,7 @@
 
     import DateSelector from './fields/DateSelector.vue';
 
-    const { convertNumberToTimeString, getDayInfoFromDate } = useDateUtils();
+    const { convertNumberToTimeString, getYMDFromDate } = useDateUtils();
 
     interface IEventModalProps {
         event?: Partial<IEvent> | null;
@@ -150,7 +150,7 @@
             return;
         }
 
-        const dayInfo = getDayInfoFromDate(date);
+        const dayInfo = getYMDFromDate(date);
 
         props.event.start = {
             ...props.event.start,
@@ -163,7 +163,7 @@
             return;
         }
 
-        const dayInfo = getDayInfoFromDate(date);
+        const dayInfo = getYMDFromDate(date);
 
         props.event.end = {
             ...props.event.end,

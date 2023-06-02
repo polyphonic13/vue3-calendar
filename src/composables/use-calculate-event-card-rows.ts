@@ -2,7 +2,7 @@ import type { IDayInfo, IEvent } from '@/interfaces';
 import { useDateUtils } from './use-date-utils';
 
 export function useCalculateEventCardRows() {
-    const { getDayInfoFromDate } = useDateUtils();
+    const { getYMDFromDate } = useDateUtils();
 
     const createGrid = (x: number, y: number) => {
         const grid: boolean[][] = [];
@@ -48,21 +48,40 @@ export function useCalculateEventCardRows() {
 
     const getRowsForEvents = (events: IEvent[], dates: Date[]) => {
         const rows: number[] = [];
-        const dayInfos = dates.map((date) => getDayInfoFromDate(date));
+        const dayInfos = dates.map((date) => getYMDFromDate(date));
+
+        const startDay = dayInfos[0].day;
+        const endDay = dayInfos[dayInfos.length - 1].day;
+        const clampedEvents = events.map((event) => {
+            const sDay = (event.start.day >= startDay) ? event.start.day : startDay;
+            const eDay = (event.end.day <= endDay) ? event.end.day : endDay;
+
+            return {
+                ...event,
+                start: {
+                    ...event.start,
+                    day: sDay,
+                },
+                end: {
+                    ...event.end,
+                    day: eDay,
+                }
+            };
+        });
 
         let grid: boolean[][] = createGrid(events.length, dates.length);
 
-        events.forEach((event) => {
-            // console.log(`event[ ${event.id} ] duration = ${event.dayCount}`);
+        clampedEvents.forEach((event) => {
+            console.log(`event[ ${event.id} ] duration = ${event.dayCount}`);
 
             dayInfos.forEach((dayInfo, d) => {
                 if (dayInfo.day === event.start.day) {
                     grid = populateGridForEvent(grid, event, d, rows);
-                    // console.log(`\tgrid now = ${JSON.stringify(grid)}`);
+                    console.log(`\tgrid now = ${JSON.stringify(grid)}`);
                 }
             });
         });
-
+        console.log(`getRowsForEvents, row = ${JSON.stringify(rows)}`);
         return rows;
     };
 

@@ -15,7 +15,11 @@ import type {
 const LOCAL_STORAGE_KEY = 'calendarAppEventData';
 
 const { load, save } = useLocalStorage();
-const { getDifferenceInDays, getAreDatesWithinRange } = useDateUtils();
+const {
+    getDifferenceInDays,
+    getAreDatesWithinRange,
+    getYMDFromDate,
+} = useDateUtils();
 
 export const useEventStore = defineStore('eventStore', () => {
     const createState = (): IEventState => {
@@ -225,10 +229,17 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getDaysInEventCount = (event: IEvent) => {
-        const start = event.start;
-        const end = event.end;
+        const start = new Date(event.start.year, event.start.month, event.start.day);
+        const end = new Date(event.end.year, event.end.month, event.end.day);
 
         return getDifferenceInDays(start, end) + 1;
+    };
+
+    const getDaysInEventInDateRangeCount = (event: IEvent, rangeStart: Date, rangeEnd: Date) => {
+        const start = new Date(event.start.year, event.start.month, event.start.day);
+        const end = new Date(event.end.year, event.end.month, event.end.day);
+
+        return getDifferenceInDays(start, end, rangeStart, rangeEnd) + 1;
     };
 
     return {
@@ -247,5 +258,6 @@ export const useEventStore = defineStore('eventStore', () => {
         getIsFullDayEvent,
         getIsSameDayEvent,
         getDaysInEventCount,
+        getDaysInEventInDateRangeCount,
     };
 });
