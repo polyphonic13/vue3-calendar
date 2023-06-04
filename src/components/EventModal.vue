@@ -39,13 +39,13 @@
             <div class="event__date_and_time">
                 <div class="event__date">
                     <DateSelector
-                        :is-editing="isEditing"
+                        :is-editing="isEditing || isNew"
                         :value="props.event!.start!"
                         @date-selected="onStartDateSelected"
                     />
                     <span v-if="!isSameDayEvent"> - </span>
                     <DateSelector
-                        :is-editing="isEditing"
+                        :is-editing="isEditing || isNew"
                         :value="props.event!.end!"
                         @date-selected="onEndDateSelected"
                     />
