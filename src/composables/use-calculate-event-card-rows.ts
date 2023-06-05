@@ -72,16 +72,16 @@ export function useCalculateEventCardRows() {
         let grid: boolean[][] = createGrid(events.length, dates.length);
 
         clampedEvents.forEach((event) => {
-            console.log(`event[ ${event.id} ] duration = ${event.dayCount}`);
+            // console.log(`event[ ${event.id} ] duration = ${event.dayCount}`);
 
             dayInfos.forEach((dayInfo, d) => {
                 if (dayInfo.day === event.start.day) {
                     grid = populateGridForEvent(grid, event, d, rows);
-                    console.log(`\tgrid now = ${JSON.stringify(grid)}`);
+                    // console.log(`\tgrid now = ${JSON.stringify(grid)}`);
                 }
             });
         });
-        console.log(`getRowsForEvents, row = ${JSON.stringify(rows)}`);
+        // console.log(`getRowsForEvents, row = ${JSON.stringify(rows)}`);
         return rows;
     };
 

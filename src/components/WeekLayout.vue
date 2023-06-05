@@ -217,7 +217,7 @@
 
     const getCardStyle = (event: IEvent, index: number) => {
         const daysInEvent = getDaysInEventInDateRangeCount(event, props.weekInfo[0], props.weekInfo[props.weekInfo.length -1]);
-        console.log(`days in event for ${event.title} = ${daysInEvent}`);
+        // console.log(`days in event for ${event.title} = ${daysInEvent}`);
         const width = (100 / 7) * daysInEvent;
         // add extra 24 to include white space at top for new event creation
         const top = ((eventRows.value[index]) * 24) + 24;
