@@ -108,7 +108,7 @@ export function useDateUtils() {
             for (let d = 0; d < months[m].days.length; d++) {
                 day = months[m].days[d];
 
-                if (day.getDay() === 0 && d > 0) {
+                if (day.getDay() === 0 && d > 0 || week.length === 7) {
                     // console.log(`\t\t\tfirst day or first day of week`);
                     weeks.push(week);
                     // week = Array.from({ length: DAYS_OF_WEEK.length });

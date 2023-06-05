@@ -25,7 +25,6 @@ export const useCalendarStore = defineStore('calendar', () => {
 
         yearData.weeks.forEach((week) => {
             if (week.findIndex((day: Date) => day.getMonth() === month && day.getFullYear() === yearData.year) > -1) {
-                console.log(`week = ${JSON.stringify(week)}`)
                 days = [...days, ...week];
             }
         });
@@ -218,7 +217,7 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const incrementYear = () => {
-        const year = state.value.year++;
+        const year = state.value.year + 1;
 
         if (!state.value.yearData[year]) {
             state.value.yearData[year] = getYearData(year);
@@ -231,7 +230,7 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const decrementYear = () => {
-        const year = state.value.year--;
+        const year = state.value.year - 1;
 
         if (!state.value.yearData[year]) {
             state.value.yearData[year] = getYearData(year);
