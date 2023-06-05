@@ -145,6 +145,8 @@
 
     .day_btn {
         @include circle_button;
+
+        font-size: 1.5em;
     }
 
     .day_btn:hover {

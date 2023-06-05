@@ -67,10 +67,11 @@ export const useCalendarStore = defineStore('calendar', () => {
     const createState = (): ICalendarState => {
         const savedState = load<IBaseCalendarState>(LOCAL_STORAGE_KEY);
         const today = new Date();
-        const year = today.getFullYear();
+
         const yearData: Dictionary<IYearData> = {};
 
         const month = (savedState) ? savedState.month : today.getMonth();
+        const year = (savedState) ? savedState.year : today.getFullYear();
 
         yearData[year] = getYearData(year);
 
@@ -194,11 +195,13 @@ export const useCalendarStore = defineStore('calendar', () => {
 
     const setInfoToToday = () => {
         const { month, week, day } = state.value.todayIndices;
+        const year = new Date().getFullYear();
 
         state.value = {
             ...state.value,
             month,
             week,
+            year,
             dayOfWeek: day,
         };
 
