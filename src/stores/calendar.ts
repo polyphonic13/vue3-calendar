@@ -24,11 +24,12 @@ export const useCalendarStore = defineStore('calendar', () => {
         let days: Date[] = [];
 
         yearData.weeks.forEach((week) => {
-            if (week.findIndex((day: Date) => day.getMonth() === month) > -1) {
+            if (week.findIndex((day: Date) => day.getMonth() === month && day.getFullYear() === yearData.year) > -1) {
+                console.log(`week = ${JSON.stringify(week)}`)
                 days = [...days, ...week];
             }
         });
-        // console.log(`days for ${month} = `, days);
+
         return days;
     };
 
