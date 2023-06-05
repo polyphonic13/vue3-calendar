@@ -21,17 +21,47 @@ const { load, save } = useLocalStorage();
 export const useCalendarStore = defineStore('calendar', () => {
 
     const getDaysForMonth = (month: number, yearData: IYearData) => {
-        const days: Date[] = [];
+        let days: Date[] = [];
 
         yearData.weeks.forEach((week) => {
             if (week.findIndex((day: Date) => day.getMonth() === month) > -1) {
-                week.forEach((day) => {
-                    days.push(day);
-                });
+                days = [...days, ...week];
+            }
+        });
+        // console.log(`days for ${month} = `, days);
+        return days;
+    };
+
+    const getWeeksForMonth = (month: number, year: number) => {
+        if (!state.value.yearData[year]) {
+            state.value.yearData[year] = getYearData(year);
+        }
+
+        const yearData = state.value.yearData[year];
+
+        let weeks: Date[][] = [];
+        let index = 0;
+        yearData.weeks.forEach((week, w) => {
+            if (week.findIndex((day) => day.getMonth() === month) > -1) {
+                weeks.push(week);
+                index = w;
             }
         });
 
-        return days;
+        if (weeks.length < 5) {
+            if (index < yearData.weeks.length - 1) {
+                index++;
+                weeks.push(yearData.weeks[index]);
+            } else {
+                const nextYear = year + 1;
+                if (!state.value.yearData[nextYear]) {
+                    state.value.yearData[nextYear] = getYearData(nextYear);
+                }
+                weeks.push(state.value.yearData[nextYear].weeks[0]);
+            }
+        }
+
+        return weeks;
     };
 
     const createState = (): ICalendarState => {
@@ -115,9 +145,9 @@ export const useCalendarStore = defineStore('calendar', () => {
         return state.value.yearData[state.value.year];
     };
 
-    const setMonth = (index: number) => {
-        state.value.month = index;
-        state.value.currentMonth = getDaysForMonth(index, getCurrentYear());
+    const setMonth = (value: number) => {
+        state.value.month = value;
+        state.value.currentMonth = getDaysForMonth(value, getCurrentYear());
         saveState();
     };
 
@@ -172,6 +202,8 @@ export const useCalendarStore = defineStore('calendar', () => {
             dayOfWeek: day,
         };
 
+        setMonth(month);
+
         saveState();
     };
 
@@ -192,7 +224,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         }
 
         state.value.year = year;
-        state.value.month = 0;
+        setMonth(0);
 
         saveState();
     };
@@ -205,7 +237,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         }
 
         state.value.year = year;
-        state.value.month = MONTH_NAMES.length - 1;
+        setMonth(MONTH_NAMES.length - 1);
 
         saveState();
     };
@@ -215,7 +247,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         state.value.dayOfWeek = 0;
 
         if (state.value.month < MONTH_NAMES.length - 1) {
-            state.value.month++;
+            setMonth(state.value.month + 1);
             saveState();
             return;
         }
@@ -227,7 +259,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         state.value.dayOfWeek = 0;
 
         if (state.value.month > 0) {
-            state.value.month--;
+            setMonth(state.value.month - 1);
             saveState();
             return;
         }
@@ -341,6 +373,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         setLayout,
         setMonth,
         getMonthForYear,
+        getWeeksForMonth,
         setWeek,
         getWeekForDate,
         setDay,

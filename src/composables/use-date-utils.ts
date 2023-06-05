@@ -96,23 +96,37 @@ export function useDateUtils() {
     };
 
     const getWeekData = (months: IMonthData[]) => {
+        // console.log(`GET MONTH DATA`);
         const weeks: Date[][] = [];
 
-        let week: Date[] = Array.from({ length: DAYS_OF_WEEK.length });
+        // let week: Date[] = Array.from({ length: DAYS_OF_WEEK.length });
+        let week: Date[] = [];
         let day: Date;
 
         for (let m = 0; m < months.length; m++) {
+            // console.log(`\tmonths[${m}]`)
             for (let d = 0; d < months[m].days.length; d++) {
                 day = months[m].days[d];
+
                 if (day.getDay() === 0 && d > 0) {
+                    // console.log(`\t\t\tfirst day or first day of week`);
                     weeks.push(week);
-                    week = Array.from({ length: DAYS_OF_WEEK.length });
+                    // week = Array.from({ length: DAYS_OF_WEEK.length });
+                    week = [];
                 }
-                week[day.getDay()] = day;
+
+                // console.log(`\t\tday[${d}] = `, day);
+                // week[day.getDay()] = day;
+                week.push(day);
+                // if (d === months[m].days.length - 1 && !!week[week.length - 1] && week.length === DAYS_OF_WEEK.length) {
+                //     console.log(`\t\t\t\tpushing week ending on a saturday`);
+                //     weeks.push(week);
+                // }
             }
         }
 
         if (week[0]) {
+            // console.log(`\t\t\tpushing week[0]`);
             weeks.push(week);
         }
 
@@ -141,8 +155,8 @@ export function useDateUtils() {
                 weeks[lastWeekIndex][i] = day;
                 beginningOfYearDate++;
             }
-
         }
+
         return weeks;
     };
 
@@ -272,6 +286,7 @@ export function useDateUtils() {
 
         return ((e - s) / MILLISECONDS_IN_DAY);
     };
+
 
     return {
         getYMDFromDate,

@@ -4,11 +4,12 @@
         <div class="week">
             <DayOfMonth
                 v-for="(day, d) in currentMonth"
-                :key="`${props.year}${props.month}${day.getDate()}${d}`"
+                :key="`${day.getFullYear()}${day.getMonth()}${day.getDate()}`"
                 :index="d"
                 :year="props.year"
                 :month="day.getMonth()"
                 :currentMonth="props.month"
+                :date="day"
                 :day="day.getDate()"
                 :is-selecting="isSelecting"
                 :is-selected="selectedItems.includes(d)"
@@ -24,12 +25,11 @@
 <script setup lang="ts">
     import { toRef, watch, onMounted } from 'vue';
 
-    import type { IEvent, IMonthData, IYearMonthDayTime } from '@/interfaces';
+    import type { IYearMonthDayTime } from '@/interfaces';
 
     import DayOfMonth from './DayOfMonth.vue';
     import DaysOfWeekNames from './DaysOfWeekNames.vue';
 
-    import { TIMES_IN_DAY } from '@/composables/use-date-utils';
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
     import { useCalendarStore } from '@/stores/calendar';
 
@@ -55,6 +55,10 @@
     const isSelecting = toRef(state, 'isSelecting');
 
     const emit = defineEmits(['addEvent', 'dateClicked']);
+
+    watch(() => props.month, () => {
+        initAllDays();
+    });
 
     const initAllDays = () => {
         if (!props.currentMonth) {
@@ -101,10 +105,6 @@
 
         emit('dateClicked', { day, week });
     };
-
-    watch(() => props.month, () => {
-        initAllDays();
-    });
 
     onMounted(() => {
         initAllDays();

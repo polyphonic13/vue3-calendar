@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-    import { reactive, watch, computed } from 'vue';
+    import { reactive, watch, computed, onMounted } from 'vue';
 
     interface IDayProps {
         index: number;
@@ -31,6 +31,7 @@
         month: number;
         currentMonth: number;
         day: number;
+        date: Date;
         isSelecting: boolean;
         isSelected: boolean;
     }

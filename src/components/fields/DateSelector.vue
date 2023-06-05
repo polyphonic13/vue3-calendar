@@ -35,9 +35,9 @@
                 >
                     <button
                         class="day_of_month__btn"
-                        :class="{ 'day_of_month__btn--other_month': (day.getMonth() !== month), 'day_of_month__btn--current': (day.getMonth() === value.month && day.getDate() === value.day)}"
+                        :class="{ 'day_of_month__btn--other_month': (day.getMonth() !== month), 'day_of_month__btn--current': (day.getMonth() === value.month && day.getDate() === value.day && day.getFullYear() === value.year)}"
                         @click="onDateClicked(d)"
-                    >{{  day.getDate() }}</button>
+                    >{{ day.getDate() }}</button>
                 </div>
             </div>
         </div>
@@ -45,12 +45,15 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted, ref } from 'vue';
-    import { useCalendarStore } from '@/stores/calendar';
-    import { MONTH_NAMES, useDateUtils } from '@/composables/use-date-utils';
+    import { computed, onMounted, ref, watch } from 'vue';
+
     import type { IYearMonthDay } from '@/interfaces';
 
-    const { getMonthForYear } = useCalendarStore();
+    import { useCalendarStore } from '@/stores/calendar';
+
+    import { MONTH_NAMES, useDateUtils } from '@/composables/use-date-utils';
+
+    const { getMonthForYear, getWeeksForMonth } = useCalendarStore();
     const { convertYMDToDateString } = useDateUtils();
 
     interface IDateSelectorProps {
@@ -122,9 +125,15 @@
         isModalOpen.value = false;
     };
 
+    watch(() => month.value, () => {
+        // console.log(`getWeeksForMonth = `, getWeeksForMonth(month.value, year.value));
+    });
+
     onMounted(() => {
         year.value = props.value.year;
         month.value = props.value.month;
+
+        // console.log(`getWeeksForMonth = `, getWeeksForMonth(month.value, year.value));
     })
 </script>
 
