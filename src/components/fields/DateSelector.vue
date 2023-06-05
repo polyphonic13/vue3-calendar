@@ -1,5 +1,5 @@
 <template>
-    <div class="date_selector">
+    <div class="date_selector" ref="dateSelector">
         <button
             class="date_selector__btn"
             :class="dateSelectorBtnClasses"
@@ -45,16 +45,18 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted, ref, watch } from 'vue';
+    import { computed, onMounted, ref } from 'vue';
 
     import type { IYearMonthDay } from '@/interfaces';
 
     import { useCalendarStore } from '@/stores/calendar';
 
     import { MONTH_NAMES, useDateUtils } from '@/composables/use-date-utils';
+    import { useDocumentClickListener } from '@/composables/use-document-click-listener';
 
-    const { getMonthForYear, getWeeksForMonth } = useCalendarStore();
+    const { getMonthForYear } = useCalendarStore();
     const { convertYMDToDateString } = useDateUtils();
+    const { addDocumentClickListener, removeDocumentClickListener } = useDocumentClickListener();
 
     interface IDateSelectorProps {
         isEditing: boolean;
@@ -67,6 +69,8 @@
 
     const year = ref(0);
     const month = ref(0);
+    const dateSelector = ref<HTMLElement | null>(null);
+
     const isModalOpen = ref(false);
 
     const dateSelectorBtnClasses = computed(() => ({
@@ -90,6 +94,8 @@
             return;
         }
         isModalOpen.value = true;
+
+        addDocumentClickListener(onDocumentClicked);
     };
 
     const onPreviousMonthClicked = () => {
@@ -125,16 +131,26 @@
         isModalOpen.value = false;
     };
 
-    watch(() => month.value, () => {
-        // console.log(`getWeeksForMonth = `, getWeeksForMonth(month.value, year.value));
-    });
+    const onDocumentClicked = (event: MouseEvent) => {
+        console.log(`onDocumentClicked`);
+        if (!dateSelector.value || !event.target) {
+            return;
+        }
+
+        const isChild = dateSelector.value.contains(event.target as Node);
+
+        if (isChild) {
+            return;
+        }
+        isModalOpen.value = false;
+        removeDocumentClickListener(onDocumentClicked);
+    };
 
     onMounted(() => {
+        console.log(`DateSelector/onMounted`);
         year.value = props.value.year;
         month.value = props.value.month;
-
-        // console.log(`getWeeksForMonth = `, getWeeksForMonth(month.value, year.value));
-    })
+    });
 </script>
 
 <style scoped lang="scss">
