@@ -53,8 +53,8 @@ export function useCalculateEventCardRows() {
         const startDay = dayInfos[0].day;
         const endDay = dayInfos[dayInfos.length - 1].day;
         const clampedEvents = events.map((event) => {
-            const sDay = (event.start.day >= startDay) ? event.start.day : startDay;
-            const eDay = (event.end.day <= endDay) ? event.end.day : endDay;
+            const sDay = (event.start.getDate() >= startDay) ? event.start.getDate() : startDay;
+            const eDay = (event.end.getDate() <= endDay) ? event.end.getDate() : endDay;
 
             return {
                 ...event,
@@ -77,11 +77,10 @@ export function useCalculateEventCardRows() {
             dayInfos.forEach((dayInfo, d) => {
                 if (dayInfo.day === event.start.day) {
                     grid = populateGridForEvent(grid, event, d, rows);
-                    // console.log(`\tgrid now = ${JSON.stringify(grid)}`);
                 }
             });
         });
-        // console.log(`getRowsForEvents, row = ${JSON.stringify(rows)}`);
+
         return rows;
     };
 

@@ -7,27 +7,45 @@ import { useDateUtils } from '@/composables/use-date-utils';
 import type {
     IEvent,
     IEventState,
-    INumberRange,
-    IYearMonthDay,
-    IYearMonthDayTime,
+    ISerializedEvent,
+    ISerializedEventState,
 } from '@/interfaces/';
 
 const LOCAL_STORAGE_KEY = 'calendarAppEventData';
 
 const { load, save } = useLocalStorage();
-const {
-    getDifferenceInDays,
-    getAreDatesWithinRange,
-    getYMDFromDate,
-} = useDateUtils();
+const { getDifferenceInDays, getAreDatesWithinRange } = useDateUtils();
 
 export const useEventStore = defineStore('eventStore', () => {
+    const deserializeEvents = (serialized: ISerializedEvent[]): IEvent[] => {
+        return serialized.map((event: ISerializedEvent) => {
+            return {
+                ...event,
+                start: new Date(event.start),
+                end: new Date(event.end),
+            };
+        });
+    };
+
+    const serializeEvents = (): ISerializedEvent[] => {
+        return state.value.events.map((event: IEvent) => {
+            return {
+                ...event,
+                start: event.start.toJSON(),
+                end: event.end.toJSON(),
+            };
+        });
+    };
+
     const createState = (): IEventState => {
-        const savedState = load<IEventState>(LOCAL_STORAGE_KEY);
+        const savedState = load<ISerializedEventState>(LOCAL_STORAGE_KEY);
 
         if (savedState) {
-            console.log(`EventStore/createState, savedState events = `, savedState.events);
-            return savedState;
+            return {
+                events: deserializeEvents(savedState.events),
+                isViewingEvent: false,
+                focusedEvent: null,
+            };
         }
 
         return {
@@ -38,28 +56,21 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const state = ref<IEventState>(createState());
+    console.log(`EventsStore/init, state = `, state.value);
 
     const eventFactory = (seed: Partial<IEvent>) => {
+        const today = new Date();
         const event: IEvent = {
-            id: Date.now(),
+            id: today.getTime(),
             title: '',
             description: '',
             location: '',
-            start: {
-                year: 0,
-                month: 0,
-                day: 0,
-                time: 0,
-            },
-            end: {
-                year: 1900,
-                month: 0,
-                day: 0,
-                time: 0,
-            },
+            start: today,
+            end: new Date(),
             dayCount: 0,
             ...seed,
         };
+        console.log(`eventFactory\nseed = `, seed, `\nevent = `, event);
         return event;
     };
 
@@ -68,20 +79,8 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getEventsForRange = (startDate: Date, endDate: Date, isSorted: boolean = true): IEvent[] => {
-        const start = {
-            year: startDate.getFullYear(),
-            month: startDate.getMonth(),
-            day: startDate.getDate(),
-        };
-
-        const end = {
-            year: endDate.getFullYear(),
-            month: endDate.getMonth(),
-            day: endDate.getDate(),
-        };
-
         const events = state.value.events.filter((event: IEvent) => {
-            if (getAreDatesWithinRange(event.start, event.end, start, end, true)) {
+            if (getAreDatesWithinRange(event.start, event.end, startDate, endDate, true)) {
                 return event;
             }
         });
@@ -91,40 +90,12 @@ export const useEventStore = defineStore('eventStore', () => {
         }
 
         return [...events].sort((a, b) => {
-            return new Date(a.start.year, a.start.month, a.start.day).getTime() - new Date(b.start.year, b.start.month, b.start.day).getTime();
+            return a.start.getTime() - b.start.getTime();
         });
     };
 
     const createEvent = (payload: Partial<IEvent>) => {
         state.value.focusedEvent = eventFactory(payload);
-    };
-
-    const createEventStartAndEnd = (times: INumberRange, day: number, month: number, year: number, dates?: INumberRange, months?: INumberRange, years?: INumberRange) => {
-        if (!state.value.focusedEvent) {
-            console.warn(`ERROR: can not init start/end on undefined focusedEvent`);
-            return;
-        }
-
-        const start: IYearMonthDayTime = {
-            year: (years) ? years.start : year,
-            month: (months) ? months.start : month,
-            day: (dates) ? dates.start : day,
-            time: times.start,
-        };
-
-        const end: IYearMonthDayTime = {
-            year: (years) ? years.end : year,
-            month: (months) ? months.end : month,
-            day: (dates) ? dates.end : day,
-            time: times.start,
-        };
-
-        const event: Partial<IEvent> = {
-            start,
-            end,
-        };
-
-        return event;
     };
 
     const addEvent = () => {
@@ -136,8 +107,8 @@ export const useEventStore = defineStore('eventStore', () => {
         const event: IEvent = eventFactory(state.value.focusedEvent);
         state.value.events.push(event);
         event.dayCount = getDaysInEventCount(event);
-        // console.log(`\tnew event = ${JSON.stringify(event)}`);
-        save<IEventState>(LOCAL_STORAGE_KEY, state.value);
+
+        saveEvents();
     };
 
     const viewEvent = (payload: Partial<IEvent>) => {
@@ -145,7 +116,10 @@ export const useEventStore = defineStore('eventStore', () => {
             console.warn(`ERROR: can not edit event without value id\n${JSON.stringify(payload)}`);
             return;
         }
-        state.value.focusedEvent = JSON.parse(JSON.stringify(payload));
+        const copy = JSON.parse(JSON.stringify(payload));
+        copy.start = new Date(copy.start);
+        copy.end = new Date(copy.end);
+        state.value.focusedEvent = copy;
         state.value.isViewingEvent = true;
     };
 
@@ -167,12 +141,11 @@ export const useEventStore = defineStore('eventStore', () => {
         }
 
         state.value.focusedEvent.dayCount = getDaysInEventCount(state.value.focusedEvent as IEvent);
-        console.log(`\tupdated event = ${JSON.stringify(state.value.focusedEvent)}`);
 
         state.value.events = state.value.events.map((event: IEvent) => {
             return (event.id === state.value.focusedEvent!.id) ? { ...event, ...state.value.focusedEvent! } : event;
         });
-        save<IEventState>(LOCAL_STORAGE_KEY, state.value);
+        saveEvents();
     };
 
     const deleteEvent = () => {
@@ -183,7 +156,7 @@ export const useEventStore = defineStore('eventStore', () => {
             return;
         }
         state.value.events = state.value.events.filter((event: IEvent) => event.id !== state.value.focusedEvent!.id);
-        save<IEventState>(LOCAL_STORAGE_KEY, state.value);
+        saveEvents();
     };
 
     const getisViewingEvent = () => {
@@ -198,18 +171,19 @@ export const useEventStore = defineStore('eventStore', () => {
         return state.value.focusedEvent;
     }
 
-    const getIsFullDayEvent = () => {
-        if (!state.value.focusedEvent) {
+    const getIsFullDayEvent = (event: Partial<IEvent>) => {
+        if (!event) {
             return true;
         }
 
-        const focusedEvent: Partial<IEvent> = state.value.focusedEvent;
-
-        if (!focusedEvent.start || !focusedEvent.end) {
+        if (!event.start || !event.end) {
             return true;
         }
 
-        return focusedEvent.start.time === 0 && focusedEvent.end.time === 0;
+        const startHour = event.start.getHours();
+        const endHour = event.end.getHours();
+
+        return startHour === 0 && endHour === 0;
     };
 
     const getIsSameDayEvent = () => {
@@ -223,30 +197,32 @@ export const useEventStore = defineStore('eventStore', () => {
             return true;
         }
 
-        return (focusedEvent.start.year === focusedEvent.end.year) &&
-            (focusedEvent.start.month === focusedEvent.end.month) &&
-            (focusedEvent.start.day === focusedEvent.end.day);
+        const { start, end } = focusedEvent;
+        console.log(`start = `, start, `\nend = `, end);
+        return true;
+        // return (start.getFullYear() === end.getFullYear()) && (start.getMonth() === end.getMonth()) && (start.getDate() === end.getDate());
     };
 
     const getDaysInEventCount = (event: IEvent) => {
-        const start = new Date(event.start.year, event.start.month, event.start.day);
-        const end = new Date(event.end.year, event.end.month, event.end.day);
-
-        return getDifferenceInDays(start, end) + 1;
+        return getDifferenceInDays(event.start, event.end) + 1;
     };
 
     const getDaysInEventInDateRangeCount = (event: IEvent, rangeStart: Date, rangeEnd: Date) => {
-        const start = new Date(event.start.year, event.start.month, event.start.day);
-        const end = new Date(event.end.year, event.end.month, event.end.day);
+        return getDifferenceInDays(event.start, event.end, rangeStart, rangeEnd) + 1;
+    };
 
-        return getDifferenceInDays(start, end, rangeStart, rangeEnd) + 1;
+    const saveEvents = () => {
+        const events = serializeEvents();
+        const serialized = {
+            events,
+        };
+        save<ISerializedEventState>(LOCAL_STORAGE_KEY, serialized);
     };
 
     return {
         getEvents,
         getEventsForRange,
         createEvent,
-        createEventStartAndEnd,
         addEvent,
         viewEvent,
         cancelEditEvent,

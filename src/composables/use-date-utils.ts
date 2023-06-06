@@ -223,17 +223,31 @@ export function useDateUtils() {
         return convertDateToYMD(result);
     };
 
-    const convertDateToYMD = (seed: Date): IYearMonthDay => {
-        const year = seed.getFullYear();
-        const month = seed.getMonth();
-        const day = seed.getDate();
+    const convertDateToYMD = (value: Date): IYearMonthDay => {
+        const year = value.getFullYear();
+        const month = value.getMonth();
+        const day = value.getDate();
         return {
             year,
             month,
             day,
         };
+    };
 
-    }
+    const convertDateToHHMM = (value: Date) => {
+        const localTimeString = value.toLocaleTimeString();
+
+        const spaceSplit = localTimeString.split(' ');
+        const colonSplit = localTimeString.split(':');
+        return `${colonSplit[0]}:${colonSplit[1]} ${spaceSplit[1]}`;
+    };
+
+    const convertDateTimeToNumber = (value: Date) => {
+        const hours = value.getHours();
+        const minutes = value.getMinutes();
+
+        return hours + (minutes / 60);
+    };
 
     const convertNumberToTimeString = (source: number) => {
         const suffix = (Math.floor(source) > 11) ? 'PM' : 'AM';
@@ -255,11 +269,11 @@ export function useDateUtils() {
         return `${DAYS_OF_WEEK[date.getDay()]}, ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
     };
 
-    const getAreDatesWithinRange = (startDate: IYearMonthDay, endDate: IYearMonthDay, rangeStart: IYearMonthDay, rangeEnd: IYearMonthDay, isGreedy: boolean = false) => {
-        const vStart = new Date(startDate.year, startDate.month, startDate.day).getTime();
-        const vEnd = new Date(endDate.year, endDate.month, endDate.day).getTime();
-        const rStart = new Date(rangeStart.year, rangeStart.month, rangeStart.day).getTime();
-        const rEnd = new Date(rangeEnd.year, rangeEnd.month, rangeEnd.day).getTime();
+    const getAreDatesWithinRange = (startDate: Date, endDate: Date, rangeStart: Date, rangeEnd: Date, isGreedy: boolean = false) => {
+        const vStart = startDate.getTime();
+        const vEnd = endDate.getTime();
+        const rStart = rangeStart.getTime();
+        const rEnd = rangeEnd.getTime();
 
         if (!isGreedy) {
             return (vStart >= rStart && vEnd <= rEnd);
@@ -287,8 +301,30 @@ export function useDateUtils() {
         return ((e - s) / MILLISECONDS_IN_DAY);
     };
 
-    const getDateFromYMD = (seed: IYearMonthDay) => {
-        return new Date(seed.year, seed.month, seed.day);
+    const getDateFromYMD = (value: IYearMonthDay) => {
+        return new Date(value.year, value.month, value.day);
+    };
+
+    const createDateFromDateAndHHMM = (value: Date, hours: number, minutes: number) => {
+        return new Date(
+            value.getFullYear(),
+            value.getMonth(),
+            value.getDate(),
+            hours,
+            minutes,
+        );
+    };
+
+
+    const getHHMMFromNumber = (value: number) => {
+        const hh = Math.floor(value);
+        const minMod = value - hh;
+        const mm = minMod * 60;
+
+        return {
+            hh,
+            mm,
+        };
     };
 
     return {
@@ -299,10 +335,14 @@ export function useDateUtils() {
         getNextWeek,
         getPrevWeek,
         convertDateToYMD,
+        convertDateToHHMM,
         convertNumberToTimeString,
         convertYMDToDateString,
+        convertDateTimeToNumber,
         getAreDatesWithinRange,
         getDifferenceInDays,
+        createDateFromDateAndHHMM,
+        getHHMMFromNumber,
     };
 
 }

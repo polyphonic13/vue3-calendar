@@ -76,7 +76,7 @@
                     :selected-items="selectedItems"
                     :current-initiator="currentInitiator"
                     :current-type="currentType"
-                    :events="hourlyEvents(d2)"
+                    :events="hourlyEvents(day)"
                     @time-on-mouse-down="onTimeMouseDown"
                     @time-on-mouse-over="onTimeMouseOver"
                     @time-on-mouse-up="onTimeMouseUp(d2)"
@@ -134,7 +134,7 @@
     const {
         state,
         initIndices,
-        getTimesFromItems,
+        getNumberValuesFromItems,
         onMouseDown,
         onMouseOver,
         onMouseUp,
@@ -142,13 +142,14 @@
 
     const {
         getEventsForRange,
+        getIsFullDayEvent,
         viewEvent,
         getDaysInEventInDateRangeCount,
     } = useEventStore();
 
     const { getRowsForEvents } = useCalculateEventCardRows();
 
-    const { getYMDFromDate } = useDateUtils();
+    const { getYMDFromDate, getHHMMFromNumber } = useDateUtils();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -198,17 +199,12 @@
         return getEventsForRange(days[0], days[days.length - 1]);
     });
 
-    const hourlyEvents = (index: number) => {
-        const day = props.weekInfo[index].getDate();
-        return weekEvents.value.filter((event) => {
-            if(event.start.day === day && event.start.time !== 0 && event.end.time !== 0) {
-                return event;
-            }
-        });
+    const hourlyEvents = (day: Date) => {
+        return weekEvents.value.filter((event) => !getIsFullDayEvent(event)).filter((event) => event.start.getDate() === day.getDate());
     };
 
     const dayEvents = computed(() => {
-        return weekEvents.value.filter((event) => event.start.time === 0 && event.end.time === 0);
+        return weekEvents.value.filter((event) => getIsFullDayEvent(event));
     });
 
     const eventRows = computed(() => {
@@ -221,7 +217,7 @@
         const width = (100 / 7) * daysInEvent;
         // add extra 24 to include white space at top for new event creation
         const top = ((eventRows.value[index]) * 24) + 24;
-        let leftMultiplier = props.weekInfo.findIndex((date) => date.getDate() === event.start.day);
+        let leftMultiplier = props.weekInfo.findIndex((date) => date.getDate() === event.start.getDate());
         if (leftMultiplier === -1) {
             leftMultiplier = 0;
         }
@@ -230,16 +226,10 @@
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
     };
 
-    const emitCreateEvent = (times: INumberRange, startYMD: IYearMonthDay, endYMD: IYearMonthDay) => {
+    const emitCreateEvent = (start: Date, end: Date) => {
         const seed = {
-            start: {
-                ...startYMD,
-                time: times.start,
-            },
-            end: {
-                ...endYMD,
-                time: times.end,
-            },
+            start,
+            end,
         };
 
         emit('createEvent', seed);
@@ -256,24 +246,19 @@
         onMouseOver(hour, isSecondHalf)
     };
 
+    const getDateFromTimes = (time: number, ymd: IYearMonthDay) => {
+        const { hh, mm } = getHHMMFromNumber(time);
+        return new Date(ymd.year, ymd.month, ymd.day, hh, mm);
+    };
+
     const onTimeMouseUp = (dayIndex: number) => {
-        const times = getTimesFromItems();
+        const times = getNumberValuesFromItems();
+        const { year, month, day } = getYMDFromDate(props.weekInfo[dayIndex]);
 
-        const { day, year, month } = getYMDFromDate(props.weekInfo[dayIndex]);
+        const start = getDateFromTimes(times.start, { year, month, day });
+        const end = getDateFromTimes(times.end, { year, month, day });
 
-        const startYMD = {
-            year,
-            month,
-            day,
-        };
-
-        const endYMD = {
-            year,
-            month,
-            day,
-        };
-
-        emitCreateEvent(times, startYMD, endYMD);
+        emitCreateEvent(start, end);
         onMouseUp();
     };
 
@@ -294,12 +279,13 @@
             return;
         }
 
-        const times = { start: 0, end: 0 };
-
         const startDay = getYMDFromDate(props.weekInfo[selectedItems.value[0]]);
         const endDay = getYMDFromDate(props.weekInfo[selectedItems.value[selectedItems.value.length - 1]]);
 
-        emitCreateEvent(times, startDay, endDay);
+        const start = getDateFromTimes(0, { ...startDay });
+        const end = getDateFromTimes(0, { ...endDay });
+
+        emitCreateEvent(start, end);
         onMouseUp();
     };
 

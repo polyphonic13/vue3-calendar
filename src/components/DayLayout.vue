@@ -51,7 +51,7 @@
     const {
         state,
         initIndices,
-        getTimesFromItems,
+        getNumberValuesFromItems,
         onMouseDown,
         onMouseOver,
         onMouseUp,
@@ -100,7 +100,7 @@
     };
 
     const onAddEventForTimes = (index: number) => {
-        addEvent(getTimesFromItems());
+        addEvent(getNumberValuesFromItems());
         onMouseUp();
     };
 

@@ -36,7 +36,7 @@ export function useMouseItemSelect() {
         }
     }
 
-    const getTimesFromItems = () => {
+    const getNumberValuesFromItems = () => {
         const start = (state.isStartOnSecondHalf) ? state.selectedItems[0] + 0.5 : state.selectedItems[0];
         const modifier = (state.isEndOnFirstHalf) ? 0.5 : 1;
         const end = state.selectedItems[state.selectedItems.length - 1] + modifier;
@@ -107,7 +107,7 @@ export function useMouseItemSelect() {
     return {
         state,
         initIndices,
-        getTimesFromItems,
+        getNumberValuesFromItems,
         onMouseDown,
         onMouseOver,
         onMouseUp,

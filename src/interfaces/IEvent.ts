@@ -1,11 +1,18 @@
-import type { IYearMonthDayTime } from '.';
-
-export default interface IEvent {
+export interface IBaseEvent {
     id: number;
-    start: IYearMonthDayTime;
-    end: IYearMonthDayTime;
     title: string;
     description: string;
     location: string;
     dayCount: number;
 }
+
+export interface ISerializedEvent extends IBaseEvent {
+    start: string;
+    end: string;
+}
+
+export default interface IEvent extends IBaseEvent {
+    start: Date;
+    end: Date;
+}
+

@@ -3,7 +3,9 @@ import type ICalendarState from './ICalendarState';
 import type IDateIndices from './IDateIndices';
 import type IDayInfo from './IDayInfo';
 import type IEvent from './IEvent';
+import type { IBaseEvent, ISerializedEvent } from './IEvent';
 import type IEventState from './IEventState';
+import type { ISerializedEventState } from './IEventState';
 import type IMonthData from './IMonthData';
 import type IMonthInfo from './IMonthInfo';
 import type INumberRange from './INumberRange';
@@ -16,6 +18,7 @@ import type IYearMonthDayTime from './IYearMonthDayTime';
 
 export type {
     IBaseCalendarState,
+    IBaseEvent,
     ICalendarState,
     IDateIndices,
     IDayInfo,
@@ -25,6 +28,8 @@ export type {
     IMonthInfo,
     INumberRange,
     ISavedAppData,
+    ISerializedEvent,
+    ISerializedEventState,
     IUIState,
     IWeekInfo,
     IYearData,

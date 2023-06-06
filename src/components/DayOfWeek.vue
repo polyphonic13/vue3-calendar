@@ -46,7 +46,7 @@
                             <b>{{ event.title }}</b>
                         </span>
                     </div>
-                    <div class="event_card__times">{{ convertNumberToTimeString(event.start.time) }} - {{ convertNumberToTimeString(event.end.time) }}</div>
+                    <div class="event_card__times">{{ convertDateToHHMM(event.start) }} - {{ convertDateToHHMM(event.end) }}</div>
                 </button>
             </div>
 
@@ -65,7 +65,7 @@
 
     const { viewEvent } = useEventStore();
 
-    const { convertNumberToTimeString } = useDateUtils();
+    const { convertDateToHHMM, convertDateTimeToNumber } = useDateUtils();
 
     interface IDayOfWeekProps {
         index: number;
@@ -101,8 +101,11 @@
             count = 0;
             offset = 0;
 
-            const height = (100/48) * ((event.end.time - event.start.time) * 2);
-            const top = (100/48) * (event.start.time * 2);
+            const startTime = convertDateTimeToNumber(event.start);
+            const endTime = convertDateTimeToNumber(event.end);
+
+            const height = (100/48) * ((endTime - startTime) * 2);
+            const top = (100/48) * (startTime * 2);
 
             offset = (count === 0) ? 0 : offset + 1;
 
@@ -112,7 +115,6 @@
                 top,
             };
         });
-
 
         return formatted;
     });

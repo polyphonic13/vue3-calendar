@@ -4,7 +4,7 @@
             class="date_selector__btn"
             :class="dateSelectorBtnClasses"
             @click="onDateSelectorBtnClicked"
-        >{{ dateString }}</button>
+        >{{ props.value.toDateString() }}</button>
         <div
             v-if="isModalOpen"
             class="date_selector__modal"
@@ -35,7 +35,7 @@
                 >
                     <button
                         class="day_of_month__btn"
-                        :class="{ 'day_of_month__btn--other_month': (day.getMonth() !== month), 'day_of_month__btn--current': (day.getMonth() === value.month && day.getDate() === value.day && day.getFullYear() === value.year)}"
+                        :class="{ 'day_of_month__btn--other_month': (day.getTime() === props.value.getTime())}"
                         @click="onDateClicked(d)"
                     >{{ day.getDate() }}</button>
                 </div>
@@ -47,20 +47,18 @@
 <script setup lang="ts">
     import { computed, onMounted, ref } from 'vue';
 
-    import type { IYearMonthDay } from '@/interfaces';
-
     import { useCalendarStore } from '@/stores/calendar';
 
-    import { MONTH_NAMES, useDateUtils } from '@/composables/use-date-utils';
+    import { MONTH_NAMES } from '@/composables/use-date-utils';
     import { useDocumentClickListener } from '@/composables/use-document-click-listener';
 
     const { getMonthForYear } = useCalendarStore();
-    const { convertYMDToDateString } = useDateUtils();
+
     const { addDocumentClickListener, removeDocumentClickListener } = useDocumentClickListener();
 
     interface IDateSelectorProps {
         isEditing: boolean;
-        value: IYearMonthDay;
+        value: Date;
     }
 
     const props = defineProps<IDateSelectorProps>();
@@ -76,10 +74,6 @@
     const dateSelectorBtnClasses = computed(() => ({
         'date_selector__btn--enabled': (props.isEditing),
     }));
-
-    const dateString = computed(() => {
-        return convertYMDToDateString(props.value);
-    });
 
     const modalHeaderString = computed(() => {
         return `${MONTH_NAMES[month.value]} ${year.value}`;
@@ -146,8 +140,8 @@
     };
 
     onMounted(() => {
-        year.value = props.value.year;
-        month.value = props.value.month;
+        year.value = props.value.getFullYear();
+        month.value = props.value.getMonth();
     });
 </script>
 

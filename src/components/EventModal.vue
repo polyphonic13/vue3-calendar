@@ -45,12 +45,13 @@
                     />
                     <span v-if="!isSameDayEvent"> - </span>
                     <DateSelector
+                        v-if="!isSameDayEvent"
                         :is-editing="isEditing || isNew"
                         :value="props.event!.end!"
                         @date-selected="onEndDateSelected"
                     />
                 </div>
-                <span v-if="!isFullDayEvent">{{ convertNumberToTimeString(props.event!.start!.time) }} - {{ convertNumberToTimeString(props.event!.end!.time) }}</span>
+                <span v-if="!isFullDayEvent">{{ convertDateToHHMM(props.event!.start!) }} - {{ convertDateToHHMM(props.event!.end!) }}</span>
             </div>
             <textarea
                 class="event__description"
@@ -83,9 +84,8 @@
     import DateSelector from './fields/DateSelector.vue';
 
     const {
-        convertNumberToTimeString,
-        getYMDFromDate,
-        getDateFromYMD,
+        createDateFromDateAndHHMM,
+        convertDateToHHMM,
     } = useDateUtils();
 
     interface IEventModalProps {
@@ -121,7 +121,11 @@
     });
 
     const isFullDayEvent = computed(() => {
-        return getIsFullDayEvent();
+        console.log(`EventModal/isFullDateEvent, props.event = `, props.event);
+        if (!props.event || !props.event.start || !props.event.end) {
+            return true;
+        }
+        return getIsFullDayEvent(props.event!);
     });
 
     const isSaveDisabled = computed(() => {
@@ -154,31 +158,21 @@
             return;
         }
 
-        const dayInfo = getYMDFromDate(date);
+        const start = createDateFromDateAndHHMM(date, props.event.start!.getHours(), props.event.start!.getMinutes());
 
-        props.event.start = {
-            ...props.event.start,
-            ...dayInfo,
-        };
+        props.event.start = start;
 
-
-        let end = props.event.end;
-
-        if (!end) {
+        if (!props.event.end) {
             return;
         }
 
-        const endDate = getDateFromYMD(end);
-
-        if (endDate > date) {
+        if (props.event.end.getTime() > date.getTime()) {
             return;
         }
 
-        props.event.end = {
-            ...end,
-            ...dayInfo,
-            day: dayInfo.day + 1,
-        };
+        const end = createDateFromDateAndHHMM(date, props.event.end!.getHours(), props.event.end!.getMinutes());
+
+        props.event.end = end;
     };
 
     const onEndDateSelected = (date: Date) => {
@@ -186,32 +180,21 @@
             return;
         }
 
-        const dayInfo = getYMDFromDate(date);
+        const end = createDateFromDateAndHHMM(date, props.event.end!.getHours(), props.event.end!.getMinutes());
 
-        props.event.end = {
-            ...props.event.end,
-            ...dayInfo,
-        };
+        props.event.end = end;
 
-        let start = props.event.start;
-
-        if (!start) {
+        if (!props.event.start) {
             return;
         }
 
-        const endDate = getDateFromYMD(start);
-
-        if (endDate < date) {
+        if (props.event.start!.getTime() < date.getTime()) {
             return;
         }
 
-        const day = dayInfo.day - 1;
+        const start = createDateFromDateAndHHMM(date, props.event.start!.getHours(), props.event.start!.getMinutes());
 
-        props.event.start = {
-            ...start,
-            ...dayInfo,
-            day,
-        };
+        props.event.start = start;
     };
 
     const onCloseClicked = () => {
