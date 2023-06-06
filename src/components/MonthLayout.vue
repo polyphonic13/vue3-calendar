@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-    import { toRef, watch, onMounted } from 'vue';
+    import { toRef, watch, onMounted, computed } from 'vue';
 
     import type { IYearMonthDayTime } from '@/interfaces';
 
@@ -32,6 +32,7 @@
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
     import { useCalendarStore } from '@/stores/calendar';
+    import { useEventStore } from '@/stores/events';
 
     interface IMonthProps {
         year: number;
@@ -51,6 +52,8 @@
 
     const { getWeekForDate } = useCalendarStore();
 
+    const { getEventsForRange } = useEventStore();
+
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
 
@@ -58,6 +61,10 @@
 
     watch(() => props.month, () => {
         initAllDays();
+    });
+
+    const monthEvents = computed(() => {
+        return getEventsForRange(props.currentMonth[0], props.currentMonth[props.currentMonth.length - 1]);
     });
 
     const initAllDays = () => {
@@ -108,6 +115,7 @@
 
     onMounted(() => {
         initAllDays();
+        console.log(`MonthLayout/onMounted, monthEvents = `, monthEvents.value);
     });
 </script>
 
