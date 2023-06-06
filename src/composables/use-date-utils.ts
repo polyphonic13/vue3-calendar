@@ -287,9 +287,13 @@ export function useDateUtils() {
         return ((e - s) / MILLISECONDS_IN_DAY);
     };
 
+    const getDateFromYMD = (seed: IYearMonthDay) => {
+        return new Date(seed.year, seed.month, seed.day);
+    };
 
     return {
         getYMDFromDate,
+        getDateFromYMD,
         getYearData,
         getTodayIndices,
         getNextWeek,

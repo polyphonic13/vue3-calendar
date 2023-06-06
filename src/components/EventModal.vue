@@ -82,7 +82,11 @@
 
     import DateSelector from './fields/DateSelector.vue';
 
-    const { convertNumberToTimeString, getYMDFromDate } = useDateUtils();
+    const {
+        convertNumberToTimeString,
+        getYMDFromDate,
+        getDateFromYMD,
+    } = useDateUtils();
 
     interface IEventModalProps {
         event?: Partial<IEvent> | null;
@@ -164,7 +168,9 @@
             return;
         }
 
-        if (end.year >= dayInfo.year && end.month >= dayInfo.month && end.day >= dayInfo.day) {
+        const endDate = getDateFromYMD(end);
+
+        if (endDate > date) {
             return;
         }
 
@@ -193,7 +199,9 @@
             return;
         }
 
-        if (start.year <= dayInfo.year && start.month <= dayInfo.month && start.day <= dayInfo.day) {
+        const endDate = getDateFromYMD(start);
+
+        if (endDate < date) {
             return;
         }
 
