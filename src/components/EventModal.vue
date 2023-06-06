@@ -156,6 +156,23 @@
             ...props.event.start,
             ...dayInfo,
         };
+
+
+        let end = props.event.end;
+
+        if (!end) {
+            return;
+        }
+
+        if (end.year >= dayInfo.year && end.month >= dayInfo.month && end.day >= dayInfo.day) {
+            return;
+        }
+
+        props.event.end = {
+            ...end,
+            ...dayInfo,
+            day: dayInfo.day + 1,
+        };
     };
 
     const onEndDateSelected = (date: Date) => {
@@ -169,7 +186,24 @@
             ...props.event.end,
             ...dayInfo,
         };
-        console.log(`onEndDateSelected, new end = ${JSON.stringify(props.event.end)}`);
+
+        let start = props.event.start;
+
+        if (!start) {
+            return;
+        }
+
+        if (start.year <= dayInfo.year && start.month <= dayInfo.month && start.day <= dayInfo.day) {
+            return;
+        }
+
+        const day = dayInfo.day - 1;
+
+        props.event.start = {
+            ...start,
+            ...dayInfo,
+            day,
+        };
     };
 
     const onCloseClicked = () => {

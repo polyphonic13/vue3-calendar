@@ -132,7 +132,6 @@
     };
 
     const onDocumentClicked = (event: MouseEvent) => {
-        console.log(`onDocumentClicked`);
         if (!dateSelector.value || !event.target) {
             return;
         }
@@ -147,7 +146,6 @@
     };
 
     onMounted(() => {
-        console.log(`DateSelector/onMounted`);
         year.value = props.value.year;
         month.value = props.value.month;
     });
