@@ -198,6 +198,9 @@
         box-sizing: border-box;
 
         display: flex;
+    }
+
+    .date_selector__modal__header {
         align-items: center;
     }
 
@@ -223,7 +226,7 @@
     .date_selector__modal__contents {
         flex-wrap: wrap;
         flex-grow: 1;
-
+        align-content: flex-start;
     }
 
     .day_of_month {
