@@ -121,7 +121,6 @@
     });
 
     const isFullDayEvent = computed(() => {
-        console.log(`EventModal/isFullDateEvent, props.event = `, props.event);
         if (!props.event || !props.event.start || !props.event.end) {
             return true;
         }

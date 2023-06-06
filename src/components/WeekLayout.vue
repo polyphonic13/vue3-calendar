@@ -226,12 +226,12 @@
     };
 
     const emitCreateEvent = (start: Date, end: Date) => {
-        const seed = {
+        const event = {
             start,
             end,
         };
 
-        emit('createEvent', seed);
+        emit('createEvent', event);
     };
 
     const onTimeMouseDown = (day: number, hour: number, isSecondHalf?: boolean) => {

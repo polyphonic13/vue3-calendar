@@ -70,7 +70,7 @@ export const useEventStore = defineStore('eventStore', () => {
             dayCount: 0,
             ...seed,
         };
-        console.log(`eventFactory\nseed = `, seed, `\nevent = `, event);
+
         return event;
     };
 
@@ -199,8 +199,7 @@ export const useEventStore = defineStore('eventStore', () => {
 
         const { start, end } = focusedEvent;
         console.log(`start = `, start, `\nend = `, end);
-        return true;
-        // return (start.getFullYear() === end.getFullYear()) && (start.getMonth() === end.getMonth()) && (start.getDate() === end.getDate());
+        return (start.getFullYear() === end.getFullYear()) && (start.getMonth() === end.getMonth()) && (start.getDate() === end.getDate());
     };
 
     const getDaysInEventCount = (event: IEvent) => {
