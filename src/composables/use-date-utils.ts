@@ -1,9 +1,6 @@
 import type {
     IDateIndices,
-    IDayInfo,
     IMonthData,
-    IMonthInfo,
-    IWeekInfo,
     IYearData,
     IYearMonthDay,
 } from '../interfaces';
@@ -211,29 +208,6 @@ export function useDateUtils() {
         return todayIndices;
     };
 
-    const getPrevWeek = (y: number, m: number, d: number): IYearMonthDay => {
-        const current = new Date(y, m, d);
-        const result = new Date(current.setDate(current.getDate() - 7));
-        return convertDateToYMD(result);
-    };
-
-    const getNextWeek = (y: number, m: number, d: number): IYearMonthDay => {
-        const current = new Date(y, m, d);
-        const result = new Date(current.setDate(current.getDate() + 7));
-        return convertDateToYMD(result);
-    };
-
-    const convertDateToYMD = (value: Date): IYearMonthDay => {
-        const year = value.getFullYear();
-        const month = value.getMonth();
-        const day = value.getDate();
-        return {
-            year,
-            month,
-            day,
-        };
-    };
-
     const convertDateToHHMM = (value: Date) => {
         const localTimeString = value.toLocaleTimeString();
 
@@ -247,26 +221,6 @@ export function useDateUtils() {
         const minutes = value.getMinutes();
 
         return hours + (minutes / 60);
-    };
-
-    const convertNumberToTimeString = (source: number) => {
-        const suffix = (Math.floor(source) > 11) ? 'PM' : 'AM';
-        let hour = Math.floor(source % 12);
-
-        const minNum = Math.floor(60 * (source - Math.floor(source)));
-        const minute = (minNum < 10) ? `0${minNum}` : minNum;
-
-        if (hour === 0) {
-            hour = 12;
-        }
-
-        return `${hour}:${minute} ${suffix}`;
-    };
-
-    const convertYMDToDateString = (value: IYearMonthDay) => {
-        const { year, month, day } = value;
-        const date = new Date(year, month, day);
-        return `${DAYS_OF_WEEK[date.getDay()]}, ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}`;
     };
 
     const getAreDatesWithinRange = (startDate: Date, endDate: Date, rangeStart: Date, rangeEnd: Date, isGreedy: boolean = false) => {
@@ -301,10 +255,6 @@ export function useDateUtils() {
         return ((e - s) / MILLISECONDS_IN_DAY);
     };
 
-    const getDateFromYMD = (value: IYearMonthDay) => {
-        return new Date(value.year, value.month, value.day);
-    };
-
     const createDateFromDateAndHHMM = (value: Date, hours: number, minutes: number) => {
         return new Date(
             value.getFullYear(),
@@ -314,7 +264,6 @@ export function useDateUtils() {
             minutes,
         );
     };
-
 
     const getHHMMFromNumber = (value: number) => {
         const hh = Math.floor(value);
@@ -329,15 +278,9 @@ export function useDateUtils() {
 
     return {
         getYMDFromDate,
-        getDateFromYMD,
         getYearData,
         getTodayIndices,
-        getNextWeek,
-        getPrevWeek,
-        convertDateToYMD,
         convertDateToHHMM,
-        convertNumberToTimeString,
-        convertYMDToDateString,
         convertDateTimeToNumber,
         getAreDatesWithinRange,
         getDifferenceInDays,

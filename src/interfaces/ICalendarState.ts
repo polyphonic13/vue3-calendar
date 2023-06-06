@@ -1,5 +1,5 @@
 import type { CalendarLayout } from '@/enum/CalendarLayout';
-import type { IDateIndices, IMonthInfo, IYearData } from '.';
+import type { IDateIndices, IYearData } from '.';
 
 export interface IBaseCalendarState {
     layout: CalendarLayout;

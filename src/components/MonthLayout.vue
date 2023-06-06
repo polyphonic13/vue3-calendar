@@ -25,8 +25,6 @@
 <script setup lang="ts">
     import { toRef, watch, onMounted, computed } from 'vue';
 
-    import type { IYearMonthDayTime } from '@/interfaces';
-
     import DayOfMonth from './DayOfMonth.vue';
     import DaysOfWeekNames from './DaysOfWeekNames.vue';
 
@@ -72,15 +70,6 @@
             return;
         }
         initIndices<Date>(props.currentMonth);
-    };
-
-    const getYearMonthDateTime = (date: Date, time: number): IYearMonthDayTime => {
-        return {
-            year: date.getFullYear(),
-            month: date.getMonth(),
-            day: date.getDate(),
-            time,
-        };
     };
 
     const onAddEventForDay = () => {

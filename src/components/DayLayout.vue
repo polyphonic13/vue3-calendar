@@ -33,7 +33,7 @@
 <script setup lang="ts">
     import { toRef, watch, onMounted, computed } from 'vue';
 
-    import type { IDayInfo, IEvent } from '@/interfaces';
+    import type { IEvent } from '@/interfaces';
 
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
@@ -72,26 +72,26 @@
     };
 
     const addEvent = (times: { start: number, end: number }) => {
-        const date = props.dayInfo.getDate();
-        const month = props.dayInfo.getMonth();
-        const year = props.year;
+        // const date = props.dayInfo.getDate();
+        // const month = props.dayInfo.getMonth();
+        // const year = props.year;
 
-        const event: Partial<IEvent> = {
-            start: {
-                year,
-                month,
-                day: date,
-                time: times.start,
-            },
-            end: {
-                year,
-                month,
-                day: date,
-                time: times.end,
-            },
-        };
+        // const event: Partial<IEvent> = {
+        //     start: {
+        //         year,
+        //         month,
+        //         day: date,
+        //         time: times.start,
+        //     },
+        //     end: {
+        //         year,
+        //         month,
+        //         day: date,
+        //         time: times.end,
+        //     },
+        // };
 
-        emit('addEvent', event);
+        // emit('addEvent', event);
     };
 
     const onAddEventForDay = () => {

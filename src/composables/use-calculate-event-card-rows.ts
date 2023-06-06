@@ -1,4 +1,4 @@
-import type { IDayInfo, IEvent } from '@/interfaces';
+import type { IEvent } from '@/interfaces';
 import { useDateUtils } from './use-date-utils';
 
 export function useCalculateEventCardRows() {

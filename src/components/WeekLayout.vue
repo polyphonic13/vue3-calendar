@@ -99,7 +99,6 @@
     // interfaces, types and enums
     import type {
         IEvent,
-        INumberRange,
         IYearMonthDay,
     } from '@/interfaces';
 
