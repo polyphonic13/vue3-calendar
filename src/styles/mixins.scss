@@ -110,8 +110,11 @@
     padding: 2px 4px;
     box-sizing: border-box;
 
-    border-top: 1px solid $greyscale02;
-    border-bottom: 1px solid $greyscale02;
+    // border-top: 1px solid $greyscale02;
+    // border-bottom: 1px solid $greyscale02;
+    // border-left: none;
+    // border-right: none;
+    border: 1px solid $greyscale02;
 
     background-color: $transparentGrey03;
 
@@ -138,19 +141,15 @@
 }
 
 @mixin event_card--rounded {
-    border-left: 1px solid $greyscale02;
-    border-right: 1px solid $greyscale02;
     border-radius: 8px;
 }
 
 @mixin event_card--rounded_left {
-    border-left: 1px solid $greyscale02;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
 }
 
 @mixin event_card--rounded_right {
-    border-right: 1px solid $greyscale02;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
 }

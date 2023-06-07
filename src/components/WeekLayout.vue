@@ -52,6 +52,7 @@
                 v-for="(event, e) in dayEvents"
                 :key="event.id"
                 class="event_card"
+                :class="getCardClasses(event)"
                 :style="getCardStyle(event, e)"
                 @click.stop="onEventClicked(e)"
             >
@@ -202,27 +203,51 @@
         return weekEvents.value.filter((event) => !getIsFullDayEvent(event)).filter((event) => event.start.getDate() === day.getDate());
     };
 
+    interface IDayEvent extends IEvent {
+        daysWithinWeek: number;
+        leftMultiplier: number;
+    }
+
     const dayEvents = computed(() => {
-        return weekEvents.value.filter((event) => getIsFullDayEvent(event));
+        return weekEvents.value.filter((event) => getIsFullDayEvent(event)).map((event) => {
+            const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekInfo[0], props.weekInfo[props.weekInfo.length -1]);
+            let leftMultiplier = props.weekInfo.findIndex((date) => date.getDate() === event.start.getDate());
+            if (leftMultiplier === -1) {
+                leftMultiplier = 0;
+            }
+
+            return {
+                ...event,
+                daysWithinWeek,
+                leftMultiplier,
+            };
+        });
     });
 
     const eventRows = computed(() => {
         return getRowsForEvents(dayEvents.value, props.weekInfo);
     });
 
-    const getCardStyle = (event: IEvent, index: number) => {
-        const daysInEvent = getDaysInEventInDateRangeCount(event, props.weekInfo[0], props.weekInfo[props.weekInfo.length -1]);
-        // console.log(`days in event for ${event.title} = ${daysInEvent}`);
-        const width = (100 / 7) * daysInEvent;
-        // add extra 24 to include white space at top for new event creation
+    const getCardStyle = (event: IDayEvent, index: number) => {
+        const width = (100 / 7) * event.daysWithinWeek;
+        // add extra 24 to include white space at top for new event creation area
         const top = ((eventRows.value[index]) * 24) + 24;
-        let leftMultiplier = props.weekInfo.findIndex((date) => date.getDate() === event.start.getDate());
-        if (leftMultiplier === -1) {
-            leftMultiplier = 0;
-        }
-        const left = (100 / 7) * leftMultiplier;
+        const left = (100 / 7) * event.leftMultiplier;
 
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
+    };
+
+    const getCardClasses = (event: IDayEvent) => {
+        console.log(`daysWithinWeek for ${event.title} = ${event.daysWithinWeek}, event.dayCount = ${event.dayCount}, leftMultiplier = ${event.leftMultiplier}`);
+        return {
+            'event_card--whole': (event.dayCount <= event.daysWithinWeek),
+            'event_card--left': (event.dayCount > event.daysWithinWeek && event.leftMultiplier > 0),
+            'event_card--right': (event.dayCount > event.daysWithinWeek && event.leftMultiplier < 1 && event.daysWithinWeek < 7),
+        };
+    };
+
+    const getCardClass = (event: IDayEvent, index: number) => {
+
     };
 
     const emitCreateEvent = (start: Date, end: Date) => {
@@ -372,7 +397,8 @@
 
     .event_card {
         @include event_card;
-        @include event_card--rounded;
+        // @include event_card--rounded;
+        // @include event_card--rounded_left;
 
         height: 24px;
 
@@ -380,11 +406,7 @@
         position: absolute;
     }
 
-    .event_card:hover {
-        @include event_card--hover;
-    }
-
-    .event_card--rounded {
+    .event_card--whole {
         @include event_card--rounded;
     }
 
@@ -394,6 +416,10 @@
 
     .event_card--right {
         @include event_card--rounded_right;
+    }
+
+    .event_card:hover {
+        @include event_card--hover;
     }
 
     .event_card__title {

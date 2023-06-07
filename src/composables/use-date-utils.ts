@@ -233,7 +233,7 @@ export function useDateUtils() {
             return (vStart >= rStart && vEnd <= rEnd);
         }
 
-        return ((vEnd >= rStart && vEnd <= rEnd) || (vStart <= rEnd && vStart >= rStart));
+        return ((vEnd >= rStart && vEnd <= rEnd) || (vStart <= rEnd && vStart >= rStart) || (vStart <= rStart && vEnd >= rEnd));
     };
 
     const getDifferenceInDays = (start: Date, end: Date, rStart?: Date, rEnd?: Date) => {
