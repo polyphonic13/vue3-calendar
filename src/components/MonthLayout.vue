@@ -1,19 +1,23 @@
 <template>
     <div v-if="props.currentMonth" class="month">
         <DaysOfWeekNames />
-        <div class="week">
+        <div
+            v-for="(week, w) in weekEvents"
+            :key="w"
+            class="week"
+        >
             <DayOfMonth
-                v-for="(day, d) in currentMonth"
+                v-for="(day, d) in week"
                 :key="`${day.getFullYear()}${day.getMonth()}${day.getDate()}`"
-                :index="d"
+                :index="getDayIndex(w, d)"
                 :year="props.year"
                 :month="day.getMonth()"
                 :currentMonth="props.month"
                 :date="day"
                 :day="day.getDate()"
                 :is-selecting="isSelecting"
-                :is-selected="selectedItems.includes(d)"
-                @date-clicked="onDateClicked(d)"
+                :is-selected="selectedItems.includes(getDayIndex(w, d))"
+                @date-clicked="onDateClicked(getDayIndex(w, d))"
                 @day-on-mouse-down="onMouseDown"
                 @day-on-mouse-over="onMouseOver"
                 @day-on-mouse-up="onAddEventForDay"
@@ -30,7 +34,6 @@
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
     import { useCalendarStore } from '@/stores/calendar';
-    import { useEventStore } from '@/stores/events';
 
     interface IMonthProps {
         year: number;
@@ -50,8 +53,6 @@
 
     const { getWeekForDate } = useCalendarStore();
 
-    const { getEventsForRange } = useEventStore();
-
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
 
@@ -61,9 +62,30 @@
         initAllDays();
     });
 
-    const monthEvents = computed(() => {
-        return getEventsForRange(props.currentMonth[0], props.currentMonth[props.currentMonth.length - 1]);
+    interface IWeekEvent extends Date {
+        index: number;
+    }
+
+    const weekEvents = computed(() => {
+        const weeks: Date[][] = [];
+        let week: Date[] = [];
+
+        const l = props.currentMonth.length;
+        for (let i = 0; i < l; i++) {
+            if (i % 7 === 0 && i > 0) {
+                weeks.push(week);
+                week = [];
+            }
+            week.push(props.currentMonth[i]);
+        }
+        weeks.push(week);
+
+        return weeks;
     });
+
+    const getDayIndex = (row: number, col: number) => {
+        return props.currentMonth.findIndex((date) => date.getTime() === weekEvents.value[row][col].getTime());
+    };
 
     const initAllDays = () => {
         if (!props.currentMonth) {
@@ -104,7 +126,7 @@
 
     onMounted(() => {
         initAllDays();
-        console.log(`MonthLayout/onMounted, monthEvents = `, monthEvents.value);
+        console.log(`MonthLayout/onMounted, weekEvents = `, weekEvents.value);
     });
 </script>
 

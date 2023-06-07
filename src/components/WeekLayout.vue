@@ -238,7 +238,6 @@
     };
 
     const getCardClasses = (event: IDayEvent) => {
-        console.log(`daysWithinWeek for ${event.title} = ${event.daysWithinWeek}, event.dayCount = ${event.dayCount}, leftMultiplier = ${event.leftMultiplier}`);
         return {
             'event_card--whole': (event.dayCount <= event.daysWithinWeek),
             'event_card--left': (event.dayCount > event.daysWithinWeek && event.leftMultiplier > 0),
