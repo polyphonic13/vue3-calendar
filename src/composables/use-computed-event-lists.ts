@@ -1,12 +1,26 @@
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 
 import { useEventStore } from '@/stores/events';
 
-export function useComputedEventLists(startDate: Date, endDate: Date) {
+export function useComputedEventLists() {
     const { getEventsForRange, getIsFullDayEvent } = useEventStore();
 
+    const startDate = ref<Date>();
+    const endDate = ref<Date>();
+
+    const setStartDate = (value: Date) => {
+        startDate.value = value;
+    };
+
+    const setEndDate = (value: Date) => {
+        endDate.value = value;
+    };
+
     const weeklyEvents = computed(() => {
-        return getEventsForRange(startDate, endDate);
+        if (!startDate.value || !endDate.value) {
+            return [];
+        }
+        return getEventsForRange(startDate.value, endDate.value);
     });
 
     const dailyEvents = computed(() => {
@@ -22,6 +36,8 @@ export function useComputedEventLists(startDate: Date, endDate: Date) {
     };
 
     return {
+        setStartDate,
+        setEndDate,
         weeklyEvents,
         dailyEvents,
         hourlyEvents,

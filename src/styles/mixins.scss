@@ -93,6 +93,14 @@
 }
 
 @mixin event_card_list {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    position: relative;
+
     overflow: hidden;
 }
 

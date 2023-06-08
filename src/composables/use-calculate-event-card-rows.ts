@@ -52,6 +52,7 @@ export function useCalculateEventCardRows() {
 
         const startDay = dayInfos[0].day;
         const endDay = dayInfos[dayInfos.length - 1].day;
+
         const clampedEvents = events.map((event) => {
             const sDay = (event.start.getDate() >= startDay) ? event.start.getDate() : startDay;
             const eDay = (event.end.getDate() <= endDay) ? event.end.getDate() : endDay;

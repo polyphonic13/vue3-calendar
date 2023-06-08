@@ -56,7 +56,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const state = ref<IEventState>(createState());
-    console.log(`EventsStore/init, state evetns = `, state.value.events);
+    console.log(`EventsStore/init, state events = `, state.value.events);
 
     const eventFactory = (seed: Partial<IEvent>) => {
         const today = new Date();
@@ -179,7 +179,6 @@ export const useEventStore = defineStore('eventStore', () => {
         if (!event.start || !event.end) {
             return true;
         }
-
         const startHour = event.start.getHours();
         const endHour = event.end.getHours();
 

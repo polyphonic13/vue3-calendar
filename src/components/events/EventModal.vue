@@ -273,9 +273,9 @@
 </script>
 
 <style lang="scss">
-    @import '../styles/global.scss';
-    @import '../styles/variables.scss';
-    @import '../styles/mixins.scss';
+    @import '../../styles/global.scss';
+    @import '../../styles/variables.scss';
+    @import '../../styles/mixins.scss';
 
     .event_modal {
         width: 512px;
