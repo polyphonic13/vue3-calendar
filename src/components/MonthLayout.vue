@@ -2,7 +2,7 @@
     <div v-if="props.currentMonth" class="month">
         <DaysOfWeekNames />
         <div
-            v-for="(week, w) in weekEvents"
+            v-for="(week, w) in weeklyEvents"
             :key="w"
             class="week"
         >
@@ -56,17 +56,13 @@
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
 
-    const emit = defineEmits(['addEvent', 'dateClicked']);
+    const emit = defineEmits(['createEvent', 'dateClicked']);
 
     watch(() => props.month, () => {
         initAllDays();
     });
 
-    interface IWeekEvent extends Date {
-        index: number;
-    }
-
-    const weekEvents = computed(() => {
+    const weeklyEvents = computed(() => {
         const weeks: Date[][] = [];
         let week: Date[] = [];
 
@@ -84,7 +80,7 @@
     });
 
     const getDayIndex = (row: number, col: number) => {
-        return props.currentMonth.findIndex((date) => date.getTime() === weekEvents.value[row][col].getTime());
+        return props.currentMonth.findIndex((date) => date.getTime() === weeklyEvents.value[row][col].getTime());
     };
 
     const initAllDays = () => {
@@ -98,15 +94,12 @@
         if (!props.currentMonth) {
             return;
         }
-        // const start = getYearMonthDateTime(props.currentMonth[selectedItems.value[0]], 0);
-        // const end = getYearMonthDateTime(props.currentMonth[selectedItems.value[selectedItems.value.length - 1]], TIMES_IN_DAY.length - 1);
 
-        // const event: Partial<IEvent> = {
-        //     start,
-        //     end,
-        // };
+        console.log(`onAddEventForDay, selectedItems.value[0] = ${selectedItems.value[0]}, selectedItems.value[selectedItems.value.length] = ${selectedItems.value[selectedItems.value.length - 1]}\n`, props.currentMonth[selectedItems.value[0]], props.currentMonth[selectedItems.value[selectedItems.value.length - 1]]);
+        const start = new Date(props.currentMonth[selectedItems.value[0]].toJSON());
+        const end = new Date(props.currentMonth[selectedItems.value[selectedItems.value.length - 1]].toJSON());
 
-        // emit('addEvent', event);
+        emit('createEvent', { start, end });
 
         onMouseUp();
     };
@@ -126,7 +119,7 @@
 
     onMounted(() => {
         initAllDays();
-        console.log(`MonthLayout/onMounted, weekEvents = `, weekEvents.value);
+        console.log(`MonthLayout/onMounted, weeklyEvents = `, weeklyEvents.value);
     });
 </script>
 

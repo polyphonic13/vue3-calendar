@@ -114,6 +114,7 @@
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
     import { useCalculateEventCardRows } from '@/composables/use-calculate-event-card-rows';
+    import { useComputedEventLists } from '@/composables/use-computed-event-lists';
 
     // stores
     import { useEventStore } from '@/stores/events';
@@ -194,13 +195,15 @@
         return (isEventCardsExpanded.value) ? `height: ${(((sorted[0] + 1) * 24) + 28)}px` : 'height: 96px';
     });
 
-    const weekEvents = computed(() => {
-        const days = props.weekInfo;
-        return getEventsForRange(days[0], days[days.length - 1]);
-    });
+    // const weeklyEvents = computed(() => {
+    //     const days = props.weekInfo;
+    //     return getEventsForRange(days[0], days[days.length - 1]);
+    // });
+
+    const { weeklyEvents } = useComputedEventLists(props.weekInfo[0], props.weekInfo[props.weekInfo.length - 1]);
 
     const hourlyEvents = (day: Date) => {
-        return weekEvents.value.filter((event) => !getIsFullDayEvent(event)).filter((event) => event.start.getDate() === day.getDate());
+        return weeklyEvents.value.filter((event) => !getIsFullDayEvent(event)).filter((event) => event.start.getDate() === day.getDate());
     };
 
     interface IDayEvent extends IEvent {
@@ -209,7 +212,7 @@
     }
 
     const dayEvents = computed(() => {
-        return weekEvents.value.filter((event) => getIsFullDayEvent(event)).map((event) => {
+        return weeklyEvents.value.filter((event) => getIsFullDayEvent(event)).map((event) => {
             const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekInfo[0], props.weekInfo[props.weekInfo.length -1]);
             let leftMultiplier = props.weekInfo.findIndex((date) => date.getDate() === event.start.getDate());
             if (leftMultiplier === -1) {
