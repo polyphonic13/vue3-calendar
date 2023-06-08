@@ -23,7 +23,8 @@
             />
         </div>
         <WeeklyEventCards
-            :events="dailyEvents"
+            :daily-events="dailyEvents"
+            :hourly-events="hourlyEvents"
             :week-dates="weekInfo"
             :is-selecting="isSelecting"
             :selected-items="selectedItems"
@@ -46,7 +47,7 @@
                     :selected-items="selectedItems"
                     :current-initiator="currentInitiator"
                     :current-type="currentType"
-                    :events="getHourlyEventsForDay(day)"
+                    :events="getHourlyEventsForDate(day, hourlyEvents)"
                     @time-on-mouse-down="onTimeMouseDown"
                     @time-on-mouse-over="onTimeMouseOver"
                     @time-on-mouse-up="onTimeMouseUp(d2)"
@@ -65,10 +66,7 @@
     } from 'vue';
 
     // interfaces, types and enums
-    import type {
-        IEvent,
-        IYearMonthDay,
-    } from '@/interfaces';
+    import type { IYearMonthDay } from '@/interfaces';
 
     import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
@@ -102,7 +100,8 @@
         setStartDate,
         setEndDate,
         dailyEvents,
-        getHourlyEventsForDay,
+        hourlyEvents,
+        getHourlyEventsForDate,
     } = useComputedEventLists();
 
     const {

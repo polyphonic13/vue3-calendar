@@ -1,4 +1,5 @@
 @import "./variables.scss";
+@import "./global.scss";
 
 @mixin selected_item {
     background-color: $selectingColorPrimary;
@@ -24,7 +25,7 @@
 }
 
 @mixin text_button--primary {
-    background-color: $blue05;
+    background-color: $blue07;
     color: $greyscale01;
 }
 
@@ -62,7 +63,7 @@
 
     padding: 4px;
 
-    font-size: 0.5em;
+    // font-size: 0.5em;
 }
 
 @mixin circle_button--hover {
@@ -119,9 +120,9 @@
     padding: 2px 4px;
     box-sizing: border-box;
 
-    border: 1px solid $greyscale02;
-
-    background-color: $transparentGrey03;
+    background-color: $eventCard01BG;
+    color: $eventCard01Color;
+    border: 1px solid $eventCard01Border;
 
     display: flex;
     flex-direction: column;
@@ -133,11 +134,39 @@
     cursor: pointer;
 }
 
+@mixin event_card--hourly {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    > .event_card__title {
+        width: 50%;
+        padding: 0;
+    }
+}
+
+@mixin event_card--hourly__dot {
+    // shape-outside: circle(50%);
+    width: 12px;
+    height: 12px;
+    background-color: $eventCard01BG;
+    clip-path: circle(6px at 50% 50%);
+}
+
 @mixin event_card--hover {
+    background-color: $eventCard01BG;
     box-shadow: $boxShadow01;
-    background-color: $transparentGrey04;
 
     z-index: 100;
+}
+
+@mixin event_card--hourly--hover {
+    // background-color: transparent;
+    box-shadow: none;
 }
 
 @mixin event_card--mobile {

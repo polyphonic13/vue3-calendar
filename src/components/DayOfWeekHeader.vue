@@ -1,15 +1,13 @@
 <template>
     <div
-        class="day"
+        class="day_of_week_header"
     >
-        <div class="header">
             <span v-if="props.dayName !== ''" class="day_name">{{ props.dayName }}</span>
             <button
                 class="day_btn"
                 :class="classes"
                 @click.stop="$emit('dateClicked', props.index)"
             >{{ props.day }}</button>
-        </div>
     </div>
 </template>
 
@@ -49,22 +47,10 @@
     @import '../styles/global.scss';
     @import '../styles/mixins.scss';
 
-    .day {
+    .day_of_week_header {
         width: 100%;
 
         box-sizing: border-box;
-
-        display: flex;
-        flex-direction: column;
-
-        // border-right: 1px solid $borderColor01;
-        border-top: 1px solid $borderColor01;
-
-        cursor: pointer;
-    }
-
-    .header {
-        padding: 8px;
 
         display: flex;
         flex-direction: column;
@@ -73,6 +59,10 @@
 
         text-align: center;
         user-select: none;
+
+        border-top: 1px solid $borderColor01;
+
+        cursor: pointer;
     }
 
     .day_name {
@@ -104,6 +94,12 @@
     }
 
     @media screen and (max-width: 400px) {
+        .day_of_week_header {
+            width: calc(100% / 7);
+
+            font-size: 0.75em
+        }
+
         .day_btn {
             @include circle_button--mobile;
         }

@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 
 import { useEventStore } from '@/stores/events';
+import type { IEvent } from '@/interfaces';
 
 export function useComputedEventLists() {
     const { getEventsForRange, getIsFullDayEvent } = useEventStore();
@@ -35,6 +36,10 @@ export function useComputedEventLists() {
         return hourlyEvents.value.filter((event) => event.start.getDate() === date.getDate());
     };
 
+    const getHourlyEventsForDate = (date: Date, events: IEvent[]) => {
+        return events.filter((event) => event.start.getDate() === date.getDate());
+    };
+
     return {
         setStartDate,
         setEndDate,
@@ -42,5 +47,6 @@ export function useComputedEventLists() {
         dailyEvents,
         hourlyEvents,
         getHourlyEventsForDay,
+        getHourlyEventsForDate,
     };
 }
