@@ -56,7 +56,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const state = ref<IEventState>(createState());
-    console.log(`EventsStore/init, state = `, state.value);
+    console.log(`EventsStore/init, state evetns = `, state.value.events);
 
     const eventFactory = (seed: Partial<IEvent>) => {
         const today = new Date();

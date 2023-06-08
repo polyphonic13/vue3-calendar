@@ -106,14 +106,11 @@
 
 @mixin event_card {
     width: 100%;
+    min-height: 24px;
 
     padding: 2px 4px;
     box-sizing: border-box;
 
-    // border-top: 1px solid $greyscale02;
-    // border-bottom: 1px solid $greyscale02;
-    // border-left: none;
-    // border-right: none;
     border: 1px solid $greyscale02;
 
     background-color: $transparentGrey03;
@@ -156,6 +153,7 @@
 
 @mixin event_card__title {
     width: 100%;
+    min-height: 15px;
 
     white-space: nowrap;
     overflow: hidden;

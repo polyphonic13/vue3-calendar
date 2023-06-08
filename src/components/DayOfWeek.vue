@@ -41,11 +41,7 @@
                     :style="`height: ${event.height}%; top: ${event.top}%;`"
                     @click.stop="onEventClicked(e)"
                 >
-                    <div class="event_card__title">
-                        <span>
-                            <b>{{ event.title }}</b>
-                        </span>
-                    </div>
+                    <div class="event_card__title"><b>{{ event.title }}</b></div>
                     <div class="event_card__times">{{ convertDateToHHMM(event.start) }} - {{ convertDateToHHMM(event.end) }}</div>
                 </button>
             </div>
