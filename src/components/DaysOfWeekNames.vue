@@ -34,7 +34,6 @@
         box-sizing: border-box;
         border-top: 1px solid $borderColor01;
         border-right: 1px solid $borderColor01;
-        border-bottom: 1px solid $borderColor01;
 
         display:flex;
         align-items: center;

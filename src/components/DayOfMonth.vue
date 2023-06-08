@@ -108,13 +108,17 @@
         background-color: $primaryBg01;
 
         border-right: 1px solid $borderColor01;
-        border-bottom: 1px solid $borderColor01;
+        border-top: 1px solid $borderColor01;
 
         cursor: pointer;
     }
 
     .day__other_month {
-        background-color: $inactiveBg01;
+        > .day__header {
+            > button {
+                color: $inactiveColor01;
+            }
+        }
     }
 
     .day__selecting {

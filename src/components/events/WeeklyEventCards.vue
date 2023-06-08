@@ -5,6 +5,10 @@
         :style="eventCardsStyle"
     >
         <div
+            v-for="(_, d) in DAYS_OF_WEEK"
+            class="weekly_event_cards__day"
+        ></div>
+        <div
             v-if="isEventCardsControlsVisible"
             class="event_card_list__controls"
         >
@@ -39,7 +43,7 @@
     import { useEventStore } from '@/stores/events';
 
     import { useCalculateEventCardRows } from '@/composables/use-calculate-event-card-rows';
-    import { useDateUtils } from '@/composables/use-date-utils';
+    import { DAYS_OF_WEEK, useDateUtils } from '@/composables/use-date-utils';
 
     interface IMultiDayEvent extends IEvent {
         daysWithinWeek: number;
@@ -162,11 +166,10 @@
     .weekly_event_cards {
         @include event_card_list;
 
-        border-right: 1px solid $borderColor01;
     }
 
-    .event_card_list {
-        @include event_card_list;
+    .weekly_event_cards__day {
+        width: calc(100% / 7);
 
         border-right: 1px solid $borderColor01;
     }

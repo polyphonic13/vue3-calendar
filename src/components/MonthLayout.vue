@@ -6,21 +6,28 @@
             :key="w"
             class="week"
         >
-            <DayOfMonth
-                v-for="(day, d) in week"
-                :key="`${day.getFullYear()}${day.getMonth()}${day.getDate()}`"
-                :index="getDayIndex(w, d)"
-                :year="props.year"
-                :month="day.getMonth()"
-                :currentMonth="props.month"
-                :date="day"
-                :day="day.getDate()"
-                :is-selecting="isSelecting"
-                :is-selected="selectedItems.includes(getDayIndex(w, d))"
-                @date-clicked="onDateClicked(getDayIndex(w, d))"
-                @day-on-mouse-down="onMouseDown"
-                @day-on-mouse-over="onMouseOver"
-                @day-on-mouse-up="onAddEventForDay"
+            <div class="day_list">
+                <DayOfMonth
+                    v-for="(day, d) in week"
+                    :key="`${day.getFullYear()}${day.getMonth()}${day.getDate()}`"
+                    :index="getDayIndex(w, d)"
+                    :year="props.year"
+                    :month="day.getMonth()"
+                    :currentMonth="props.month"
+                    :date="day"
+                    :day="day.getDate()"
+                    :is-selecting="isSelecting"
+                    :is-selected="selectedItems.includes(getDayIndex(w, d))"
+                    @date-clicked="onDateClicked(getDayIndex(w, d))"
+                    @day-on-mouse-down="onMouseDown"
+                    @day-on-mouse-over="onMouseOver"
+                    @day-on-mouse-up="onAddEventForDay"
+                />
+            </div>
+            <WeeklyEventCards
+                :daily-events="dailyEvents"
+                :hourly-events="hourlyEvents"
+                :week-dates="currentMonth"
             />
         </div>
     </div>
@@ -29,11 +36,14 @@
 <script setup lang="ts">
     import { toRef, watch, onMounted, computed } from 'vue';
 
-    import DayOfMonth from './DayOfMonth.vue';
-    import DaysOfWeekNames from './DaysOfWeekNames.vue';
+    import { useCalendarStore } from '@/stores/calendar';
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
-    import { useCalendarStore } from '@/stores/calendar';
+    import { useComputedEventLists } from '@/composables/use-computed-event-lists';
+
+    import DayOfMonth from './DayOfMonth.vue';
+    import DaysOfWeekNames from './DaysOfWeekNames.vue';
+    import WeeklyEventCards from './events/WeeklyEventCards.vue';
 
     interface IMonthProps {
         year: number;
@@ -56,9 +66,17 @@
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
 
+    const {
+        setStartDate,
+        setEndDate,
+        dailyEvents,
+        hourlyEvents,
+    } = useComputedEventLists();
+
     const emit = defineEmits(['createEvent', 'dateClicked']);
 
     watch(() => props.month, () => {
+        setStartAndEndDate();
         initAllDays();
     });
 
@@ -117,7 +135,13 @@
         emit('dateClicked', { day, week });
     };
 
+    const setStartAndEndDate = () => {
+        setStartDate(props.currentMonth[0]);
+        setEndDate(props.currentMonth[props.currentMonth.length - 1]);
+    };
+
     onMounted(() => {
+        setStartAndEndDate();
         initAllDays();
         console.log(`MonthLayout/onMounted, weeklyEvents = `, weeklyEvents.value);
     });
@@ -140,7 +164,15 @@
         height: 100%;
         flex: 1;
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
     }
 
+    .day_list {
+        width: 100%;
+        display: flex;
+    }
+
+    .weekly_event_cards {
+        flex: 1;
+    }
 </style>
