@@ -198,7 +198,7 @@ export const useEventStore = defineStore('eventStore', () => {
         }
 
         const { start, end } = focusedEvent;
-        console.log(`start = `, start, `\nend = `, end);
+        // console.log(`start = `, start, `\nend = `, end);
         return (start.getFullYear() === end.getFullYear()) && (start.getMonth() === end.getMonth()) && (start.getDate() === end.getDate());
     };
 

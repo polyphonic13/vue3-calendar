@@ -92,15 +92,15 @@
     cursor: pointer;
 }
 
-@mixin event_cards {
+@mixin event_card_list {
     overflow: hidden;
 }
 
-@mixin event_cards--expanded {
+@mixin event_card_list--expanded {
     overflow: visible;
 }
 
-@mixin event_cards--mobile {
+@mixin event_card_list--mobile {
     right: 4px;
 }
 

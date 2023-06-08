@@ -1,7 +1,7 @@
 <template>
     <div class="week" ref="weekEl">
         <div
-            class="day_of_week_headers"
+            class="day_of_week_header_list"
             ref="headerEl"
         >
             <DayOfWeekHeader
@@ -23,15 +23,15 @@
             />
         </div>
         <div
-            class="event_cards"
+            class="event_card_list"
             :class="eventCardsClasses"
             :style="eventCardsStyle"
         >
             <div
                 v-if="isEventCardsControlsVisible"
-                class="event_cards__controls"
+                class="event_card_list__controls"
             >
-                <button class="event_cards__controls__toggle_btn" @click="onToggleEventCardsExpandedClicked">
+                <button class="event_card_list__controls__toggle_btn" @click="onToggleEventCardsExpandedClicked">
                     <svg v-if="isEventCardsExpanded" class="up_arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg>
                     <svg v-else class="down_arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
                 </button>
@@ -49,7 +49,7 @@
                 @touchend="onDayMouseUp()"
             ></div>
             <button
-                v-for="(event, e) in dayEvents"
+                v-for="(event, e) in multiDayEvents"
                 :key="event.id"
                 class="event_card"
                 :class="getCardClasses(event)"
@@ -60,11 +60,8 @@
 
             </button>
         </div>
-        <div
-            class="day_container"
-            ref="containerEl"
-        >
-            <div class="day_list">
+        <div class="day_container">
+            <div class="day_of_week_list">
                 <DayOfWeek
                     v-for="(day, d2) in props.weekInfo"
                     :key="`${props.year}${props.month}${day.getDate()}${d2}`"
@@ -77,7 +74,7 @@
                     :selected-items="selectedItems"
                     :current-initiator="currentInitiator"
                     :current-type="currentType"
-                    :events="hourlyEvents(day)"
+                    :events="getHourlyEventsForDay(day)"
                     @time-on-mouse-down="onTimeMouseDown"
                     @time-on-mouse-over="onTimeMouseOver"
                     @time-on-mouse-up="onTimeMouseUp(d2)"
@@ -123,6 +120,11 @@
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
 
+    interface IMultiDayEvent extends IEvent {
+        daysWithinWeek: number;
+        leftMultiplier: number;
+    }
+
     interface IWeekProps {
         year: number;
         month: number;
@@ -133,17 +135,6 @@
     const props: IWeekProps = defineProps<IWeekProps>();
 
     const {
-        state,
-        initIndices,
-        getNumberValuesFromItems,
-        onMouseDown,
-        onMouseOver,
-        onMouseUp,
-    } = useMouseItemSelect();
-
-    const {
-        getEventsForRange,
-        getIsFullDayEvent,
         viewEvent,
         getDaysInEventInDateRangeCount,
     } = useEventStore();
@@ -151,6 +142,20 @@
     const { getRowsForEvents } = useCalculateEventCardRows();
 
     const { getYMDFromDate, getHHMMFromNumber } = useDateUtils();
+
+    const {
+        dailyEvents,
+        getHourlyEventsForDay,
+    } = useComputedEventLists(props.weekInfo[0], props.weekInfo[props.weekInfo.length - 1]);
+
+    const {
+        state,
+        initIndices,
+        getNumberValuesFromItems,
+        onMouseDown,
+        onMouseOver,
+        onMouseUp,
+    } = useMouseItemSelect();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -163,10 +168,6 @@
         'createEvent',
         'dateClicked',
     ]);
-
-    const initHourIndices = () => {
-        initIndices<string>(TIMES_IN_DAY);
-    };
 
     watch(() => props.weekInfo, () => {
         initHourIndices();
@@ -187,7 +188,7 @@
     });
 
     const eventCardsClasses = computed(() => ({
-        'event_cards--expanded': (isCardsExpanded.value)
+        'event_card_list--expanded': (isCardsExpanded.value)
     }));
 
     const eventCardsStyle = computed(() => {
@@ -195,24 +196,8 @@
         return (isEventCardsExpanded.value) ? `height: ${(((sorted[0] + 1) * 24) + 28)}px` : 'height: 96px';
     });
 
-    // const weeklyEvents = computed(() => {
-    //     const days = props.weekInfo;
-    //     return getEventsForRange(days[0], days[days.length - 1]);
-    // });
-
-    const { weeklyEvents } = useComputedEventLists(props.weekInfo[0], props.weekInfo[props.weekInfo.length - 1]);
-
-    const hourlyEvents = (day: Date) => {
-        return weeklyEvents.value.filter((event) => !getIsFullDayEvent(event)).filter((event) => event.start.getDate() === day.getDate());
-    };
-
-    interface IDayEvent extends IEvent {
-        daysWithinWeek: number;
-        leftMultiplier: number;
-    }
-
-    const dayEvents = computed(() => {
-        return weeklyEvents.value.filter((event) => getIsFullDayEvent(event)).map((event) => {
+    const multiDayEvents = computed(() => {
+        return dailyEvents.value.map((event) => {
             const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekInfo[0], props.weekInfo[props.weekInfo.length -1]);
             let leftMultiplier = props.weekInfo.findIndex((date) => date.getDate() === event.start.getDate());
             if (leftMultiplier === -1) {
@@ -228,10 +213,10 @@
     });
 
     const eventRows = computed(() => {
-        return getRowsForEvents(dayEvents.value, props.weekInfo);
+        return getRowsForEvents(multiDayEvents.value, props.weekInfo);
     });
 
-    const getCardStyle = (event: IDayEvent, index: number) => {
+    const getCardStyle = (event: IMultiDayEvent, index: number) => {
         const width = (100 / 7) * event.daysWithinWeek;
         // add extra 24 to include white space at top for new event creation area
         const top = ((eventRows.value[index]) * 24) + 24;
@@ -240,16 +225,12 @@
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
     };
 
-    const getCardClasses = (event: IDayEvent) => {
+    const getCardClasses = (event: IMultiDayEvent) => {
         return {
             'event_card--whole': (event.dayCount <= event.daysWithinWeek),
             'event_card--left': (event.dayCount > event.daysWithinWeek && event.leftMultiplier > 0),
             'event_card--right': (event.dayCount > event.daysWithinWeek && event.leftMultiplier < 1 && event.daysWithinWeek < 7),
         };
-    };
-
-    const getCardClass = (event: IDayEvent, index: number) => {
-
     };
 
     const emitCreateEvent = (start: Date, end: Date) => {
@@ -259,6 +240,10 @@
         };
 
         emit('createEvent', event);
+    };
+
+    const initHourIndices = () => {
+        initIndices<string>(TIMES_IN_DAY);
     };
 
     const onTimeMouseDown = (day: number, hour: number, isSecondHalf?: boolean) => {
@@ -320,12 +305,12 @@
     };
 
     const onEventClicked = (index: number) => {
-        if (index > dayEvents.value.length) {
+        if (index > multiDayEvents.value.length) {
             console.warn(`ERROR: can not edit non-existent event with index ${index}`);
             return;
         }
 
-        viewEvent(dayEvents.value[index]);
+        viewEvent(multiDayEvents.value[index]);
     };
 
     const onToggleEventCardsExpandedClicked = () => {
@@ -354,7 +339,7 @@
         border-bottom: 1px solid $borderColor01;
     }
 
-    .day_of_week_headers {
+    .day_of_week_header_list {
         width: 100%;
         height: 64px;
         display: flex;
@@ -363,8 +348,8 @@
         border-right: 1px solid $borderColor01;
     }
 
-    .event_cards {
-        @include event_cards;
+    .event_card_list {
+        @include event_card_list;
 
         width: 100%;
 
@@ -377,23 +362,23 @@
         border-right: 1px solid $borderColor01;
     }
 
-    .event_cards--expanded {
-        @include event_cards--expanded;
+    .event_card_list--expanded {
+        @include event_card_list--expanded;
     }
 
-    .event_cards__controls {
+    .event_card_list__controls {
         bottom: 4px;
         left: 4px;
         position: absolute;
     }
 
-    .event_cards__controls__toggle_btn {
+    .event_card_list__controls__toggle_btn {
         @include circle_button;
 
         z-index: 1000;
     }
 
-    .event_cards__controls__toggle_btn:hover {
+    .event_card_list__controls__toggle_btn:hover {
         @include circle_button--hover;
     }
 
@@ -494,7 +479,7 @@
         color: $greyscale01;
     }
 
-    .day_list {
+    .day_of_week_list {
         flex: 1;
         display: flex;
     }

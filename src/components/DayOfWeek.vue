@@ -32,7 +32,7 @@
                 ></div>
             </div>
         </div>
-        <div class="event_cards">
+        <div class="event_card_list">
                 <button
                     v-for="(event, e) in formattedEvents"
                     :key="event.id"
@@ -236,8 +236,8 @@
         top: 50%;
     }
 
-    .event_cards {
-        @include event_cards;
+    .event_card_list {
+        @include event_card_list;
 
         top: 0;
         bottom: 0;
@@ -309,8 +309,8 @@
             font-size: 0.5em;
         }
 
-        .event_cards {
-            @include event_cards--mobile;
+        .event_card_list {
+            @include event_card_list--mobile;
         }
 
         .event_card {
