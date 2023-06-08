@@ -26,12 +26,6 @@
             :daily-events="dailyEvents"
             :hourly-events="hourlyEvents"
             :week-dates="weekInfo"
-            :is-selecting="isSelecting"
-            :selected-items="selectedItems"
-            :current-type="currentType"
-            @on-day-mouse-down="onDayMouseDown"
-            @on-day-mouse-over="onDayMouseOver"
-            @on-day-mouse-up="onDayMouseUp"
         />
         <div class="day_container">
             <div class="day_of_week_list">
@@ -231,7 +225,7 @@
 
     .day_of_week_header_list {
         width: 100%;
-        height: 64px;
+        height: 92px;
         display: flex;
 
         box-sizing: border-box;

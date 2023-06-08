@@ -1,6 +1,9 @@
 <template>
     <div
         class="day_of_week_header"
+        @mousedown="onMouseDown"
+        @mouseover="onMouseOver"
+        @mouseup="onMouseUp"
     >
             <span v-if="props.dayName !== ''" class="day_name">{{ props.dayName }}</span>
             <button
@@ -8,11 +11,17 @@
                 :class="classes"
                 @click.stop="$emit('dateClicked', props.index)"
             >{{ props.day }}</button>
+            <div
+                class="day_of_week_header__selection_area"
+                :class="{ 'day_of_week_header__selection_area--selecting': isSelectingDays && selectedItems.includes(index) }"
+            ></div>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { reactive, watch } from 'vue';
+    import { reactive, watch, computed } from 'vue';
+
+    import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
     interface IDayOfWeekHeaderProps {
         index: number;
@@ -20,9 +29,22 @@
         month: number;
         day: number;
         dayName?: string;
+        isSelecting: boolean;
+        selectedItems: number[];
+        currentType: string;
     }
 
     const props = defineProps<IDayOfWeekHeaderProps>();
+
+    const emit = defineEmits([
+        'dayOnMouseDown',
+        'dayOnMouseOver',
+        'dayOnMouseUp',
+    ]);
+
+    const isSelectingDays = computed(() => {
+        return props.isSelecting && props.currentType === MouseSelectionType.DAILY;
+    });
 
     const getIsToday = () => {
         const today = new Date();
@@ -41,6 +63,23 @@
         current: getIsToday(),
     });
 
+    const onMouseDown = (_: MouseEvent) => {
+        emit('dayOnMouseDown', props.index);
+    };
+
+    const onMouseOver = (_: MouseEvent) => {
+        if (!props.isSelecting) {
+            return;
+        }
+        emit('dayOnMouseOver', props.index);
+    };
+
+    const onMouseUp = (_: MouseEvent) => {
+        if (!props.isSelecting) {
+            return;
+        }
+        emit('dayOnMouseUp', props.index);
+    };
 </script>
 
 <style scoped lang="scss">
@@ -91,6 +130,15 @@
 
     .current:hover {
         background-color: $highlightedColorPrimaryHover;
+    }
+
+    .day_of_week_header__selection_area {
+        width: 100%;
+        height: 24px;
+    }
+
+    .day_of_week_header__selection_area--selecting {
+        @include selected_item;
     }
 
     @media screen and (max-width: 400px) {

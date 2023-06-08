@@ -74,18 +74,18 @@
         day__selecting: props.isSelected,
     }));
 
-    const onMouseDown = (event: MouseEvent) => {
+    const onMouseDown = (_: MouseEvent) => {
         emit('dayOnMouseDown', props.index);
     };
 
-    const onMouseOver = (event: MouseEvent) => {
+    const onMouseOver = (_: MouseEvent) => {
         if (!props.isSelecting) {
             return;
         }
         emit('dayOnMouseOver', props.index);
     };
 
-    const onMouseUp = (event: MouseEvent) => {
+    const onMouseUp = (_: MouseEvent) => {
         if (!props.isSelecting) {
             return;
         }

@@ -13,18 +13,6 @@
                 <svg v-else class="down_arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
             </button>
         </div>
-        <div
-            v-for="(_, d) in DAYS_OF_WEEK"
-            :key="d"
-            class="day_selection_area"
-            :class="{ 'day--selecting': isSelectingDays && selectedItems.includes(d) }"
-            @mousedown="emit('onDayMouseDown', d)"
-            @mouseover="emit('onDayMouseOver', d)"
-            @mouseup="emit('onDayMouseUp')"
-            @touchstart="emit('onDayMouseDown', d)"
-            @touchmove="emit('onDayMouseOver', d)"
-            @touchend="emit('onDayMouseUp')"
-        ></div>
         <button
             v-for="(event, e) in events"
             :key="event.id"
@@ -47,12 +35,11 @@
     import type {
         IEvent,
     } from '@/interfaces';
-    import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
     import { useEventStore } from '@/stores/events';
 
     import { useCalculateEventCardRows } from '@/composables/use-calculate-event-card-rows';
-    import { DAYS_OF_WEEK, useDateUtils } from '@/composables/use-date-utils';
+    import { useDateUtils } from '@/composables/use-date-utils';
 
     interface IMultiDayEvent extends IEvent {
         daysWithinWeek: number;
@@ -64,9 +51,6 @@
         dailyEvents: IEvent[];
         hourlyEvents: IEvent[];
         weekDates: Date[];
-        isSelecting: boolean;
-        selectedItems: number[];
-        currentType: string;
     }
 
     const props = defineProps<IWeeklyEventCardsProps>();
@@ -84,9 +68,6 @@
 
     const isCardsExpanded = ref(false);
 
-    const isSelectingDays = computed(() => {
-        return props.isSelecting && props.currentType === MouseSelectionType.DAILY;
-    });
 
     const eventRows = computed(() => {
         return getRowsForEvents(events.value, props.weekDates);
@@ -139,13 +120,13 @@
 
     const eventCardsStyle = computed(() => {
         const sorted = [...eventRows.value].sort((a, b) => b - a);
-        return (isEventCardsExpanded.value) ? `height: ${(((sorted[0] + 1) * 24) + 28)}px` : 'height: 96px';
+        return (isEventCardsExpanded.value) ? `height: ${(((sorted[0] + 1) * 24))}px` : 'height: 74px';
     });
 
     const getCardStyle = (event: IMultiDayEvent, index: number) => {
         const width = (100 / 7) * event.daysWithinWeek;
         // add extra 24 to include white space at top for new event creation area
-        const top = ((eventRows.value[index]) * 24) + 24;
+        const top = ((eventRows.value[index]) * 24);
         const left = (100 / 7) * event.leftMultiplier;
 
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
@@ -172,9 +153,6 @@
     const onToggleEventCardsExpandedClicked = () => {
         isCardsExpanded.value = !isCardsExpanded.value;
     };
-
-
-
 </script>
 
 <style scoped lang="scss">
@@ -254,16 +232,6 @@
         @include event_card__title;
 
         padding: 2px 0 0 2px;
-    }
-
-    .day_selection_area {
-        width: calc(100% / 7);
-        height: 100%;
-
-    }
-
-    .day--selecting {
-        @include selected_item;
     }
 
     @media screen and (max-width: 400px) {
