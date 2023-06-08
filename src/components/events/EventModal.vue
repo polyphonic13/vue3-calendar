@@ -81,7 +81,7 @@
     import { useEventStore } from '@/stores/events';
     import { useDateUtils } from '@/composables/use-date-utils';
 
-    import DateSelector from './fields/DateSelector.vue';
+    import DateSelector from '@/components/fields/DateSelector.vue';
 
     const {
         createDateFromDateAndHHMM,

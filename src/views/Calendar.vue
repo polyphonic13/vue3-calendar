@@ -72,7 +72,7 @@
     import WeekLayout from '@/components/WeekLayout.vue';
     import DayLayout from '@/components/DayLayout.vue';
     import LayoutSelector from '@/components/LayoutSelector.vue';
-    import EventModal from '@/components/EventModal.vue';
+    import EventModal from '@/components/events/EventModal.vue';
 
     const calendarStore = useCalendarStore();
     const { state } = storeToRefs(calendarStore);
