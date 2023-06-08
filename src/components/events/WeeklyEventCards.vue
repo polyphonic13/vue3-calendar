@@ -14,15 +14,15 @@
             </button>
         </div>
         <div
-            v-for="(day, d) in DAYS_OF_WEEK"
+            v-for="(_, d) in DAYS_OF_WEEK"
             :key="d"
             class="day_selection_area"
             :class="{ 'day--selecting': isSelectingDays && selectedItems.includes(d) }"
             @mousedown="emit('onDayMouseDown', d)"
-            @mouseover="emit('onDayMouseMove', d)"
+            @mouseover="emit('onDayMouseOver', d)"
             @mouseup="emit('onDayMouseUp')"
             @touchstart="emit('onDayMouseDown', d)"
-            @touchmove="emit('onDayMouseMove', d)"
+            @touchmove="emit('onDayMouseOver', d)"
             @touchend="emit('onDayMouseUp')"
         ></div>
         <button
@@ -70,7 +70,7 @@
 
     const emit = defineEmits([
         'onDayMouseDown',
-        'onDayMouseMove',
+        'onDayMouseOver',
         'onDayMouseUp',
     ]);
 
@@ -192,8 +192,6 @@
 
     .event_card {
         @include event_card;
-        // @include event_card--rounded;
-        // @include event_card--rounded_left;
 
         height: 24px;
 
@@ -221,6 +219,16 @@
         @include event_card__title;
 
         padding: 2px 0 0 2px;
+    }
+
+    .day_selection_area {
+        width: calc(100% / 7);
+        height: 100%;
+
+    }
+
+    .day--selecting {
+        @include selected_item;
     }
 
 </style>

@@ -28,6 +28,9 @@
             :is-selecting="isSelecting"
             :selected-items="selectedItems"
             :current-type="currentType"
+            @on-day-mouse-down="onDayMouseDown"
+            @on-day-mouse-over="onDayMouseOver"
+            @on-day-mouse-up="onDayMouseUp"
         />
         <div class="day_container">
             <div class="day_of_week_list">
@@ -56,10 +59,8 @@
 <script setup lang="ts">
     // external
     import {
-        ref,
         toRef,
         watch,
-        computed,
         onMounted,
     } from 'vue';
 
@@ -79,21 +80,12 @@
     } from '@/composables/use-date-utils';
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
-    import { useCalculateEventCardRows } from '@/composables/use-calculate-event-card-rows';
     import { useComputedEventLists } from '@/composables/use-computed-event-lists';
-
-    // stores
-    import { useEventStore } from '@/stores/events';
 
     // components
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
     import WeeklyEventCards from './events/WeeklyEventCards.vue';
-
-    interface IMultiDayEvent extends IEvent {
-        daysWithinWeek: number;
-        leftMultiplier: number;
-    }
 
     interface IWeekProps {
         year: number;
@@ -104,16 +96,11 @@
 
     const props: IWeekProps = defineProps<IWeekProps>();
 
-    const { viewEvent, getDaysInEventInDateRangeCount } = useEventStore();
-
-    const { getRowsForEvents } = useCalculateEventCardRows();
-
     const { getYMDFromDate, getHHMMFromNumber } = useDateUtils();
 
     const {
         setStartDate,
         setEndDate,
-        weeklyEvents,
         dailyEvents,
         getHourlyEventsForDay,
     } = useComputedEventLists();
@@ -250,16 +237,6 @@
 
         box-sizing: border-box;
         border-right: 1px solid $borderColor01;
-    }
-
-    .day_selection_area {
-        width: calc(100% / 7);
-        height: 100%;
-
-    }
-
-    .day--selecting {
-        @include selected_item;
     }
 
     .day_container {
