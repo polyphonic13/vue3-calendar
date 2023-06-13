@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, ref } from 'vue';
+    import { computed, onMounted, ref } from 'vue';
 
     import type {
         IEvent,
@@ -52,6 +52,7 @@
     }
 
     interface IWeeklyEventCardsProps {
+        index: number;
         dailyEvents: IEvent[];
         hourlyEvents: IEvent[];
         weekDates: Date[];
@@ -79,7 +80,7 @@
 
     const events = computed(() => {
         const daily = props.dailyEvents.map((event) => {
-            const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekDates[0], props.weekDates[props.weekDates.length -1]);
+            const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekDates[0], props.weekDates[props.weekDates.length - 1]);
             let leftMultiplier = props.weekDates.findIndex((date) => date.getDate() === event.start.getDate());
             if (leftMultiplier === -1) {
                 leftMultiplier = 0;
@@ -106,7 +107,7 @@
                 isHourly: true,
             };
         });
-
+        console.log(`=============\nWeeklyEventCards[ ${props.index} ]\ndaily = `, daily, `\nhourly = `, hourly);
         return [...daily, ...hourly];
     });
 
@@ -157,6 +158,10 @@
     const onToggleEventCardsExpandedClicked = () => {
         isCardsExpanded.value = !isCardsExpanded.value;
     };
+
+    onMounted(() => {
+        console.log(`WeeklyEventCards[ ${props.index} ]/onMounted, weekDates = `, props.weekDates);
+    })
 </script>
 
 <style scoped lang="scss">

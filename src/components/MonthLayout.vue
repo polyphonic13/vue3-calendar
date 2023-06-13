@@ -25,9 +25,10 @@
                 />
             </div>
             <WeeklyEventCards
+                :index="w"
                 :daily-events="dailyEvents"
                 :hourly-events="hourlyEvents"
-                :week-dates="currentMonth"
+                :week-dates="[week[0], week[week.length - 1]]"
             />
         </div>
     </div>

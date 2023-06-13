@@ -151,6 +151,7 @@
         @include circle_button;
 
         font-size: 1.5em;
+        line-height: 1em;
     }
 
     .day_btn:hover {
