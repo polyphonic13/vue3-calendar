@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, onMounted, ref } from 'vue';
+    import { computed, ref } from 'vue';
 
     import type {
         IEvent,
@@ -92,7 +92,7 @@
         const daily = dailyEvents.value.map((event) => {
             const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekDates[0], props.weekDates[props.weekDates.length - 1]);
             let leftMultiplier = props.weekDates.findIndex(date => date.getDate() === event.start.getDate());
-            console.log(`[ ${props.index} ] ${props.weekDates[0].getDate()} - ${props.weekDates[props.weekDates.length - 1].getDate()}, leftMultiplier = ${leftMultiplier} for ${event.start.getDate()}`);
+
             if (leftMultiplier === -1) {
                 leftMultiplier = 0;
             }
@@ -173,10 +173,6 @@
     const onToggleEventCardsExpandedClicked = () => {
         isCardsExpanded.value = !isCardsExpanded.value;
     };
-
-    onMounted(() => {
-        console.log(`WeeklyEventCards[ ${props.index} ]/onMounted`);
-    });
 </script>
 
 <style scoped lang="scss">
