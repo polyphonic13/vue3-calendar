@@ -292,7 +292,7 @@
     }
 
     .arrow_btn {
-        border: 1px solid #ccc;
+        border: 1px solid $greyscale02;
         border-radius: 50%;
         max-width: 34px;
     }

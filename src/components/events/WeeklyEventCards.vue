@@ -53,9 +53,8 @@
 
     interface IWeeklyEventCardsProps {
         index: number;
-        dailyEvents: IEvent[];
-        hourlyEvents: IEvent[];
         weekDates: Date[];
+        isIncludeHourlyEvents: boolean;
     }
 
     const props = defineProps<IWeeklyEventCardsProps>();
@@ -69,7 +68,12 @@
     const { convertDateToHHMM } = useDateUtils();
 
     const { getRowsForEvents } = useCalculateEventCardRows();
-    const { getDaysInEventInDateRangeCount, viewEvent } = useEventStore();
+    const {
+        getEventsForRange,
+        getIsFullDayEvent,
+        getDaysInEventInDateRangeCount,
+        viewEvent,
+     } = useEventStore();
 
     const isCardsExpanded = ref(false);
 
@@ -78,10 +82,17 @@
         return getRowsForEvents(events.value, props.weekDates);
     });
 
+    const weeklyEvents = computed(() => getEventsForRange(props.weekDates[0], props.weekDates[props.weekDates.length - 1]));
+
+    const dailyEvents = computed(() => weeklyEvents.value.filter((event) => getIsFullDayEvent(event)));
+
+    const hourlyEvents = computed(() => weeklyEvents.value.filter((event) => !getIsFullDayEvent(event)));
+
     const events = computed(() => {
-        const daily = props.dailyEvents.map((event) => {
+        const daily = dailyEvents.value.map((event) => {
             const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekDates[0], props.weekDates[props.weekDates.length - 1]);
-            let leftMultiplier = props.weekDates.findIndex((date) => date.getDate() === event.start.getDate());
+            let leftMultiplier = props.weekDates.findIndex(date => date.getDate() === event.start.getDate());
+            console.log(`[ ${props.index} ] ${props.weekDates[0].getDate()} - ${props.weekDates[props.weekDates.length - 1].getDate()}, leftMultiplier = ${leftMultiplier} for ${event.start.getDate()}`);
             if (leftMultiplier === -1) {
                 leftMultiplier = 0;
             }
@@ -94,7 +105,11 @@
             };
         });
 
-        const hourly = props.hourlyEvents.map((event) => {
+        if (!props.isIncludeHourlyEvents) {
+            return daily;
+        }
+
+        const hourly = hourlyEvents.value.map((event) => {
             let leftMultiplier = props.weekDates.findIndex((date) => date.getDate() === event.start.getDate());
             if (leftMultiplier === -1) {
                 leftMultiplier = 0;
@@ -107,7 +122,7 @@
                 isHourly: true,
             };
         });
-        console.log(`=============\nWeeklyEventCards[ ${props.index} ]\ndaily = `, daily, `\nhourly = `, hourly);
+
         return [...daily, ...hourly];
     });
 
@@ -125,7 +140,7 @@
 
     const eventCardsStyle = computed(() => {
         const sorted = [...eventRows.value].sort((a, b) => b - a);
-        return (isEventCardsExpanded.value) ? `height: ${(((sorted[0] + 1) * 24))}px` : 'height: 74px';
+        return (isEventCardsExpanded.value) ? `min-height: ${(((sorted[0] + 1) * 24))}px` : 'height: 74px';
     });
 
     const getCardStyle = (event: IMultiDayEvent, index: number) => {
@@ -160,8 +175,8 @@
     };
 
     onMounted(() => {
-        console.log(`WeeklyEventCards[ ${props.index} ]/onMounted, weekDates = `, props.weekDates);
-    })
+        console.log(`WeeklyEventCards[ ${props.index} ]/onMounted`);
+    });
 </script>
 
 <style scoped lang="scss">
@@ -192,6 +207,13 @@
     .event_card_list__controls__toggle_btn {
         @include circle_button;
 
+        background-color: $transparentGrey05;
+        border: 1px solid $greyscale02;
+
+        bottom: 0;
+        left: 0;
+
+        position: absolute;
         z-index: 1000;
     }
 
@@ -230,6 +252,8 @@
 
     .event_card:hover {
         @include event_card--hover;
+
+        z-index: 1001;
     }
 
     .event_card--hourly:hover {

@@ -23,9 +23,9 @@
             />
         </div>
         <WeeklyEventCards
-            :daily-events="dailyEvents"
-            :hourly-events="hourlyEvents"
+            :index="0"
             :week-dates="weekInfo"
+            :is-include-hourly-events="true"
         />
         <div class="day_container">
             <div class="day_of_week_list">

@@ -26,9 +26,8 @@
             </div>
             <WeeklyEventCards
                 :index="w"
-                :daily-events="dailyEvents"
-                :hourly-events="hourlyEvents"
-                :week-dates="[week[0], week[week.length - 1]]"
+                :week-dates="week"
+                :is-include-hourly-events="true"
             />
         </div>
     </div>
@@ -40,7 +39,6 @@
     import { useCalendarStore } from '@/stores/calendar';
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
-    import { useComputedEventLists } from '@/composables/use-computed-event-lists';
 
     import DayOfMonth from './DayOfMonth.vue';
     import DaysOfWeekNames from './DaysOfWeekNames.vue';
@@ -67,17 +65,9 @@
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
 
-    const {
-        setStartDate,
-        setEndDate,
-        dailyEvents,
-        hourlyEvents,
-    } = useComputedEventLists();
-
     const emit = defineEmits(['createEvent', 'dateClicked']);
 
     watch(() => props.month, () => {
-        setStartAndEndDate();
         initAllDays();
     });
 
@@ -136,15 +126,8 @@
         emit('dateClicked', { day, week });
     };
 
-    const setStartAndEndDate = () => {
-        setStartDate(props.currentMonth[0]);
-        setEndDate(props.currentMonth[props.currentMonth.length - 1]);
-    };
-
     onMounted(() => {
-        setStartAndEndDate();
         initAllDays();
-        console.log(`MonthLayout/onMounted, weeklyEvents = `, weeklyEvents.value);
     });
 </script>
 
