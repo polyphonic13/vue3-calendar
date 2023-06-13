@@ -297,7 +297,7 @@
         flex-direction: column;
 
         position: absolute;
-        z-index: 1000;
+        z-index: 9999;
     }
 
     .event_modal__header, .event_modal__content, .event_model__footer {
