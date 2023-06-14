@@ -12,32 +12,30 @@ import type {
 } from '@/interfaces';
 
 export const useUIStore = defineStore('ui', () => {
-
     const createState = (): IUIState => {
         const savedState = load<IUIState>(LOCAL_STORAGE_KEY);
 
-        if (savedState) {
-            return savedState;
-        }
-
         return {
             isControlCenterCollapsed: false,
+            isViewingEvent: false,
+            isViewingEventList: false,
+            ...savedState,
         };
     };
 
-    const state = ref<IUIState>(createState());
+    const uiState = ref<IUIState>(createState());
 
     const saveState = () => {
-        save<IUIState>(LOCAL_STORAGE_KEY, state.value);
+        save<IUIState>(LOCAL_STORAGE_KEY, uiState.value);
     };
 
     const toggleisControlCenterCollapsed = () => {
-        state.value.isControlCenterCollapsed = !state.value.isControlCenterCollapsed;
+        uiState.value.isControlCenterCollapsed = !uiState.value.isControlCenterCollapsed;
         saveState();
     }
 
     return {
-        state,
+        uiState,
         toggleisControlCenterCollapsed,
     };
 });

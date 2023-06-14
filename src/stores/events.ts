@@ -94,6 +94,14 @@ export const useEventStore = defineStore('eventStore', () => {
         });
     };
 
+    const getEventsForDate = (date: Date): IEvent[] => {
+        return state.value.events.filter((event: IEvent) => {
+            if (getAreDatesWithinRange(event.start, event.end, date, date, true)) {
+                return event;
+            }
+        }).sort((a, b) => a.start.getTime() - b.start.getTime());
+    };
+
     const createEvent = (payload: Partial<IEvent>) => {
         state.value.focusedEvent = eventFactory(payload);
     };
@@ -111,7 +119,7 @@ export const useEventStore = defineStore('eventStore', () => {
         saveEvents();
     };
 
-    const viewEvent = (payload: Partial<IEvent>) => {
+    const setFocusedEvent = (payload: Partial<IEvent>) => {
         if (!payload.id) {
             console.warn(`ERROR: can not edit event without value id\n${JSON.stringify(payload)}`);
             return;
@@ -220,9 +228,10 @@ export const useEventStore = defineStore('eventStore', () => {
     return {
         getEvents,
         getEventsForRange,
+        getEventsForDate,
         createEvent,
         addEvent,
-        viewEvent,
+        setFocusedEvent,
         cancelEditEvent,
         updateEvent,
         deleteEvent,

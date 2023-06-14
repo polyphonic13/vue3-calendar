@@ -12,7 +12,7 @@
     justify-content: center;
 }
 
-@mixin text_button {
+@mixin text_btn {
     @include flex_centered;
 
     padding: 8px 16px;
@@ -24,16 +24,16 @@
     cursor: pointer;
 }
 
-@mixin text_button--primary {
+@mixin text_btn--primary {
     background-color: $blue07;
     color: $greyscale01;
 }
 
-@mixin text_button--hover {
+@mixin text_btn--hover {
     opacity: 0.5;
 }
 
-@mixin text_button--disabled {
+@mixin text_btn--disabled {
     background-color: $greyscale06;
     opacity: 0.5;
 }
@@ -76,6 +76,17 @@
 
 @mixin circle_button--current--hover {
     background-color: $highlightedColorPrimaryHover;
+}
+
+@mixin link_btn {
+    width: 100%;
+
+    background-color: transparent;
+    border: none;
+
+    text-decoration: underline;
+
+    cursor: pointer;
 }
 
 @mixin control__btn {
@@ -149,7 +160,7 @@
     }
 }
 
-@mixin event_card--hourly__dot {
+@mixin event_dot {
     width: 12px;
     height: 12px;
     background-color: $eventCard01BG;
@@ -215,4 +226,23 @@
 
 @mixin event_card__title__t--active {
     display: block;
+}
+
+@mixin modal {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+
+    background-color: $greyscale01;
+    box-shadow: $boxShadow03;
+
+    padding: 8px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    position: absolute;
 }

@@ -57,9 +57,9 @@
     import { TIMES_IN_DAY, useDateUtils } from '@/composables/use-date-utils';
     import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
-    import { useEventStore } from '@/stores/events';
+    import { useViewEvent } from '@/composables/use-view-event';
 
-    const { viewEvent } = useEventStore();
+    const { viewEvent } = useViewEvent();
 
     const { convertDateToHHMM, convertDateTimeToNumber } = useDateUtils();
 

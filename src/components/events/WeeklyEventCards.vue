@@ -1,21 +1,17 @@
 <template>
     <div
         class="weekly_event_cards"
-        :class="eventCardsClasses"
-        :style="eventCardsStyle"
+        :class="classes"
     >
         <div
-            v-for="(_, d) in DAYS_OF_WEEK"
+            v-for="(date, d) in weekDates"
             class="weekly_event_cards__day"
-        ></div>
-        <div
-            v-if="isEventCardsControlsVisible"
-            class="event_card_list__controls"
         >
-            <button class="event_card_list__controls__toggle_btn" @click="onToggleEventCardsExpandedClicked">
-                <svg v-if="isEventCardsExpanded" class="up_arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"/></svg>
-                <svg v-else class="down_arrow" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
-            </button>
+            <button
+                v-if="getEventsForDate(date).length > 2"
+                class="more_events_btn"
+                @click="onViewEventListClicked(d)"
+            >{{ `${getEventsForDate(date).length - 2} more` }}</button>
         </div>
         <button
             v-for="(event, e) in events"
@@ -25,25 +21,27 @@
             :style="getCardStyle(event, e)"
             @click.stop="onEventClicked(e)"
         >
-            <span v-if="event.isHourly" class="event_card--hourly__dot"></span>
+            <span v-if="event.isHourly" class="event_dot"></span>
             <span class="event_card__title"><b>{{ event.title }}</b></span>
             <span v-if="event.isHourly" class="event_card--hourly__time">{{  convertDateToHHMM(event.start) }}</span>
         </button>
-
     </div>
 </template>
 
 <script setup lang="ts">
-    import { computed, ref } from 'vue';
+    import { computed, nextTick, onMounted, ref } from 'vue';
+    import { storeToRefs } from 'pinia';
 
     import type {
         IEvent,
     } from '@/interfaces';
 
     import { useEventStore } from '@/stores/events';
+    import { useUIStore } from '@/stores/ui';
 
     import { useCalculateEventCardRows } from '@/composables/use-calculate-event-card-rows';
-    import { DAYS_OF_WEEK, useDateUtils } from '@/composables/use-date-utils';
+    import { useDateUtils } from '@/composables/use-date-utils';
+    import { useViewEvent } from '@/composables/use-view-event';
 
     interface IMultiDayEvent extends IEvent {
         daysWithinWeek: number;
@@ -63,20 +61,24 @@
         'onDayMouseDown',
         'onDayMouseOver',
         'onDayMouseUp',
+        'viewEventListClicked',
     ]);
 
     const { convertDateToHHMM } = useDateUtils();
 
     const { getRowsForEvents } = useCalculateEventCardRows();
+
     const {
         getEventsForRange,
+        getEventsForDate,
         getIsFullDayEvent,
         getDaysInEventInDateRangeCount,
-        viewEvent,
      } = useEventStore();
 
-    const isCardsExpanded = ref(false);
+    const uiStore = useUIStore();
+    const { uiState } = storeToRefs(uiStore);
 
+    const { viewEvent } = useViewEvent();
 
     const eventRows = computed(() => {
         return getRowsForEvents(events.value, props.weekDates);
@@ -84,12 +86,12 @@
 
     const weeklyEvents = computed(() => getEventsForRange(props.weekDates[0], props.weekDates[props.weekDates.length - 1]));
 
-    const dailyEvents = computed(() => weeklyEvents.value.filter((event) => getIsFullDayEvent(event)));
+    const fullDayEvents = computed(() => weeklyEvents.value.filter((event) => getIsFullDayEvent(event)));
 
     const hourlyEvents = computed(() => weeklyEvents.value.filter((event) => !getIsFullDayEvent(event)));
 
     const events = computed(() => {
-        const daily = dailyEvents.value.map((event) => {
+        const daily = fullDayEvents.value.map((event) => {
             const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekDates[0], props.weekDates[props.weekDates.length - 1]);
             let leftMultiplier = props.weekDates.findIndex(date => date.getDate() === event.start.getDate());
 
@@ -126,26 +128,15 @@
         return [...daily, ...hourly];
     });
 
-    const isEventCardsControlsVisible = computed(() => {
-        return [...eventRows.value].sort((a, b) => b - a)[0] > 2;
-    });
-
-    const isEventCardsExpanded = computed(() => {
-        return isCardsExpanded.value;
-    });
-
-    const eventCardsClasses = computed(() => ({
-        'event_card_list--expanded': (isCardsExpanded.value)
+    const classes = computed(() => ({
+        'weekly_event_cards--tall': ([...eventRows.value].sort((a, b) => b - a)[0] > 1),
     }));
 
-    const eventCardsStyle = computed(() => {
-        const sorted = [...eventRows.value].sort((a, b) => b - a);
-        return (isEventCardsExpanded.value) ? `min-height: ${(((sorted[0] + 1) * 24))}px` : 'height: 72px';
-    });
-
     const getCardStyle = (event: IMultiDayEvent, index: number) => {
+        if (eventRows.value[index] > 1) {
+            return 'display: none';
+        }
         const width = (100 / 7) * event.daysWithinWeek;
-        // add extra 24 to include white space at top for new event creation area
         const top = ((eventRows.value[index]) * 24);
         const left = (100 / 7) * event.leftMultiplier;
 
@@ -170,9 +161,17 @@
         viewEvent(events.value[index]);
     };
 
-    const onToggleEventCardsExpandedClicked = () => {
-        isCardsExpanded.value = !isCardsExpanded.value;
+    const onViewEventListClicked = (index: number) => {
+        console.log(`WeeklyEventCards/onViewEventListClicked, index = ${index}`);
+        // have to use set-timeout to give existing event list time to close
+        setTimeout(() => {
+            emit('viewEventListClicked', index);
+        }, 30);
     };
+
+    onMounted(() => {
+        console.log(`WeeklyEventCards/onMounted, events = `, events.value);
+    })
 </script>
 
 <style scoped lang="scss">
@@ -181,7 +180,6 @@
 
     .weekly_event_cards {
         @include event_card_list;
-
     }
 
     .weekly_event_cards__day {
@@ -191,8 +189,20 @@
         box-sizing: border-box;
     }
 
-    .event_card_list--expanded {
-        @include event_card_list--expanded;
+    .more_events_btn {
+        @include link_btn;
+
+        padding-top: 54px;
+    }
+
+    .weekly_event_cards {
+        min-height: 48px;
+        max-height: 48px;
+    }
+
+    .weekly_event_cards--tall {
+        min-height: 72px;
+        max-height: 72px;
     }
 
     .event_card_list__controls {
@@ -234,8 +244,8 @@
         @include event_card--hourly;
     }
 
-    .event_card--hourly__dot {
-        @include event_card--hourly__dot;
+    .event_dot {
+        @include event_dot;
     }
 
     .event_card--whole {
@@ -267,7 +277,7 @@
     }
 
     @media screen and (max-width: 400px) {
-        .event_card--hourly__dot, .event_card--hourly__time {
+        .event_dot, .event_card--hourly__time {
             display: none;
         }
     }

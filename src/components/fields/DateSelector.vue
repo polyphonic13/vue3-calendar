@@ -125,7 +125,7 @@
         isModalOpen.value = false;
     };
 
-    const onDocumentClicked = (event: MouseEvent) => {
+    const onDocumentClicked = (event: MouseEvent | TouchEvent) => {
         if (!dateSelector.value || !event.target) {
             return;
         }

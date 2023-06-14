@@ -68,6 +68,8 @@
 
     import type { IEvent } from '../interfaces';
 
+    import { useUIStore } from '@/stores/ui';
+
     import MonthLayout from '@/components/MonthLayout.vue';
     import WeekLayout from '@/components/WeekLayout.vue';
     import DayLayout from '@/components/DayLayout.vue';
@@ -76,6 +78,9 @@
 
     const calendarStore = useCalendarStore();
     const { state } = storeToRefs(calendarStore);
+
+    const uiStore = useUIStore();
+    const { uiState } = storeToRefs(uiStore);
 
     const {
         setLayout,
@@ -91,8 +96,6 @@
         createEvent,
         cancelEditEvent,
         deleteEvent,
-        getisViewingEvent,
-        setIsViewingEvent,
         getFocusedEvent,
     } = eventStore;
 
@@ -123,7 +126,7 @@
     });
 
     const isViewingEvent = computed(() => {
-        return getisViewingEvent();
+        return uiState.value.isViewingEvent;
     });
 
     const focusedEvent = computed(() => {
@@ -155,7 +158,7 @@
         resetEventEditing();
         createEvent(event);
         isNewEvent = true;
-        setIsViewingEvent(true);
+        uiState.value.isViewingEvent = true;
     };
 
     const handleEscapeClicked = () => {
@@ -201,7 +204,7 @@
     };
 
     const resetEventEditing = () => {
-        setIsViewingEvent(false);
+        uiState.value.isViewingEvent = false;
         isNewEvent = false;
         cancelEditEvent();
     };

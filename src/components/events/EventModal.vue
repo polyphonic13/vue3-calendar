@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="event_modal"
-    >
+    <div class="event_modal">
         <div class="event_modal__header">
             <span></span>
             <button
@@ -78,8 +76,11 @@
     import { ref, computed, onMounted, nextTick } from 'vue';
 
     import type { IEvent } from '@/interfaces';
+
     import { useEventStore } from '@/stores/events';
+
     import { useDateUtils } from '@/composables/use-date-utils';
+    import { useViewEvent } from '@/composables/use-view-event';
 
     import DateSelector from '@/components/fields/DateSelector.vue';
 
@@ -97,12 +98,13 @@
 
     const {
         addEvent,
-        viewEvent,
         updateEvent,
         deleteEvent,
         getIsFullDayEvent,
         getIsSameDayEvent,
     } = eventStore;
+
+    const { viewEvent } = useViewEvent();
 
     const emit = defineEmits(['onClose']);
 
@@ -222,10 +224,10 @@
 
     const close = () => {
         // console.log(`close, isEditingDisabled = ${isEditingDisabled.value}`);
-        if (isEditingDisabled.value) {
-            emit('onClose');
-            return;
-        }
+        // if (isEditingDisabled.value) {
+        //     emit('onClose');
+        //     return;
+        // }
 
         // const isConfirmed = confirm('Discard unsaved changes?');
 
@@ -278,25 +280,11 @@
     @import '../../styles/mixins.scss';
 
     .event_modal {
+        @include modal;
+
         width: 512px;
         height: 512px;
 
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-
-        background-color: $greyscale01;
-        box-shadow: $boxShadow03;
-
-        padding: 8px;
-        box-sizing: border-box;
-
-        display: flex;
-        flex-direction: column;
-
-        position: absolute;
         z-index: 9999;
     }
 
@@ -378,16 +366,16 @@
     }
 
     .save_button {
-        @include text_button;
-        @include text_button--primary;
+        @include text_btn;
+        @include text_btn--primary;
     }
 
     .save_button:hover {
-        @include text_button--hover;
+        @include text_btn--hover;
     }
 
     .save_button:disabled {
-        @include text_button--disabled;
+        @include text_btn--disabled;
     }
 
     .date_selector__btn {
