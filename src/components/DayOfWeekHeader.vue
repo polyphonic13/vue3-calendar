@@ -1,15 +1,20 @@
 <template>
     <div
         class="day_of_week_header"
-        @mousedown="onMouseDown"
-        @mouseover="onMouseOver"
-        @mouseup="onMouseUp"
+        @mousedown="emit('dayOnMouseDown', props.index)"
+        @mouseover="emit('dayOnMouseOver', props.index)"
+        @mouseup="emit('dayOnMouseUp', props.index)"
+        @touchstart="emit('dayOnMouseDown', props.index)"
+        @touchmove="emit('dayOnMouseOver', props.index)"
+        @touchend="emit('dayOnMouseUp', props.index)"
     >
         <span v-if="props.dayName !== ''" class="day_name">{{ props.dayName }}</span>
         <button
             class="day_btn"
             :class="classes"
             @click.stop="$emit('dateClicked', props.index)"
+            @mousedown.stop=""
+            @touchstart.stop=""
         >{{ props.day }}</button>
         <div
             class="day_of_week_header__selection_area"
@@ -62,24 +67,6 @@
     const classes = reactive({
         current: getIsToday(),
     });
-
-    const onMouseDown = (_: MouseEvent) => {
-        emit('dayOnMouseDown', props.index);
-    };
-
-    const onMouseOver = (_: MouseEvent) => {
-        if (!props.isSelecting) {
-            return;
-        }
-        emit('dayOnMouseOver', props.index);
-    };
-
-    const onMouseUp = (_: MouseEvent) => {
-        if (!props.isSelecting) {
-            return;
-        }
-        emit('dayOnMouseUp', props.index);
-    };
 </script>
 
 <style scoped lang="scss">
@@ -135,6 +122,7 @@
     .day_of_week_header__selection_area {
         width: 100%;
         height: 24px;
+        margin-top: 4px;
     }
 
     .day_of_week_header__selection_area--selecting {

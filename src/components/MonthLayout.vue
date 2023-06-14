@@ -14,7 +14,6 @@
                     :year="props.year"
                     :month="day.getMonth()"
                     :currentMonth="props.month"
-                    :date="day"
                     :day="day.getDate()"
                     :is-selecting="isSelecting"
                     :is-selected="selectedItems.includes(getDayIndex(w, d))"
@@ -141,6 +140,8 @@
         flex-direction: column;
 
         border-left: 1px solid $borderColor01;
+        border-bottom: 1px solid $borderColor01;
+        box-sizing: border-box;
     }
 
     .week {
@@ -153,6 +154,7 @@
 
     .day_list {
         width: 100%;
+        flex: 1;
         display: flex;
     }
 

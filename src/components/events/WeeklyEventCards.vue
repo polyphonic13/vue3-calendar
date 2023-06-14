@@ -140,7 +140,7 @@
 
     const eventCardsStyle = computed(() => {
         const sorted = [...eventRows.value].sort((a, b) => b - a);
-        return (isEventCardsExpanded.value) ? `min-height: ${(((sorted[0] + 1) * 24))}px` : 'height: 74px';
+        return (isEventCardsExpanded.value) ? `min-height: ${(((sorted[0] + 1) * 24))}px` : 'height: 72px';
     });
 
     const getCardStyle = (event: IMultiDayEvent, index: number) => {
@@ -188,6 +188,7 @@
         width: calc(100% / 7);
 
         border-right: 1px solid $borderColor01;
+        box-sizing: border-box;
     }
 
     .event_card_list--expanded {

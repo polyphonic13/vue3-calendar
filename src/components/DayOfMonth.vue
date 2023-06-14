@@ -1,28 +1,32 @@
 <template>
     <div
-        class="day"
+        class="day_of_month"
         :class="classes"
-        @mousedown="onMouseDown"
-        @mouseover="onMouseOver"
-        @mouseup="onMouseUp"
+        @mousedown="emit('dayOnMouseDown', props.index)"
+        @mouseover="emit('dayOnMouseOver', props.index)"
+        @mouseup="emit('dayOnMouseUp', props.index)"
+        @touchstart="emit('dayOnMouseDown', props.index)"
+        @touchmove="emit('dayOnMouseOver', props.index)"
+        @touchend="emit('dayOnMouseUp', props.index)"
     >
-        <div class="day__header">
+        <div class="day_of_month__header">
             <button
                 class="day_btn"
                 :class="dayButtonClasses"
-                @click.stop="$emit('dateClicked')"
+                @click="$emit('dateClicked')"
+                @mousedown.stop=""
+                @touchstart.stop=""
             >{{ props.day }}</button>
         </div>
         <div
-            class="day__container"
-        >
-            <div class="new_item"></div>
-        </div>
+            class="day_of_month__selection_area"
+            :class="{ 'day_of_month__selection_area--selecting': props.isSelecting && props.isSelected }"
+        ></div>
 </div>
 </template>
 
 <script setup lang="ts">
-    import { reactive, watch, computed, onMounted } from 'vue';
+    import { reactive, watch, computed } from 'vue';
 
     interface IDayProps {
         index: number;
@@ -30,7 +34,6 @@
         month: number;
         currentMonth: number;
         day: number;
-        date: Date;
         isSelecting: boolean;
         isSelected: boolean;
     }
@@ -54,49 +57,20 @@
         dayButtonClasses['day_btn--current'] = getIsToday();
     });
 
-    watch(() => props.isSelecting, () => {
-        if (props.isSelecting) {
-            return;
-        }
-    });
-
-    watch(() => props.month, () => {
-        console.log(`DayOfMonth, month change, month = ${props.month}, currentMonth = ${props.currentMonth}`);
-    });
-
     const dayButtonClasses = reactive({
         'day_btn--current': getIsToday(),
     });
 
     const classes = computed(() => ({
-        day__other_month: (props.month !== props.currentMonth),
-        day__selecting: props.isSelected,
+        day_of_month__other_month: (props.month !== props.currentMonth),
     }));
-
-    const onMouseDown = (_: MouseEvent) => {
-        emit('dayOnMouseDown', props.index);
-    };
-
-    const onMouseOver = (_: MouseEvent) => {
-        if (!props.isSelecting) {
-            return;
-        }
-        emit('dayOnMouseOver', props.index);
-    };
-
-    const onMouseUp = (_: MouseEvent) => {
-        if (!props.isSelecting) {
-            return;
-        }
-        emit('dayOnMouseUp', props.index);
-    };
 </script>
 
 <style scoped lang="scss">
     @import '../styles/global.scss';
     @import '../styles/mixins.scss';
 
-    .day {
+    .day_of_month {
         width: calc(100% / 7);
 
         box-sizing: border-box;
@@ -112,38 +86,26 @@
         cursor: pointer;
     }
 
-    .day__other_month {
-        > .day__header {
+    .day_of_month__other_month {
+        > .day_of_month__header {
             > button {
                 color: $inactiveColor01;
             }
         }
     }
 
-    .day__selecting {
-        > .day__container {
-            > .new_item {
-                @include selected_item;
-            }
-        }
-
-    }
-
-    .day__header {
+    .day_of_month__header {
         padding: 4px;
 
+        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
 
-
         text-align: center;
         user-select: none;
-    }
 
-    .day__container {
-        flex: 1;
     }
 
     .day_btn {
@@ -165,17 +127,20 @@
         @include circle_button--current--hover;
     }
 
+    .day_of_month__selection_area {
+        height: 24px;
+
+        cursor: pointer;
+    }
+
+    .day_of_month__selection_area--selecting {
+        @include selected_item;
+    }
+
     @media screen and (max-width: 400px) {
         .day_btn {
             @include circle_button--mobile;
         }
-    }
-
-    .new_item {
-        margin: 4px 0 4px 0;
-        width: 100%;
-        height: 16px;
-        box-sizing: border-box;
     }
 
 </style>
