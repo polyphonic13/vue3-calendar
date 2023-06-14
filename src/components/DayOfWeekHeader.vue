@@ -5,16 +5,16 @@
         @mouseover="onMouseOver"
         @mouseup="onMouseUp"
     >
-            <span v-if="props.dayName !== ''" class="day_name">{{ props.dayName }}</span>
-            <button
-                class="day_btn"
-                :class="classes"
-                @click.stop="$emit('dateClicked', props.index)"
-            >{{ props.day }}</button>
-            <div
-                class="day_of_week_header__selection_area"
-                :class="{ 'day_of_week_header__selection_area--selecting': isSelectingDays && selectedItems.includes(index) }"
-            ></div>
+        <span v-if="props.dayName !== ''" class="day_name">{{ props.dayName }}</span>
+        <button
+            class="day_btn"
+            :class="classes"
+            @click.stop="$emit('dateClicked', props.index)"
+        >{{ props.day }}</button>
+        <div
+            class="day_of_week_header__selection_area"
+            :class="{ 'day_of_week_header__selection_area--selecting': isSelectingDays && selectedItems.includes(index) }"
+        ></div>
     </div>
 </template>
 

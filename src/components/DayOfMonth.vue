@@ -2,21 +2,20 @@
     <div
         class="day"
         :class="classes"
+        @mousedown="onMouseDown"
+        @mouseover="onMouseOver"
+        @mouseup="onMouseUp"
     >
         <div class="day__header">
             <button
                 class="day_btn"
                 :class="dayButtonClasses"
-                @click="$emit('dateClicked')"
+                @click.stop="$emit('dateClicked')"
             >{{ props.day }}</button>
         </div>
         <div
             class="day__container"
-            @mousedown="onMouseDown"
-            @mouseover="onMouseOver"
-            @mouseup="onMouseUp"
         >
-            <div class="items"></div>
             <div class="new_item"></div>
         </div>
 </div>

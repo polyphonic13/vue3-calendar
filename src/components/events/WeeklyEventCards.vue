@@ -203,18 +203,21 @@
     .event_card_list__controls__toggle_btn {
         @include circle_button;
 
-        background-color: $transparentGrey05;
+        background-color: $greyscale01;
         border: 1px solid $greyscale02;
+        box-shadow: $boxShadow04;
 
-        bottom: 0;
-        left: 0;
+        bottom: 2px;
+        left: 2px;
 
         position: absolute;
         z-index: 1000;
     }
 
     .event_card_list__controls__toggle_btn:hover {
-        @include circle_button--hover;
+        // @include circle_button--hover;
+        // opacity: 0.7;
+        background-color: $transparentGrey05;
     }
 
     .event_card {
