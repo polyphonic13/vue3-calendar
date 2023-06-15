@@ -8,4 +8,8 @@ export default interface IEventState {
     events: IEvent[];
     isViewingEvent: boolean;
     focusedEvent: Partial<IEvent> | null;
+    focusedDay: {
+        date: Date,
+        events: IEvent[],
+    } | null;
 }

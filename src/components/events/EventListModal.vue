@@ -1,5 +1,6 @@
 <template>
     <div
+        v-if="focusedDay"
         ref="eventListModal"
         class="event_list_modal"
         :style="styles"
@@ -7,8 +8,8 @@
     >
         <div class="event_list_modal__header">
             <div class="event_list_modal__header__date">
-                <div class="month">{{ MONTH_NAMES[props.date.getMonth()] }}</div>
-                <div class="day">{{ props.date.getDate() }}</div>
+                <div class="month">{{ MONTH_NAMES[focusedDay.date.getMonth()] }}</div>
+                <div class="day">{{ focusedDay.date.getDate() }}</div>
             </div>
             <button
                 class="circle_button close_button"
@@ -20,7 +21,7 @@
         </div>
         <div class="event_list_modal__content">
             <button
-                v-for="(event, e) in props.events"
+                v-for="(event, e) in focusedDay.events"
                 :key="event.id"
                 class="event_list_modal__event_btn"
                 @click="onEventClicked(e)"
@@ -35,41 +36,45 @@
 <script setup lang="ts">
     import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-    import type { IEvent, ICoordinates } from '@/interfaces';
+    import { useEventStore } from '@/stores/events';
 
-    import { MONTH_NAMES } from '@/composables/use-date-utils';
-
+    import { useEventListModal } from '@/composables/use-event-list-modal';
     import { useViewEvent } from '@/composables/use-view-event';
     import { useDocumentClickListener } from '@/composables/use-document-click-listener';
     import { usePositionElementInWindow } from '@/composables/use-position-element-in-window';
+    import { MONTH_NAMES } from '@/composables/use-date-utils';
 
     const { addDocumentClickListener, removeDocumentClickListener } = useDocumentClickListener();
     const { getLocationWithinWindow } = usePositionElementInWindow();
-
-    interface IEventListModalProps {
-        events: IEvent[];
-        coords: ICoordinates;
-        date: Date;
-    }
-
-    const props = defineProps<IEventListModalProps>();
 
     const emit = defineEmits(['onClose']);
 
     const eventListModal = ref<HTMLElement | null>(null);
     const closeButton = ref<HTMLElement | null>(null);
 
+    const { getCurrentClickCoordinates, closeEventList } = useEventListModal();
+
+    const { getFocusedDay } = useEventStore();
+
     const { viewEvent } = useViewEvent();
 
+    const coords = computed(() => {
+        return getCurrentClickCoordinates();
+    });
+
     const styles = computed(() => {
-        const { x, y } = getLocationWithinWindow(props.coords.x, props.coords.y, eventListModal.value, 16);
+        const { x, y } = getLocationWithinWindow(coords.value.x, coords.value.y, eventListModal.value, 16);
 
         return `top: ${y}px; left: ${x}px;`;
     });
 
+    const focusedDay = computed(() => {
+        return getFocusedDay();
+    });
+
     const onEventClicked = (index: number) => {
         close();
-        viewEvent(props.events[index]);
+        viewEvent(focusedDay.value!.events[index]);
     };
 
     const onCloseClicked = (_: MouseEvent | TouchEvent) => {
@@ -101,7 +106,7 @@
         close();
     };
 
-    const close = () => { emit('onClose'); };
+    const close = () => { closeEventList(); };
 
     onMounted(() => {
         // have to use set time out as initial click on link to open gets registered by onDocumentClicked

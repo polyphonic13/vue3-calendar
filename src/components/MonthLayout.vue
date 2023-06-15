@@ -27,8 +27,10 @@
                 :index="w"
                 :week-dates="week"
                 :is-include-hourly-events="true"
+                @view-event-list-clicked="viewEventList"
             />
         </div>
+        <EventListModal v-if="isViewEventList" />
     </div>
 </template>
 
@@ -38,10 +40,12 @@
     import { useCalendarStore } from '@/stores/calendar';
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
+    import { useEventListModal } from '@/composables/use-event-list-modal';
 
     import DayOfMonth from './DayOfMonth.vue';
     import DaysOfWeekNames from './DaysOfWeekNames.vue';
     import WeeklyEventCards from './events/WeeklyEventCards.vue';
+    import EventListModal from './events/EventListModal.vue';
 
     interface IMonthProps {
         year: number;
@@ -60,6 +64,9 @@
     } = useMouseItemSelect();
 
     const { getWeekForDate } = useCalendarStore();
+
+    const { viewEventList, getIsViewEventList } = useEventListModal();
+
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -87,6 +94,10 @@
         return weeks;
     });
 
+    const isViewEventList = computed(() => {
+        return getIsViewEventList();
+    });
+
     const getDayIndex = (row: number, col: number) => {
         return props.currentMonth.findIndex((date) => date.getTime() === weeklyEvents.value[row][col].getTime());
     };
@@ -103,7 +114,6 @@
             return;
         }
 
-        console.log(`onAddEventForDay, selectedItems.value[0] = ${selectedItems.value[0]}, selectedItems.value[selectedItems.value.length] = ${selectedItems.value[selectedItems.value.length - 1]}\n`, props.currentMonth[selectedItems.value[0]], props.currentMonth[selectedItems.value[selectedItems.value.length - 1]]);
         const start = new Date(props.currentMonth[selectedItems.value[0]].toJSON());
         const end = new Date(props.currentMonth[selectedItems.value[selectedItems.value.length - 1]].toJSON());
 

@@ -10,7 +10,7 @@
             <button
                 v-if="getEventsForDate(date).length > 2"
                 class="more_events_btn"
-                @click="onViewEventListClicked($event, d)"
+                @click="onViewEventListClicked($event, props.weekDates[d])"
             >{{ `${getEventsForDate(date).length - 2} more` }}</button>
         </div>
         <button
@@ -105,7 +105,6 @@
             };
         });
 
-        console.log(`\tinclude hourly = ${props.isIncludeHourlyEvents}`);
         if (!props.isIncludeHourlyEvents) {
             return daily;
         }
@@ -160,10 +159,10 @@
         viewEvent(events.value[index]);
     };
 
-    const onViewEventListClicked = (event: MouseEvent, index: number) => {
+    const onViewEventListClicked = (event: MouseEvent, date: Date) => {
         const coords = getCoordsFromEvent(event);
         const payload = {
-            index,
+            date,
             coords,
         };
 
@@ -174,8 +173,8 @@
     };
 
     onMounted(() => {
-        console.log(`WeeklyEventCards/onMounted, events = `, events.value);
-    })
+        // console.log(`WeeklyEventCards/onMounted, events = `, events.value);
+    });
 </script>
 
 <style scoped lang="scss">

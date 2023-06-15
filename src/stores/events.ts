@@ -45,6 +45,7 @@ export const useEventStore = defineStore('eventStore', () => {
                 events: deserializeEvents(savedState.events),
                 isViewingEvent: false,
                 focusedEvent: null,
+                focusedDay: null,
             };
         }
 
@@ -52,6 +53,7 @@ export const useEventStore = defineStore('eventStore', () => {
             events: [],
             isViewingEvent: false,
             focusedEvent: null,
+            focusedDay: null,
         };
     };
 
@@ -130,6 +132,17 @@ export const useEventStore = defineStore('eventStore', () => {
         state.value.focusedEvent = copy;
         state.value.isViewingEvent = true;
     };
+
+    const setFocusedDay = (date: Date) => {
+        const events = getEventsForDate(date);
+
+        state.value.focusedDay = {
+            date,
+            events,
+        };
+    };
+
+    const getFocusedDay = () => state.value.focusedDay;
 
     const cancelEditEvent = () => {
         state.value.isViewingEvent = false;
@@ -232,6 +245,8 @@ export const useEventStore = defineStore('eventStore', () => {
         createEvent,
         addEvent,
         setFocusedEvent,
+        setFocusedDay,
+        getFocusedDay,
         cancelEditEvent,
         updateEvent,
         deleteEvent,

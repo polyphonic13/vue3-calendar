@@ -26,7 +26,7 @@
             :index="0"
             :week-dates="weekInfo"
             :is-include-hourly-events="true"
-            @view-event-list-clicked="onViewEventList"
+            @view-event-list-clicked="viewEventList"
         />
         <div class="day_container">
             <div class="day_of_week_list">
@@ -49,14 +49,7 @@
                 />
             </div>
         </div>
-        <EventListModal
-            v-if="isViewEventList"
-            :events="currentEventsForDate"
-            :date="currentEventListDate"
-            :coords="uiState.currentClickCoords"
-            @on-close="onCloseEventList"
-        />
-
+        <EventListModal v-if="isViewEventList" />
     </div>
 </template>
 
@@ -66,13 +59,12 @@
         toRef,
         watch,
         onMounted,
-        ref,
         computed,
     } from 'vue';
     import { storeToRefs } from 'pinia';
 
     // interfaces, types and enums
-    import type { IYearMonthDay, IEvent, ICoordinates } from '@/interfaces';
+    import type { IYearMonthDay } from '@/interfaces';
 
     import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
@@ -85,10 +77,7 @@
 
     import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
     import { useComputedEventLists } from '@/composables/use-computed-event-lists';
-
-    // store
-    import { useEventStore } from '@/stores/events';
-    import { useUIStore } from '@/stores/ui';
+    import { useEventListModal } from '@/composables/use-event-list-modal';
 
     // components
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
@@ -123,10 +112,7 @@
         onMouseUp,
     } = useMouseItemSelect();
 
-    const { getEventsForDate } = useEventStore();
-
-    const uiStore = useUIStore();
-    const { uiState } = storeToRefs(uiStore);
+    const { viewEventList, getIsViewEventList } = useEventListModal();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -140,13 +126,9 @@
         'dateClicked',
     ]);
 
-    const currentEventsForDate = ref<IEvent[]>([]);
-    const currentEventListDate = ref<Date>(new Date());
-
     const isViewEventList = computed(() => {
-        return uiState.value.isViewingEventList;
+        return getIsViewEventList();
     });
-
 
     watch(() => props.weekInfo, () => {
         setStartAndEndDate();
@@ -154,7 +136,7 @@
     });
 
     const emitCreateEvent = (start: Date, end: Date) => {
-        if (uiState.value.isViewingEventList) {
+        if (isViewEventList.value) {
             return;
         }
 
@@ -226,20 +208,6 @@
 
     const onDateClicked = (index: number) => {
         emit('dateClicked', { day: props.weekInfo[index].getDate(), week: props.index });
-    };
-
-    const onViewEventList = (payload: { index: number, coords: ICoordinates }) => {
-        const { index, coords } = payload;
-
-        currentEventsForDate.value = getEventsForDate(props.weekInfo[index]);
-        currentEventListDate.value = props.weekInfo[index];
-
-        uiState.value.currentClickCoords = coords;
-        uiState.value.isViewingEventList = true;
-    };
-
-    const onCloseEventList = () => {
-        uiState.value.isViewingEventList = false;
     };
 
     const setStartAndEndDate = () => {
