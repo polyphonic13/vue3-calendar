@@ -52,6 +52,7 @@
         <EventListModal
             v-if="isViewEventList"
             :events="currentEventsForDate"
+            :date="currentEventListDate"
             :coords="uiState.currentClickCoords"
             @on-close="onCloseEventList"
         />
@@ -140,6 +141,7 @@
     ]);
 
     const currentEventsForDate = ref<IEvent[]>([]);
+    const currentEventListDate = ref<Date>(new Date());
 
     const isViewEventList = computed(() => {
         return uiState.value.isViewingEventList;
@@ -230,6 +232,8 @@
         const { index, coords } = payload;
 
         currentEventsForDate.value = getEventsForDate(props.weekInfo[index]);
+        currentEventListDate.value = props.weekInfo[index];
+
         uiState.value.currentClickCoords = coords;
         uiState.value.isViewingEventList = true;
     };

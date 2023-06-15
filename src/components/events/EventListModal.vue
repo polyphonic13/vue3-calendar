@@ -5,7 +5,10 @@
         :style="styles"
     >
         <div class="event_list_modal__header">
-            <span></span>
+            <div class="event_list_modal__header__date">
+                <div class="month">{{ MONTH_NAMES[props.date.getMonth()] }}</div>
+                <div class="day">{{ props.date.getDate() }}</div>
+            </div>
             <button
                 class="circle_button close_button"
                 @click="onCloseClicked"
@@ -32,6 +35,8 @@
 
     import type { IEvent, ICoordinates } from '@/interfaces';
 
+    import { MONTH_NAMES } from '@/composables/use-date-utils';
+
     import { useViewEvent } from '@/composables/use-view-event';
     import { useDocumentClickListener } from '@/composables/use-document-click-listener';
     import { usePositionElementInWindow } from '@/composables/use-position-element-in-window';
@@ -42,6 +47,7 @@
     interface IEventListModalProps {
         events: IEvent[];
         coords: ICoordinates;
+        date: Date;
     }
 
     const props = defineProps<IEventListModalProps>();
@@ -115,8 +121,37 @@
         width: 100%;
 
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
+
+        > * {
+            min-height: 100%;
+        }
+    }
+
+    .left-span, .close_button {
+        flex-basis: 34px;
+    }
+
+    .event_list_modal__header__date {
+        flex-grow: 1;
+
+        margin-left: 34px;
+
+        padding-bottom: 8px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        > * {
+            padding: 4px;
+        }
+    }
+
+    .day {
+        font-size: 1.5em;
     }
 
     .event_list_modal__event_btn {
