@@ -101,11 +101,10 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
 
         text-align: center;
         user-select: none;
-
     }
 
     .day_btn {
