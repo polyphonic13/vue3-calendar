@@ -227,7 +227,6 @@
     };
 
     const onViewEventList = (payload: { index: number, coords: ICoordinates }) => {
-        // console.log(`onViewEventList, index = ${index}\n\tdate = ${props.weekInfo[index]}\n\tevents = `, getEventsForDate(props.weekInfo[index]));
         const { index, coords } = payload;
 
         currentEventsForDate.value = getEventsForDate(props.weekInfo[index]);
@@ -261,7 +260,7 @@
         display: flex;
         flex-direction: column;
 
-        position: relative;
+        // position: relative;
 
         border-left: 1px solid $borderColor01;
         border-bottom: 1px solid $borderColor01;

@@ -30,12 +30,14 @@
 <script setup lang="ts">
     import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-    import type { ICoordinates, IEvent } from '@/interfaces';
+    import type { IEvent, ICoordinates } from '@/interfaces';
 
     import { useViewEvent } from '@/composables/use-view-event';
     import { useDocumentClickListener } from '@/composables/use-document-click-listener';
+    import { usePositionElementInWindow } from '@/composables/use-position-element-in-window';
 
     const { addDocumentClickListener, removeDocumentClickListener } = useDocumentClickListener();
+    const { getLocationWithinWindow } = usePositionElementInWindow();
 
     interface IEventListModalProps {
         events: IEvent[];
@@ -51,7 +53,9 @@
     const { viewEvent } = useViewEvent();
 
     const styles = computed(() => {
-        return `top: ${props.coords.y - 32}px; left: ${props.coords.x - 128}px;`;
+        const { x, y } = getLocationWithinWindow(props.coords.x, props.coords.y, eventListModal.value, 16);
+
+        return `top: ${y}px; left: ${x}px;`;
     });
 
     const onEventClicked = (index: number) => {
@@ -131,12 +135,5 @@
 
     .event_dot {
         @include event_dot;
-    }
-
-    @media screen and (max-width: 400px) {
-        .event_list_modal {
-            width: 90%;
-            height: 90%;
-        }
     }
 </style>
