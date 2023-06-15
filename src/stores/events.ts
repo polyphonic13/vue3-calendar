@@ -96,12 +96,18 @@ export const useEventStore = defineStore('eventStore', () => {
         });
     };
 
-    const getEventsForDate = (date: Date): IEvent[] => {
-        return state.value.events.filter((event: IEvent) => {
+    const getEventsForDate = (date: Date, isSorted: boolean = true): IEvent[] => {
+        const events = state.value.events.filter((event: IEvent) => {
             if (getAreDatesWithinRange(event.start, event.end, date, date, true)) {
                 return event;
             }
-        }).sort((a, b) => a.start.getTime() - b.start.getTime());
+        });
+
+        if (!isSorted) {
+            return events;
+        }
+
+        return events.sort((a, b) => a.start.getTime() - b.start.getTime());
     };
 
     const createEvent = (payload: Partial<IEvent>) => {
@@ -223,7 +229,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getDaysInEventCount = (event: IEvent) => {
-        return getDifferenceInDays(event.start, event.end) + 1;
+        return Math.floor(getDifferenceInDays(event.start, event.end) + 1);
     };
 
     const getDaysInEventInDateRangeCount = (event: IEvent, rangeStart: Date, rangeEnd: Date) => {

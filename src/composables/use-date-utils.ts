@@ -224,10 +224,20 @@ export function useDateUtils() {
     };
 
     const getAreDatesWithinRange = (startDate: Date, endDate: Date, rangeStart: Date, rangeEnd: Date, isGreedy: boolean = false) => {
+
         const vStart = startDate.getTime();
         const vEnd = endDate.getTime();
         const rStart = rangeStart.getTime();
         const rEnd = rangeEnd.getTime();
+
+        if (
+            rStart === rEnd &&
+            startDate.getDate() === rangeStart.getDate() &&
+            startDate.getMonth() === rangeStart.getMonth() &&
+            startDate.getFullYear() === rangeStart.getFullYear()
+        ) {
+            return true;
+        }
 
         if (!isGreedy) {
             return (vStart >= rStart && vEnd <= rEnd);
