@@ -81,6 +81,57 @@ export const TIMES_IN_DAY = [
     '11 PM',
 ];
 
+export const HALF_HOURS_IN_DAY = [
+    '12:00 AM',
+    '12:30 PM',
+    '1:00 AM',
+    '1:30 PM',
+    '2:00 AM',
+    '2:30 PM',
+    '3:00 AM',
+    '3:30 PM',
+    '4:00 AM',
+    '4:30 PM',
+    '5:00 AM',
+    '5:30 PM',
+    '6:00 AM',
+    '6:30 PM',
+    '7:00 AM',
+    '7:30 PM',
+    '8:00 AM',
+    '8:30 PM',
+    '9:00 AM',
+    '9:30 PM',
+    '10:00 AM',
+    '10:30 PM',
+    '11:00 AM',
+    '11:30 PM',
+    '12:00 PM',
+    '12:30 PM',
+    '1:00 PM',
+    '1:30 PM',
+    '2:00 PM',
+    '2:30 PM',
+    '3:00 PM',
+    '3:30 PM',
+    '4:00 PM',
+    '4:30 PM',
+    '5:00 PM',
+    '5:30 PM',
+    '6:00 PM',
+    '6:30 PM',
+    '7:00 PM',
+    '7:30 PM',
+    '8:00 PM',
+    '8:30 PM',
+    '9:00 PM',
+    '9:30 PM',
+    '10:00 PM',
+    '10:30 PM',
+    '11:00 PM',
+    '11:30 PM',
+];
+
 const MILLISECONDS_IN_DAY = 86400000;
 
 export function useDateUtils() {
@@ -208,11 +259,17 @@ export function useDateUtils() {
         return todayIndices;
     };
 
-    const convertDateToHHMM = (value: Date) => {
+    const convertDateToHHMM = (value: Date, isIncludeAMPM: boolean = true) => {
         const localTimeString = value.toLocaleTimeString();
 
         const spaceSplit = localTimeString.split(' ');
         const colonSplit = localTimeString.split(':');
+
+        if (!isIncludeAMPM) {
+            const hh = (parseInt(colonSplit[0]) > 9) ? colonSplit[0] : `0${colonSplit[0]}`;
+            return `${hh}:${colonSplit[1]}`;
+        }
+
         return `${colonSplit[0]}:${colonSplit[1]} ${spaceSplit[1]}`;
     };
 

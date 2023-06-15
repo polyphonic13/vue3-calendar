@@ -61,7 +61,6 @@
         onMounted,
         computed,
     } from 'vue';
-    import { storeToRefs } from 'pinia';
 
     // interfaces, types and enums
     import type { IYearMonthDay } from '@/interfaces';
@@ -163,8 +162,8 @@
         onMouseOver(hour, isSecondHalf)
     };
 
-    const getDateFromTimes = (time: number, ymd: IYearMonthDay) => {
-        const { hh, mm } = getHHMMFromNumber(time);
+    const getDateFromTimes = (raw: number, ymd: IYearMonthDay) => {
+        const { hh, mm } = getHHMMFromNumber(raw);
         return new Date(ymd.year, ymd.month, ymd.day, hh, mm);
     };
 

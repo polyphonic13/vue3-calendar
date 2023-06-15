@@ -150,6 +150,8 @@
     @import "../../styles/mixins.scss";
 
     .date_selector__btn {
+        min-height: 30px;
+
         background-color: transparent;
 
         padding: 4px 8px;

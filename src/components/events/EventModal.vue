@@ -49,7 +49,19 @@
                         @date-selected="onEndDateSelected"
                     />
                 </div>
-                <span v-if="!isFullDayEvent">{{ convertDateToHHMM(props.event!.start!) }} - {{ convertDateToHHMM(props.event!.end!) }}</span>
+                <div v-if="!isFullDayEvent" class="event__time">
+                    <TimeInput
+                        :is-editing="isEditing || isNew"
+                        :value="props.event!.start!"
+                        @time-updated="onStartTimeSelected"
+                    />
+                    <span> - </span>
+                    <TimeInput
+                        :is-editing="isEditing || isNew"
+                        :value="props.event!.end!"
+                        @time-updated="onEndTimeSelected"
+                    />
+                </div>
             </div>
             <textarea
                 class="event__description"
@@ -83,10 +95,11 @@
     import { useViewEvent } from '@/composables/use-view-event';
 
     import DateSelector from '@/components/fields/DateSelector.vue';
+    import TimeInput from '../fields/TimeInput.vue';
 
     const {
         createDateFromDateAndHHMM,
-        convertDateToHHMM,
+        getYMDFromDate,
     } = useDateUtils();
 
     interface IEventModalProps {
@@ -196,6 +209,28 @@
         const start = createDateFromDateAndHHMM(date, props.event.start!.getHours(), props.event.start!.getMinutes());
 
         props.event.start = start;
+    };
+
+    const onStartTimeSelected = (value: string) => {
+        if (!props.event || !props.event.start) {
+            return;
+        }
+
+        const { year, month, day } = getYMDFromDate(props.event.start);
+        const split = value.split(':');
+        props.event.start = new Date(year, month, day, parseInt(split[0]), parseInt(split[1]));
+        console.log(`new start = `, props.event.start);
+    };
+
+    const onEndTimeSelected = (value: string) => {
+        if (!props.event || !props.event.end) {
+            return;
+        }
+
+        const { year, month, day } = getYMDFromDate(props.event.end);
+        const split = value.split(':');
+        props.event.end = new Date(year, month, day, parseInt(split[0]), parseInt(split[1]));
+        console.log(`new end = `, props.event.end);
     };
 
     const onCloseClicked = () => {
@@ -339,10 +374,10 @@
     .event__date_and_time {
         width: 100%;
         display: flex;
-        justify-content: space-between;
+        align-items: center;
     }
 
-    .event__date {
+    .event__date, .event__time {
         display: flex;
         align-items: center;
 

@@ -12,6 +12,10 @@ body {
     font-size: 12px;
 }
 
+input[type="time"] {
+    font-family: $mainFont;
+}
+
 #app {
     width: 100%;
     height: 100%;
