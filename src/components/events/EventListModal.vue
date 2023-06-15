@@ -94,7 +94,8 @@
         @include modal;
 
         width: 256px;
-        max-height: 128px;
+
+        padding-bottom: 32px;
 
         overflow: scroll;
 
@@ -113,7 +114,10 @@
         @include link_btn;
 
         display: flex;
-        align-items: flex-start;
+        align-items: center;
+        justify-self: flex-start;
+
+        font-size: 1.25em;
 
         > * {
             padding: 2px 4px;

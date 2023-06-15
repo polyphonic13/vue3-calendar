@@ -285,6 +285,12 @@
         width: 512px;
         height: 512px;
 
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+
         z-index: 9999;
     }
 
