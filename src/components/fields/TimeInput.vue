@@ -67,10 +67,20 @@
         cursor: default;
     }
 
+    input[type="time"]::-webkit-calendar-picker-indicator {
+        background: none;
+        display:none;
+    }
+
     .time_input__text_field--enabled {
         background-color: $transparentGrey02;
         border-bottom: 1px solid $borderColor01;
         cursor: pointer;
+    }
+
+    .time_input__text_field--enabled::-webkit-calendar-picker-indicator {
+        background: default;
+        display: block;
     }
 
 </style>
