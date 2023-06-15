@@ -10,7 +10,7 @@
             <button
                 v-if="getEventsForDate(date).length > 2"
                 class="more_events_btn"
-                @click="onViewEventListClicked(d)"
+                @click="onViewEventListClicked($event, d)"
             >{{ `${getEventsForDate(date).length - 2} more` }}</button>
         </div>
         <button
@@ -37,11 +37,11 @@
     } from '@/interfaces';
 
     import { useEventStore } from '@/stores/events';
-    import { useUIStore } from '@/stores/ui';
 
     import { useCalculateEventCardRows } from '@/composables/use-calculate-event-card-rows';
     import { useDateUtils } from '@/composables/use-date-utils';
     import { useViewEvent } from '@/composables/use-view-event';
+    import { usePointerEventProps } from '@/composables/use-pointer-event-props';
 
     interface IMultiDayEvent extends IEvent {
         daysWithinWeek: number;
@@ -75,10 +75,9 @@
         getDaysInEventInDateRangeCount,
      } = useEventStore();
 
-    const uiStore = useUIStore();
-    const { uiState } = storeToRefs(uiStore);
-
     const { viewEvent } = useViewEvent();
+
+    const { getCoordsFromEvent } = usePointerEventProps();
 
     const eventRows = computed(() => {
         return getRowsForEvents(events.value, props.weekDates);
@@ -161,11 +160,16 @@
         viewEvent(events.value[index]);
     };
 
-    const onViewEventListClicked = (index: number) => {
-        console.log(`WeeklyEventCards/onViewEventListClicked, index = ${index}`);
+    const onViewEventListClicked = (event: MouseEvent, index: number) => {
+        const coords = getCoordsFromEvent(event);
+        const payload = {
+            index,
+            coords,
+        };
+
         // have to use set-timeout to give existing event list time to close
         setTimeout(() => {
-            emit('viewEventListClicked', index);
+            emit('viewEventListClicked', payload);
         }, 30);
     };
 

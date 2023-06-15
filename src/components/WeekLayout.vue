@@ -52,6 +52,7 @@
         <EventListModal
             v-if="isViewEventList"
             :events="currentEventsForDate"
+            :coords="uiState.currentClickCoords"
             @on-close="onCloseEventList"
         />
 
@@ -67,9 +68,10 @@
         ref,
         computed,
     } from 'vue';
+    import { storeToRefs } from 'pinia';
 
     // interfaces, types and enums
-    import type { IYearMonthDay, IEvent } from '@/interfaces';
+    import type { IYearMonthDay, IEvent, ICoordinates } from '@/interfaces';
 
     import { MouseSelectionType } from '@/enum/MouseSelectionType';
 
@@ -92,7 +94,6 @@
     import DayOfWeek from './DayOfWeek.vue';
     import WeeklyEventCards from './events/WeeklyEventCards.vue';
     import EventListModal from './events/EventListModal.vue';
-import { storeToRefs } from 'pinia';
 
     interface IWeekProps {
         year: number;
@@ -108,7 +109,6 @@ import { storeToRefs } from 'pinia';
     const {
         setStartDate,
         setEndDate,
-        dailyEvents,
         hourlyEvents,
         getHourlyEventsForDate,
     } = useComputedEventLists();
@@ -226,9 +226,12 @@ import { storeToRefs } from 'pinia';
         emit('dateClicked', { day: props.weekInfo[index].getDate(), week: props.index });
     };
 
-    const onViewEventList = (index: number) => {
-        console.log(`onViewEventList, index = ${index}\n\tdate = ${props.weekInfo[index]}\n\tevents = `, getEventsForDate(props.weekInfo[index]));
+    const onViewEventList = (payload: { index: number, coords: ICoordinates }) => {
+        // console.log(`onViewEventList, index = ${index}\n\tdate = ${props.weekInfo[index]}\n\tevents = `, getEventsForDate(props.weekInfo[index]));
+        const { index, coords } = payload;
+
         currentEventsForDate.value = getEventsForDate(props.weekInfo[index]);
+        uiState.value.currentClickCoords = coords;
         uiState.value.isViewingEventList = true;
     };
 

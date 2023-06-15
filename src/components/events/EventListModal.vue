@@ -1,5 +1,9 @@
 <template>
-    <div class="event_list_modal" ref="eventListModal">
+    <div
+        ref="eventListModal"
+        class="event_list_modal"
+        :style="styles"
+    >
         <div class="event_list_modal__header">
             <span></span>
             <button
@@ -24,9 +28,9 @@
 </template>
 
 <script setup lang="ts">
-    import { nextTick, onMounted, onUnmounted, ref } from 'vue';
+    import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-    import type { IEvent } from '@/interfaces';
+    import type { ICoordinates, IEvent } from '@/interfaces';
 
     import { useViewEvent } from '@/composables/use-view-event';
     import { useDocumentClickListener } from '@/composables/use-document-click-listener';
@@ -35,6 +39,7 @@
 
     interface IEventListModalProps {
         events: IEvent[];
+        coords: ICoordinates;
     }
 
     const props = defineProps<IEventListModalProps>();
@@ -44,6 +49,10 @@
     const eventListModal = ref<HTMLElement | null>(null);
 
     const { viewEvent } = useViewEvent();
+
+    const styles = computed(() => {
+        return `top: ${props.coords.y - 32}px; left: ${props.coords.x - 128}px;`;
+    });
 
     const onEventClicked = (index: number) => {
         close();
@@ -59,7 +68,7 @@
             return;
         }
 
-        console.log(`EventListModal/onDocumentCliked, eventListModal = `, eventListModal.value, `\n\tevent.target = `, event.target);
+        // console.log(`EventListModal/onDocumentCliked, eventListModal = `, eventListModal.value, `\n\tevent.target = `, event.target);
         const isChild = eventListModal.value.contains(event.target as Node);
 
         if (isChild) {
@@ -69,13 +78,9 @@
         close();
     };
 
-    const close = () => {
-        console.log(`EventListModal/close`);
-        emit('onClose');
-    }
+    const close = () => { emit('onClose'); };
 
     onMounted(() => {
-        console.log(`EventListModal/onMounted`);
         // have to use set time out as initial click on link to open gets registered by onDocumentClicked
         setTimeout(() => {
             addDocumentClickListener(onDocumentClicked);

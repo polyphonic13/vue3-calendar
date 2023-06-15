@@ -1,5 +1,6 @@
 import type { IBaseCalendarState } from './ICalendarState';
 import type ICalendarState from './ICalendarState';
+import type ICoordinates from './ICoordinates';
 import type IDateIndices from './IDateIndices';
 import type IEvent from './IEvent';
 import type { IBaseEvent, ISerializedEvent } from './IEvent';
@@ -15,6 +16,7 @@ export type {
     IBaseCalendarState,
     IBaseEvent,
     ICalendarState,
+    ICoordinates,
     IDateIndices,
     IEvent,
     IEventState,
