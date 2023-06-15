@@ -23,14 +23,13 @@
         >
             <span v-if="event.isHourly" class="event_dot"></span>
             <span class="event_card__title"><b>{{ event.title }}</b></span>
-            <span v-if="event.isHourly" class="event_card--hourly__time">{{  convertDateToHHMM(event.start) }}</span>
+            <span v-if="event.isHourly" class="event_card--hourly__time">{{ convertDateToHHMM(event.start) }}</span>
         </button>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { computed, nextTick, onMounted, ref } from 'vue';
-    import { storeToRefs } from 'pinia';
+    import { computed, onMounted } from 'vue';
 
     import type {
         IEvent,
@@ -106,6 +105,7 @@
             };
         });
 
+        console.log(`\tinclude hourly = ${props.isIncludeHourlyEvents}`);
         if (!props.isIncludeHourlyEvents) {
             return daily;
         }
