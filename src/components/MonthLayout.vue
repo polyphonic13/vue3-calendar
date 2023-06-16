@@ -23,10 +23,11 @@
                     @day-on-mouse-up="onAddEventForDay"
                 />
             </div>
-            <WeeklyEventCards
+            <EventCards
                 :index="w"
                 :week-dates="week"
                 :is-include-hourly-events="true"
+                :is-week="true"
             />
         </div>
         <EventListModal v-if="isViewEventList" />
@@ -43,7 +44,7 @@
 
     import DayOfMonth from './DayOfMonth.vue';
     import DaysOfWeekNames from './DaysOfWeekNames.vue';
-    import WeeklyEventCards from './events/WeeklyEventCards.vue';
+    import EventCards from './events/EventCards.vue';
     import EventListModal from './events/EventListModal.vue';
 
     interface IMonthProps {

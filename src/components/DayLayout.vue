@@ -1,52 +1,93 @@
 <template>
-    <div v-if="props.dayInfo" class="week">
-        <div class="day_of_week_headers">
-            <!-- <DayOfWeekHeader
-                :year="props.year"
-                :month="props.dayInfo.month"
-                :day="props.dayInfo.date"
-                :day-name="dayName"
-                @mousedown="onAddEventForDay"
-            /> -->
-        </div>
+    <div class="day_layout" ref="dayEl">
+        <DayOfWeekHeader
+            :index="0"
+            :year="year"
+            :month="month"
+            :day="day"
+            :day-name="DAYS_OF_WEEK[props.date.getDay()]"
+            :is-selecting="isSelecting"
+            :selected-items="selectedItems"
+            :current-initiator="currentInitiator"
+            :current-type="currentType"
+            @day-on-mouse-down="onDayMouseDown"
+            @day-on-mouse-over="onDayMouseOver"
+            @day-on-mouse-up="onDayMouseUp"
+        />
+        <EventCards
+            :index="0"
+            :week-dates="[props.date]"
+            :is-include-hourly-events="false"
+            :is-week="false"
+        />
         <div class="day_container">
-            <div class="day_list">
-                <!-- <DayOfWeek
+            <div class="day_of_week_list">
+                <DayOfWeek
                     :index="0"
-                    :day-name="dayName"
+                    :day-name="DAYS_OF_WEEK[props.date.getDay()]"
                     :is-include-time-label="true"
                     :is-selecting="isSelecting"
                     :is-start-on-second-half="isStartOnSecondHalf"
                     :is-end-on-first-half="isEndOnFirstHalf"
                     :selected-items="selectedItems"
                     :current-initiator="currentInitiator"
-                    :events="[]"
-                    @time-on-mouse-down="onMouseDown"
-                    @time-on-mouse-over="onMouseOver"
-                    @time-on-mouse-up="onAddEventForTimes"
-                /> -->
+                    :current-type="currentType"
+                    :events="getHourlyEventsForDate(props.date, hourlyEvents)"
+                    @time-on-mouse-down="onTimeMouseDown"
+                    @time-on-mouse-over="onTimeMouseOver"
+                    @time-on-mouse-up="onTimeMouseUp"
+                />
             </div>
         </div>
+        <EventListModal v-if="isViewEventList" />
     </div>
 </template>
 
 <script setup lang="ts">
-    import { toRef, watch, onMounted, computed } from 'vue';
+    // external
+    import {
+        toRef,
+        watch,
+        onMounted,
+        computed,
+    } from 'vue';
 
-    import type { IEvent } from '@/interfaces';
+    // interfaces, types and enums
+    import type { IYearMonthDay } from '@/interfaces';
 
+    import { MouseSelectionType } from '@/enum/MouseSelectionType';
+
+    // composables
+    import {
+        TIMES_IN_DAY,
+        DAYS_OF_WEEK,
+        useDateUtils,
+    } from '@/composables/use-date-utils';
+
+    import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
+    import { useComputedEventLists } from '@/composables/use-computed-event-lists';
+    import { useEventListModal } from '@/composables/use-event-list-modal';
+
+    // components
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
+    import EventCards from './events/EventCards.vue';
+    import EventListModal from './events/EventListModal.vue';
 
-    import { DAYS_OF_WEEK, TIMES_IN_DAY } from '@/composables/use-date-utils';
-    import { useMouseItemSelect } from '@/composables/use-mouse-item-select';
-
-    interface IDayLayoutProps {
-        year: number;
-        dayInfo: Date;
+    interface IDayProps {
+        date: Date;
     }
 
-    const props: IDayLayoutProps = defineProps<IDayLayoutProps>();
+    const props: IDayProps = defineProps<IDayProps>();
+
+    const { getYMDFromDate, getHHMMFromNumber } = useDateUtils();
+
+    const {
+        setStartDate,
+        setEndDate,
+        hourlyEvents,
+        getHourlyEventsForDate,
+    } = useComputedEventLists();
 
     const {
         state,
@@ -57,68 +98,129 @@
         onMouseUp,
     } = useMouseItemSelect();
 
+    const { getIsEventListVisible } = useEventListModal();
+
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
     const isStartOnSecondHalf = toRef(state, 'isStartOnSecondHalf');
     const isEndOnFirstHalf = toRef(state, 'isEndOnFirstHalf');
     const currentInitiator = toRef(state, 'currentInitiator');
+    const currentType = toRef(state, 'currentType');
 
-    const emit = defineEmits(['addEvent']);
+    const emit = defineEmits([
+        'createEvent',
+        'dateClicked',
+    ]);
 
-    const dayName = computed(() => DAYS_OF_WEEK[props.dayInfo.getDay()]);
+    const year = computed(() => {
+        return props.date.getFullYear();
+    });
+
+    const month = computed(() => {
+        return props.date.getMonth();
+    });
+
+    const day = computed(() => {
+        return props.date.getDate();
+    });
+
+    const isViewEventList = computed(() => {
+        return getIsEventListVisible();
+    });
+
+    watch(() => props.date, () => {
+        setStartAndEndDate();
+        initHourIndices();
+    });
+
+    const emitCreateEvent = (start: Date, end: Date) => {
+        if (isViewEventList.value) {
+            return;
+        }
+
+        const event = {
+            start,
+            end,
+        };
+
+        emit('createEvent', event);
+    };
 
     const initHourIndices = () => {
         initIndices<string>(TIMES_IN_DAY);
     };
 
-    const addEvent = (times: { start: number, end: number }) => {
-        // const date = props.dayInfo.getDate();
-        // const month = props.dayInfo.getMonth();
-        // const year = props.year;
-
-        // const event: Partial<IEvent> = {
-        //     start: {
-        //         year,
-        //         month,
-        //         day: date,
-        //         time: times.start,
-        //     },
-        //     end: {
-        //         year,
-        //         month,
-        //         day: date,
-        //         time: times.end,
-        //     },
-        // };
-
-        // emit('addEvent', event);
+    const onTimeMouseDown = (day: number, hour: number, isSecondHalf?: boolean) => {
+        onMouseDown(hour, day, MouseSelectionType.HOURLY, isSecondHalf);
     };
 
-    const onAddEventForDay = () => {
-        const times = { start: 0, end: TIMES_IN_DAY.length - 1 };
-        addEvent(times);
+    const onTimeMouseOver = (hour: number, isSecondHalf?: boolean) => {
+        if (!isSelecting) {
+            return;
+        }
+        onMouseOver(hour, isSecondHalf)
     };
 
-    const onAddEventForTimes = (index: number) => {
-        addEvent(getNumberValuesFromItems());
+    const getDateFromTimes = (raw: number, ymd: IYearMonthDay) => {
+        const { hh, mm } = getHHMMFromNumber(raw);
+        return new Date(ymd.year, ymd.month, ymd.day, hh, mm);
+    };
+
+    const onTimeMouseUp = () => {
+        const times = getNumberValuesFromItems();
+        const { year, month, day } = getYMDFromDate(props.date);
+
+        const start = getDateFromTimes(times.start, { year, month, day });
+        const end = getDateFromTimes(times.end, { year, month, day });
+
+        emitCreateEvent(start, end);
         onMouseUp();
     };
 
-    watch(() => props.dayInfo, () => {
-        initHourIndices();
-    });
+    const onDayMouseDown = (day: number) => {
+        onMouseDown(day, day, MouseSelectionType.DAILY);
+    }
+
+    const onDayMouseOver = (day: number) => {
+        if (!isSelecting.value) {
+            return;
+        }
+
+        onMouseOver(day);
+    };
+
+    const onDayMouseUp = () => {
+        if (!isSelecting.value) {
+            return;
+        }
+
+        const startDay = getYMDFromDate(props.date);
+        const endDay = getYMDFromDate(props.date);
+
+        const start = getDateFromTimes(0, { ...startDay });
+        const end = getDateFromTimes(0, { ...endDay });
+
+        emitCreateEvent(start, end);
+        onMouseUp();
+    };
+
+    const setStartAndEndDate = () => {
+        setStartDate(props.date);
+        setEndDate(props.date);
+    };
 
     onMounted(() => {
-        console.log(`DayLayout/onMounted, props = `, props);
+        setStartAndEndDate();
         initHourIndices();
     });
 </script>
 
 <style scoped lang="scss">
     @import '../styles/global.scss';
+    @import '../styles/mixins.scss';
 
-    .week {
-        height: calc(100% - 98px);
+    .day_layout {
+        // height: calc(100% - 98px);
 
         flex: 1;
         display: flex;
@@ -126,18 +228,14 @@
 
         border-left: 1px solid $borderColor01;
         border-bottom: 1px solid $borderColor01;
+        box-sizing: border-box;
+
+        overflow: hidden;
     }
 
-    @media screen and (max-width: 400px) {
-        .week {
-            height: calc(100% - 144px);
-        }
-    }
-
-    .day_of_week_headers {
-        width: 100%;
-        display: flex;
-
+    .day_of_week_header {
+        height: 92px;
+        border-right: 1px solid $borderColor01;
     }
 
     .day_container {
@@ -187,15 +285,41 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-
+        /* border: 1px solid #eee; */
         border-right: 1px solid $borderColor01;
+        /* border-bottom: 1px solid $borderColor01; */
 
-        color: $primaryBg01;
+        color: $greyscale01;
     }
 
-    .day_list {
+    .day_of_week_list {
         flex: 1;
         display: flex;
+    }
+
+    .info {
+        width: 100%;
+        max-height: 32px;
+
+        padding: 8px;
+        box-sizing: border-box;
+
+        background-color: #eef;
+
+        flex: 1;
+        display: flex;
+        align-content: center;
+        justify-content: flex-start;
+    }
+
+    @media screen and (max-width: 400px) {
+        .week {
+            height: calc(100% - 144px);
+        }
+
+        .event_card {
+            @include event_card--mobile;
+        }
     }
 
 </style>

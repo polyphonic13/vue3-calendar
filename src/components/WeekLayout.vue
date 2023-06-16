@@ -1,5 +1,5 @@
 <template>
-    <div class="week" ref="weekEl">
+    <div class="week_layout" ref="weekEl">
         <div
             class="day_of_week_header_list"
             ref="headerEl"
@@ -22,10 +22,11 @@
                 @date-clicked="onDateClicked"
             />
         </div>
-        <WeeklyEventCards
+        <EventCards
             :index="0"
             :week-dates="weekInfo"
             :is-include-hourly-events="false"
+            :is-week="true"
         />
         <div class="day_container">
             <div class="day_of_week_list">
@@ -80,7 +81,7 @@
     // components
     import DayOfWeekHeader from './DayOfWeekHeader.vue';
     import DayOfWeek from './DayOfWeek.vue';
-    import WeeklyEventCards from './events/WeeklyEventCards.vue';
+    import EventCards from './events/EventCards.vue';
     import EventListModal from './events/EventListModal.vue';
 
     interface IWeekProps {
@@ -223,7 +224,7 @@
     @import '../styles/global.scss';
     @import '../styles/mixins.scss';
 
-    .week {
+    .week_layout {
         height: calc(100% - 98px);
 
         flex: 1;

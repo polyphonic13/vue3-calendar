@@ -42,8 +42,7 @@
         />
         <DayLayout
             v-if="state.layout === CalendarLayout.DAY"
-            :year="state.year"
-            :day-info="state.yearData[state.year].weeks[state.week][state.dayOfWeek]"
+            :date="state.yearData[state.year].weeks[state.week][state.dayOfWeek]"
             @create-event="onCreateEvent"
         />
         <EventModal

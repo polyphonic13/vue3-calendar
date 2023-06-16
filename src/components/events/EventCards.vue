@@ -6,6 +6,7 @@
         <div
             v-for="(date, d) in weekDates"
             class="weekly_event_cards__day"
+            :class="dayClasses"
         >
             <button
                 v-if="getEventsForDate(date).length > 2"
@@ -49,13 +50,14 @@
         isHourly: boolean;
     }
 
-    interface IWeeklyEventCardsProps {
+    interface IEventCardsProps {
         index: number;
         weekDates: Date[];
         isIncludeHourlyEvents: boolean;
+        isWeek: boolean;
     }
 
-    const props = defineProps<IWeeklyEventCardsProps>();
+    const props = defineProps<IEventCardsProps>();
 
     const emit = defineEmits([
         'onDayMouseDown',
@@ -132,13 +134,20 @@
         'weekly_event_cards--tall': ([...eventRows.value].sort((a, b) => b - a)[0] > 1),
     }));
 
+    const dayClasses = computed(() => {
+        const modifier = (props.isWeek) ? 'weekly' : 'daily';
+        return `weekly_event_cards__day--${modifier}`;
+    });
+
     const getCardStyle = (event: IMultiDayEvent, index: number) => {
         if (eventRows.value[index] > 1) {
             return 'display: none';
         }
-        const width = (100 / 7) * event.daysWithinWeek;
+        const widthDivider = (props.isWeek) ? 7 : 1;
+
+        const width = (100 / widthDivider) * event.daysWithinWeek;
         const top = ((eventRows.value[index]) * 24);
-        const left = (100 / 7) * event.leftMultiplier;
+        const left = (100 / widthDivider) * event.leftMultiplier;
 
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
     };
@@ -182,7 +191,7 @@
     };
 
     onMounted(() => {
-        // console.log(`WeeklyEventCards/onMounted, events = `, events.value);
+        // console.log(`EventCards/onMounted, events = `, events.value);
     });
 </script>
 
@@ -195,10 +204,16 @@
     }
 
     .weekly_event_cards__day {
-        width: calc(100% / 7);
-
-        // border-right: 1px solid $borderColor01;
+        border-right: 1px solid $greyscale02;
         box-sizing: border-box;
+    }
+
+    .weekly_event_cards__day--weekly {
+        width: calc(100% / 7);
+    }
+
+    .weekly_event_cards__day--daily {
+        width: 100%;
     }
 
     .more_events_btn {
