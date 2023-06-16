@@ -161,6 +161,7 @@
 
     const onDeleteClicked = () => {
         deleteEvent();
+        close();
     };
 
     const onSaveClicked = () => {

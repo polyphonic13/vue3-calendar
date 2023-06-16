@@ -154,7 +154,6 @@
     };
 
     const onCreateEvent = (event: Partial<IEvent>) => {
-        console.log(`onCreateEvent, event = `, event);
         resetEventEditing();
         createEvent(event);
         isNewEvent = true;

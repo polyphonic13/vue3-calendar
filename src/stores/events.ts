@@ -177,7 +177,7 @@ export const useEventStore = defineStore('eventStore', () => {
 
     const deleteEvent = () => {
         state.value.isViewingEvent = false;
-
+        console.log(`deleteEvent, focusedEvent = `, state.value.focusedEvent);
         if (!state.value.focusedEvent || !state.value.focusedEvent.id) {
             console.warn(`ERROR: can not delete event`);
             return;
