@@ -44,6 +44,7 @@ export const useEventStore = defineStore('eventStore', () => {
             return {
                 events: deserializeEvents(savedState.events),
                 isViewingEvent: false,
+                focusedCalendar: '',
                 focusedEvent: null,
                 focusedDay: null,
             };
@@ -52,6 +53,7 @@ export const useEventStore = defineStore('eventStore', () => {
         return {
             events: [],
             isViewingEvent: false,
+            focusedCalendar: '',
             focusedEvent: null,
             focusedDay: null,
         };
