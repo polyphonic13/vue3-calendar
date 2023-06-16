@@ -93,6 +93,7 @@
     const hourlyEvents = computed(() => weeklyEvents.value.filter((event) => !getIsFullDayEvent(event)));
 
     const events = computed(() => {
+        // console.log(`fullDayEvents = `, fullDayEvents.value);
         const daily = fullDayEvents.value.map((event) => {
             const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekDates[0], props.weekDates[props.weekDates.length - 1]);
             let leftMultiplier = props.weekDates.findIndex(date => date.getDate() === event.start.getDate());
@@ -110,9 +111,10 @@
         });
 
         if (!props.isIncludeHourlyEvents) {
+            // console.log(`no hourly events should be included`);
             return daily;
         }
-
+        // console.log(`going to add hourly events`);
         const hourly = hourlyEvents.value.map((event) => {
             let leftMultiplier = props.weekDates.findIndex((date) => date.getDate() === event.start.getDate());
             if (leftMultiplier === -1) {

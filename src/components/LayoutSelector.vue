@@ -4,7 +4,7 @@
             class="list__btn"
             ref="listBtn"
             @click="onOpenListClicked"
-            @keydown.stop="onKeyDown"
+            @keydown="onKeyDown"
         >
             <span>{{ props.layout.toUpperCase() }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 0 24 24" width="15px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 10l5 5 5-5z"/></svg>
@@ -71,15 +71,6 @@
     const root = ref<HTMLElement | null>(null);
     const listBtn = ref<HTMLElement | null>(null);
 
-    const LAYOUT_TYPES_FOR_KEY = new Map<string, CalendarLayout>(
-        [
-            ['m', CalendarLayout.MONTH],
-            ['w', CalendarLayout.WEEK],
-            ['d', CalendarLayout.DAY],
-            ['s', CalendarLayout.SCHEDULE],
-        ],
-    );
-
     const updateLayout = (type: CalendarLayout) => {
         state.isListOpen = false;
         emit('layoutBtnClicked', type);
@@ -100,6 +91,8 @@
         addDocumentListener();
     };
 
+    const NAV_KEYS = ['tab', 'arrowdown', 'arrowup', 'enter', 'return'];
+
     const onKeyDown = (event: KeyboardEvent) => {
         if (!state.isListOpen) {
             return;
@@ -107,18 +100,11 @@
 
         const key = event.key.toLowerCase();
 
-        if (key === 'escape') {
-            state.isListOpen = false;
+        if (NAV_KEYS.includes(key)) {
             return;
         }
 
-        const type: CalendarLayout | undefined = LAYOUT_TYPES_FOR_KEY.get(key);
-
-        if (!type) {
-            return;
-        }
-
-        updateLayout(type);
+        state.isListOpen = false;
 
         if (!listBtn.value) {
             return;

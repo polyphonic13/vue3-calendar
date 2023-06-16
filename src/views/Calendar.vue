@@ -2,6 +2,7 @@
     <div
         v-if="state"
         class="calendar"
+        @keydown.stop="onKeyDown"
     >
         <div class="header">
             <div class="header__content">
@@ -183,6 +184,15 @@
         deleteEvent();
     };
 
+    const LAYOUT_TYPES_FOR_KEY = new Map<string, CalendarLayout>(
+        [
+            ['m', CalendarLayout.MONTH],
+            ['w', CalendarLayout.WEEK],
+            ['d', CalendarLayout.DAY],
+            ['s', CalendarLayout.SCHEDULE],
+        ],
+    );
+
     const onKeyDown = (event: KeyboardEvent) => {
         const key = event.key.toLowerCase();
 
@@ -195,6 +205,14 @@
             handleDeleteClicked();
             return;
         }
+
+        const type: CalendarLayout | undefined = LAYOUT_TYPES_FOR_KEY.get(key);
+
+        if (!type) {
+            return;
+        }
+
+        setLayout(type);
     };
 
     const onEventModalClose = () => {

@@ -127,7 +127,7 @@
 }
 
 @mixin event_card {
-    width: 100%;
+    width: calc(100% - 16px);
     min-height: 24px;
 
     padding: 2px 4px;
@@ -170,7 +170,7 @@
 }
 
 @mixin event_card--hover {
-    background-color: $eventCard01BG;
+    background-color: $eventCard01BG--hover;
     box-shadow: $boxShadow01;
 
     z-index: 100;
