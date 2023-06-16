@@ -435,7 +435,7 @@
     @media screen and (max-width: 400px) {
         .event_modal {
             width: 90%;
-            height: 90%;
+            height: 75%;
         }
     }
 </style>

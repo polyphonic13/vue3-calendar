@@ -232,6 +232,7 @@
         display: flex;
         flex-direction: column;
 
+        overflow: hidden;
     }
 
     .header {

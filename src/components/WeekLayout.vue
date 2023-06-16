@@ -230,10 +230,10 @@
         display: flex;
         flex-direction: column;
 
-        // position: relative;
-
         border-left: 1px solid $borderColor01;
         border-bottom: 1px solid $borderColor01;
+
+        overflow: hidden;
     }
 
     .day_of_week_header_list {

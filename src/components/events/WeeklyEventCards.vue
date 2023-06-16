@@ -164,9 +164,15 @@
     const onViewEventListClicked = (event: MouseEvent, date: Date) => {
         const coords = getCoordsFromEvent(event);
 
+        const win = {
+            width: window.innerWidth,
+            height: window.innerHeight,
+        };
+
         const payload = {
             date,
             coords,
+            win,
         };
 
         // have to use set-timeout to give existing event list time to close
@@ -285,6 +291,10 @@
     @media screen and (max-width: 400px) {
         .event_dot, .event_card--hourly__time {
             display: none;
+        }
+
+        .more_events_btn {
+            font-size: 0.9em;
         }
     }
 </style>

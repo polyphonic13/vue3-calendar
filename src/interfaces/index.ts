@@ -1,3 +1,4 @@
+import type IBox from './IBox';
 import type { IBaseCalendarState } from './ICalendarState';
 import type ICalendarState from './ICalendarState';
 import type ICoordinates from './ICoordinates';
@@ -13,6 +14,7 @@ import type IYearData from './IYearData';
 import type IYearMonthDay from './IYearMonthDay';
 
 export type {
+    IBox,
     IBaseCalendarState,
     IBaseEvent,
     ICalendarState,

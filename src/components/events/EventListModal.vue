@@ -41,29 +41,21 @@
     import { useEventListModal } from '@/composables/use-event-list-modal';
     import { useViewEvent } from '@/composables/use-view-event';
     import { useDocumentClickListener } from '@/composables/use-document-click-listener';
-    import { usePositionElementInWindow } from '@/composables/use-position-element-in-window';
     import { MONTH_NAMES } from '@/composables/use-date-utils';
 
     const { addDocumentClickListener, removeDocumentClickListener } = useDocumentClickListener();
-    const { positionByMouseCoords } = usePositionElementInWindow();
-
-    const emit = defineEmits(['onClose']);
 
     const eventListModal = ref<HTMLElement | null>(null);
     const closeButton = ref<HTMLElement | null>(null);
 
-    const { getCurrentClickCoordinates, closeEventList } = useEventListModal();
+    const { getModalCoordinates, closeEventList } = useEventListModal();
 
     const { getFocusedDay } = useEventStore();
 
     const { viewEvent } = useViewEvent();
 
-    const coords = computed(() => {
-        return getCurrentClickCoordinates();
-    });
-
     const styles = computed(() => {
-        const { x, y } = positionByMouseCoords(coords.value.x, coords.value.y, eventListModal.value, 16);
+        const { x, y } = getModalCoordinates(eventListModal.value);
 
         return `top: ${y}px; left: ${x}px;`;
     });
@@ -73,12 +65,12 @@
     });
 
     const onEventClicked = (index: number) => {
-        close();
+        closeEventList();
         viewEvent(focusedDay.value!.events[index]);
     };
 
     const onCloseClicked = (_: MouseEvent | TouchEvent) => {
-        close();
+        closeEventList();
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -88,7 +80,7 @@
             return;
         }
 
-        close();
+        closeEventList();
     }
 
     const onDocumentClicked = (event: MouseEvent | TouchEvent) => {
@@ -103,10 +95,8 @@
             return;
         }
 
-        close();
+        closeEventList();
     };
-
-    const close = () => { closeEventList(); };
 
     onMounted(() => {
         // have to use set time out as initial click on link to open gets registered by onDocumentClicked

@@ -15,12 +15,14 @@ export const useUIStore = defineStore('ui', () => {
     const createState = (): IUIState => {
         const savedState = load<IUIState>(LOCAL_STORAGE_KEY);
         const currentClickCoords = { x: 0, y: 0 };
+        const currentWindowDimensions = { width: 0, height: 0 };
 
         return {
             isControlCenterCollapsed: false,
             isViewingEvent: false,
             isEventListVisible: false,
             currentClickCoords,
+            currentWindowDimensions,
             ...savedState,
         };
     };
