@@ -78,9 +78,4 @@
         cursor: pointer;
     }
 
-    .time_input__text_field--enabled::-webkit-calendar-picker-indicator {
-        background: default;
-        display: block;
-    }
-
 </style>

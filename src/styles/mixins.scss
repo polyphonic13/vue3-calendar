@@ -108,6 +108,7 @@
 @mixin event_card_list {
     width: 100%;
 
+    border-right: 1px solid $borderColor01;
     box-sizing: border-box;
 
     display: flex;

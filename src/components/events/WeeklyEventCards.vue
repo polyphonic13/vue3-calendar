@@ -197,7 +197,7 @@
     .weekly_event_cards__day {
         width: calc(100% / 7);
 
-        border-right: 1px solid $borderColor01;
+        // border-right: 1px solid $borderColor01;
         box-sizing: border-box;
     }
 
