@@ -1,13 +1,13 @@
 <template>
     <div
-        v-if="state"
+        v-if="calendarState"
         class="calendar"
         @keydown.stop="onKeyDown"
     >
         <div class="header">
             <div class="header__content">
                 <span class="title">{{ headerTitle }}</span>
-                <span v-if="state.layout === CalendarLayout.WEEK">WEEK {{ state.week + 1 }}</span>
+                <span v-if="calendarState.layout === CalendarLayout.WEEK">WEEK {{ calendarState.week + 1 }}</span>
             </div>
             <div class="controls">
                 <button class="control__btn arrow_btn" @click="onPrevClicked">
@@ -18,34 +18,37 @@
                 </button>
                 <button class="control__btn today_btn" @click="onTodayClicked">TODAY</button>
                 <LayoutSelector
-                    :layout="state.layout"
+                    :layout="calendarState.layout"
                     @layout-btn-clicked="onLayoutBtnClicked"
                 />
             </div>
         </div>
 
         <MonthLayout
-            v-if="state.layout === CalendarLayout.MONTH"
-            :year="state.year"
-            :month="state.month"
-            :current-month="state.currentMonth"
+            v-if="calendarState.layout === CalendarLayout.MONTH"
+            :year="calendarState.year"
+            :month="calendarState.month"
             @date-clicked="onDateClicked"
             @create-event="onCreateEvent"
         />
         <WeekLayout
-            v-if="state.layout === CalendarLayout.WEEK"
-            :year="state.year"
-            :month="state.month"
-            :index="state.week"
-            :week-info="state.yearData[state.year].weeks[state.week]"
+            v-if="calendarState.layout === CalendarLayout.WEEK"
+            :year="calendarState.year"
+            :month="calendarState.month"
+            :index="calendarState.week"
+            :week-info="calendarState.yearData[calendarState.year].weeks[calendarState.week]"
             @date-clicked="onDateClicked"
             @create-event="onCreateEvent"
         />
         <DayLayout
-            v-if="state.layout === CalendarLayout.DAY"
-            :date="state.yearData[state.year].weeks[state.week][state.dayOfWeek]"
+            v-if="calendarState.layout === CalendarLayout.DAY"
+            :date="calendarState.yearData[calendarState.year].weeks[calendarState.week][calendarState.dayOfWeek]"
             @create-event="onCreateEvent"
         />
+        <ScheduleLayout
+            v-if="calendarState.layout === CalendarLayout.SCHEDULE"
+            @create-event="onCreateEvent"
+        ></ScheduleLayout>
         <EventModal
             v-if="isViewingEvent"
             :event="focusedEvent"
@@ -74,10 +77,11 @@
     import WeekLayout from '@/components/WeekLayout.vue';
     import DayLayout from '@/components/DayLayout.vue';
     import LayoutSelector from '@/components/LayoutSelector.vue';
+    import ScheduleLayout from '@/components/ScheduleLayout.vue';
     import EventModal from '@/components/events/EventModal.vue';
 
     const calendarStore = useCalendarStore();
-    const { state } = storeToRefs(calendarStore);
+    const { calendarState } = storeToRefs(calendarStore);
 
     const uiStore = useUIStore();
     const { uiState } = storeToRefs(uiStore);
@@ -102,18 +106,18 @@
     let isNewEvent = false;
 
     const headerTitle = computed(() => {
-        if (!state) {
+        if (!calendarState) {
             return '';
         }
 
-        if (state.value.layout !== CalendarLayout.WEEK) {
-            return `${MONTH_NAMES[state.value.month]} ${state.value.year}`;
+        if (calendarState.value.layout !== CalendarLayout.WEEK) {
+            return `${MONTH_NAMES[calendarState.value.month]} ${calendarState.value.year}`;
         }
         // console.log(`updating headerTitle`);
         const monthIndices: number[] = [];
         let month;
 
-        state.value.yearData[state.value.year].weeks[state.value.week].forEach((day) => {
+        calendarState.value.yearData[calendarState.value.year].weeks[calendarState.value.week].forEach((day) => {
             month = day.getMonth();
             if (!monthIndices.includes(month)) {
                 monthIndices.push(month);
@@ -122,7 +126,7 @@
 
         const months = monthIndices.map((index) => MONTH_NAMES[index]);
 
-        return `${months.join(' - ')} ${state.value.year}`;
+        return `${months.join(' - ')} ${calendarState.value.year}`;
     });
 
     const isViewingEvent = computed(() => {

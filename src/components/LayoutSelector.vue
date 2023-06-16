@@ -151,7 +151,7 @@
 
     .layout_selector {
         width: 100%;
-        min-width: 64px;
+        min-width: 128px;
 
         height: 100%;
 
@@ -194,7 +194,7 @@
     }
 
     .list__btn {
-        min-width: 90px;
+        min-width: 128px;
         background-color: $primaryBg01;
 
         padding: 8px;

@@ -33,11 +33,11 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const getWeeksForMonth = (month: number, year: number) => {
-        if (!state.value.yearData[year]) {
-            state.value.yearData[year] = getYearData(year);
+        if (!calendarState.value.yearData[year]) {
+            calendarState.value.yearData[year] = getYearData(year);
         }
 
-        const yearData = state.value.yearData[year];
+        const yearData = calendarState.value.yearData[year];
 
         let weeks: Date[][] = [];
         let index = 0;
@@ -54,10 +54,10 @@ export const useCalendarStore = defineStore('calendar', () => {
                 weeks.push(yearData.weeks[index]);
             } else {
                 const nextYear = year + 1;
-                if (!state.value.yearData[nextYear]) {
-                    state.value.yearData[nextYear] = getYearData(nextYear);
+                if (!calendarState.value.yearData[nextYear]) {
+                    calendarState.value.yearData[nextYear] = getYearData(nextYear);
                 }
-                weeks.push(state.value.yearData[nextYear].weeks[0]);
+                weeks.push(calendarState.value.yearData[nextYear].weeks[0]);
             }
         }
 
@@ -114,24 +114,24 @@ export const useCalendarStore = defineStore('calendar', () => {
         }
     };
 
-    const state = ref<ICalendarState>(createState());
-    console.log(`CalendarStore/createState, state = `, state.value);
+    const calendarState = ref<ICalendarState>(createState());
+    console.log(`CalendarStore/createState, calendarState = `, calendarState.value);
 
     const saveState = () => {
-        const { year, month, week, dayOfWeek, layout } = state.value;
+        const { year, month, week, dayOfWeek, layout } = calendarState.value;
         // console.log(`saveState, year = ${year}, month = ${month}, week = ${week}, dayOfWeek = ${dayOfWeek}, layout = ${layout}`);
         save<IBaseCalendarState>(LOCAL_STORAGE_KEY, { year, month, week, dayOfWeek, layout });
     };
 
     const setLayout = (value: CalendarLayout) => {
-        state.value.layout = value;
+        calendarState.value.layout = value;
 
         if (value !== CalendarLayout.DAY) {
             saveState();
             return;
         }
 
-        const { month, week, day } = state.value.todayIndices;
+        const { month, week, day } = calendarState.value.todayIndices;
 
         if (month === -1 || week === -1 || day === -1) {
             saveWeekAndDayIndices({ week: 0, day: 0 });
@@ -143,25 +143,29 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const getCurrentYear = () => {
-        return state.value.yearData[state.value.year];
+        return calendarState.value.yearData[calendarState.value.year];
+    };
+
+    const getCurrentMonth = () => {
+        return calendarState.value.currentMonth;
     };
 
     const setMonth = (value: number) => {
-        state.value.month = value;
-        state.value.currentMonth = getDaysForMonth(value, getCurrentYear());
+        calendarState.value.month = value;
+        calendarState.value.currentMonth = getDaysForMonth(value, getCurrentYear());
         saveState();
     };
 
     const getMonthForYear = (year: number, month: number) => {
-        if (!state.value.yearData[year]) {
-            state.value.yearData[year] = getYearData(year);
+        if (!calendarState.value.yearData[year]) {
+            calendarState.value.yearData[year] = getYearData(year);
         }
 
-        return getDaysForMonth(month, state.value.yearData[year]);
+        return getDaysForMonth(month, calendarState.value.yearData[year]);
     };
 
     const setWeek = (index: number) => {
-        state.value.week = index;
+        calendarState.value.week = index;
         saveState();
     };
 
@@ -170,11 +174,11 @@ export const useCalendarStore = defineStore('calendar', () => {
         const date = target.getDate();
         const month = target.getMonth();
 
-        if (!state.value.yearData[year]) {
-            state.value.yearData[year] = getYearData(year);
+        if (!calendarState.value.yearData[year]) {
+            calendarState.value.yearData[year] = getYearData(year);
         }
 
-        const yearData = state.value.yearData[year];
+        const yearData = calendarState.value.yearData[year];
 
         yearData.weeks.forEach((week, w) => {
             week.forEach((day) => {
@@ -194,11 +198,11 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const setInfoToToday = () => {
-        const { month, week, day } = state.value.todayIndices;
+        const { month, week, day } = calendarState.value.todayIndices;
         const year = new Date().getFullYear();
 
-        state.value = {
-            ...state.value,
+        calendarState.value = {
+            ...calendarState.value,
             month,
             week,
             year,
@@ -213,44 +217,44 @@ export const useCalendarStore = defineStore('calendar', () => {
     const saveWeekAndDayIndices = (indices: { week: number, day: number }) => {
         const { week, day } = indices;
 
-        state.value.week = week;
-        state.value.dayOfWeek = day;
+        calendarState.value.week = week;
+        calendarState.value.dayOfWeek = day;
 
         saveState();
     };
 
     const incrementYear = () => {
-        const year = state.value.year + 1;
+        const year = calendarState.value.year + 1;
 
-        if (!state.value.yearData[year]) {
-            state.value.yearData[year] = getYearData(year);
+        if (!calendarState.value.yearData[year]) {
+            calendarState.value.yearData[year] = getYearData(year);
         }
 
-        state.value.year = year;
+        calendarState.value.year = year;
         setMonth(0);
 
         saveState();
     };
 
     const decrementYear = () => {
-        const year = state.value.year - 1;
+        const year = calendarState.value.year - 1;
 
-        if (!state.value.yearData[year]) {
-            state.value.yearData[year] = getYearData(year);
+        if (!calendarState.value.yearData[year]) {
+            calendarState.value.yearData[year] = getYearData(year);
         }
 
-        state.value.year = year;
+        calendarState.value.year = year;
         setMonth(MONTH_NAMES.length - 1);
 
         saveState();
     };
 
     const incrementMonth = () => {
-        state.value.week = 0;
-        state.value.dayOfWeek = 0;
+        calendarState.value.week = 0;
+        calendarState.value.dayOfWeek = 0;
 
-        if (state.value.month < MONTH_NAMES.length - 1) {
-            setMonth(state.value.month + 1);
+        if (calendarState.value.month < MONTH_NAMES.length - 1) {
+            setMonth(calendarState.value.month + 1);
             saveState();
             return;
         }
@@ -259,10 +263,10 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const decrementMonth = () => {
-        state.value.dayOfWeek = 0;
+        calendarState.value.dayOfWeek = 0;
 
-        if (state.value.month > 0) {
-            setMonth(state.value.month - 1);
+        if (calendarState.value.month > 0) {
+            setMonth(calendarState.value.month - 1);
             saveState();
             return;
         }
@@ -271,11 +275,11 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const incrementWeek = () => {
-        state.value.dayOfWeek = 0;
+        calendarState.value.dayOfWeek = 0;
 
-        if (state.value.week < getCurrentYear().weeks.length - 1) {
-            state.value.week++;
-            state.value.month = getCurrentYear().weeks[state.value.week][state.value.dayOfWeek].getMonth();
+        if (calendarState.value.week < getCurrentYear().weeks.length - 1) {
+            calendarState.value.week++;
+            calendarState.value.month = getCurrentYear().weeks[calendarState.value.week][calendarState.value.dayOfWeek].getMonth();
             saveState();
             return;
         }
@@ -285,11 +289,11 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const decrementWeek = () => {
-        state.value.dayOfWeek = 0;
+        calendarState.value.dayOfWeek = 0;
 
-        if (state.value.week > 0) {
-            state.value.week--;
-            state.value.month = getCurrentYear().weeks[state.value.week][state.value.dayOfWeek].getMonth();
+        if (calendarState.value.week > 0) {
+            calendarState.value.week--;
+            calendarState.value.month = getCurrentYear().weeks[calendarState.value.week][calendarState.value.dayOfWeek].getMonth();
             saveState();
             return;
         }
@@ -299,25 +303,25 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const incrementDay = () => {
-        if (state.value.dayOfWeek < DAYS_OF_WEEK.length) {
-            state.value.dayOfWeek++;
+        if (calendarState.value.dayOfWeek < DAYS_OF_WEEK.length) {
+            calendarState.value.dayOfWeek++;
             saveState();
             return;
         }
 
-        state.value.dayOfWeek = 0;
+        calendarState.value.dayOfWeek = 0;
 
-        if (state.value.week < getCurrentYear().weeks.length - 1) {
-            state.value.week++;
-            state.value.month = getCurrentYear().weeks[state.value.week][state.value.dayOfWeek].getMonth();
+        if (calendarState.value.week < getCurrentYear().weeks.length - 1) {
+            calendarState.value.week++;
+            calendarState.value.month = getCurrentYear().weeks[calendarState.value.week][calendarState.value.dayOfWeek].getMonth();
         } else {
-            state.value.week = 0;
+            calendarState.value.week = 0;
 
-            const year = state.value.year++;
+            const year = calendarState.value.year++;
 
-            if (state.value.yearData[year]) {
-                state.value.yearData[year] = getYearData(year);
-                state.value.month = state.value.yearData[year].weeks[0][0].getMonth();
+            if (calendarState.value.yearData[year]) {
+                calendarState.value.yearData[year] = getYearData(year);
+                calendarState.value.month = calendarState.value.yearData[year].weeks[0][0].getMonth();
             }
         }
 
@@ -325,25 +329,25 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const decrementDay = () => {
-        if (state.value.dayOfWeek > 0) {
-            state.value.dayOfWeek--;
+        if (calendarState.value.dayOfWeek > 0) {
+            calendarState.value.dayOfWeek--;
             saveState();
             return;
         }
 
-        state.value.dayOfWeek = DAYS_OF_WEEK.length - 1;
+        calendarState.value.dayOfWeek = DAYS_OF_WEEK.length - 1;
 
-        if (state.value.week = 0) {
-            const year = state.value.year--;
+        if (calendarState.value.week = 0) {
+            const year = calendarState.value.year--;
 
-            if (!state.value.yearData[year]) {
-                state.value.yearData[year] = getYearData(year);
+            if (!calendarState.value.yearData[year]) {
+                calendarState.value.yearData[year] = getYearData(year);
             }
 
-            const weeks = state.value.yearData[year].weeks;
+            const weeks = calendarState.value.yearData[year].weeks;
 
-            state.value.week = weeks.length - 1;
-            state.value.month = weeks[state.value.week][0].getMonth();
+            calendarState.value.week = weeks.length - 1;
+            calendarState.value.month = weeks[calendarState.value.week][0].getMonth();
         }
 
         saveState();
@@ -357,7 +361,7 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const increment = () => {
-        INCREMENT_METHODS[state.value.layout]();
+        INCREMENT_METHODS[calendarState.value.layout]();
     };
 
     const DECREMENT_METHODS = {
@@ -368,13 +372,14 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const decrement = () => {
-        DECREMENT_METHODS[state.value.layout]();
+        DECREMENT_METHODS[calendarState.value.layout]();
     };
 
     return {
-        state,
+        calendarState,
         setLayout,
         setMonth,
+        getCurrentMonth,
         getMonthForYear,
         getWeeksForMonth,
         setWeek,
