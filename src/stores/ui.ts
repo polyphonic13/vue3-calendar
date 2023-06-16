@@ -19,7 +19,7 @@ export const useUIStore = defineStore('ui', () => {
         return {
             isControlCenterCollapsed: false,
             isViewingEvent: false,
-            isViewingEventList: false,
+            isEventListVisible: false,
             currentClickCoords,
             ...savedState,
         };

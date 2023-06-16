@@ -219,7 +219,6 @@
         const { year, month, day } = getYMDFromDate(props.event.start);
         const split = value.split(':');
         props.event.start = new Date(year, month, day, parseInt(split[0]), parseInt(split[1]));
-        console.log(`new start = `, props.event.start);
     };
 
     const onEndTimeSelected = (value: string) => {
@@ -230,7 +229,6 @@
         const { year, month, day } = getYMDFromDate(props.event.end);
         const split = value.split(':');
         props.event.end = new Date(year, month, day, parseInt(split[0]), parseInt(split[1]));
-        console.log(`new end = `, props.event.end);
     };
 
     const onCloseClicked = () => {

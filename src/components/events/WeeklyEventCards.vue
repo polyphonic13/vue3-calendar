@@ -41,6 +41,7 @@
     import { useDateUtils } from '@/composables/use-date-utils';
     import { useViewEvent } from '@/composables/use-view-event';
     import { usePointerEventProps } from '@/composables/use-pointer-event-props';
+    import { useEventListModal } from '@/composables/use-event-list-modal';
 
     interface IMultiDayEvent extends IEvent {
         daysWithinWeek: number;
@@ -60,7 +61,6 @@
         'onDayMouseDown',
         'onDayMouseOver',
         'onDayMouseUp',
-        'viewEventListClicked',
     ]);
 
     const { convertDateToHHMM } = useDateUtils();
@@ -77,6 +77,8 @@
     const { viewEvent } = useViewEvent();
 
     const { getCoordsFromEvent } = usePointerEventProps();
+
+    const { viewEventList } = useEventListModal();
 
     const eventRows = computed(() => {
         return getRowsForEvents(events.value, props.weekDates);
@@ -161,6 +163,7 @@
 
     const onViewEventListClicked = (event: MouseEvent, date: Date) => {
         const coords = getCoordsFromEvent(event);
+
         const payload = {
             date,
             coords,
@@ -168,7 +171,7 @@
 
         // have to use set-timeout to give existing event list time to close
         setTimeout(() => {
-            emit('viewEventListClicked', payload);
+            viewEventList(payload);
         }, 30);
     };
 

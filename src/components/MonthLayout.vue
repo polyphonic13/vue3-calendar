@@ -27,7 +27,6 @@
                 :index="w"
                 :week-dates="week"
                 :is-include-hourly-events="true"
-                @view-event-list-clicked="viewEventList"
             />
         </div>
         <EventListModal v-if="isViewEventList" />
@@ -65,8 +64,7 @@
 
     const { getWeekForDate } = useCalendarStore();
 
-    const { viewEventList, getIsViewEventList } = useEventListModal();
-
+    const { getIsEventListVisible } = useEventListModal();
 
     const selectedItems = toRef(state, 'selectedItems');
     const isSelecting = toRef(state, 'isSelecting');
@@ -95,7 +93,7 @@
     });
 
     const isViewEventList = computed(() => {
-        return getIsViewEventList();
+        return getIsEventListVisible();
     });
 
     const getDayIndex = (row: number, col: number) => {

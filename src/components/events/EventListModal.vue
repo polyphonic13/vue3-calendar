@@ -45,7 +45,7 @@
     import { MONTH_NAMES } from '@/composables/use-date-utils';
 
     const { addDocumentClickListener, removeDocumentClickListener } = useDocumentClickListener();
-    const { getLocationWithinWindow } = usePositionElementInWindow();
+    const { positionByMouseCoords } = usePositionElementInWindow();
 
     const emit = defineEmits(['onClose']);
 
@@ -63,7 +63,7 @@
     });
 
     const styles = computed(() => {
-        const { x, y } = getLocationWithinWindow(coords.value.x, coords.value.y, eventListModal.value, 16);
+        const { x, y } = positionByMouseCoords(coords.value.x, coords.value.y, eventListModal.value, 16);
 
         return `top: ${y}px; left: ${x}px;`;
     });

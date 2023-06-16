@@ -18,25 +18,25 @@ export function useEventListModal() {
         setFocusedDay(date);
 
         uiState.value.currentClickCoords = coords;
-        uiState.value.isViewingEventList = true;
+        uiState.value.isEventListVisible = true;
     };
 
     const getCurrentClickCoordinates = () => {
         return uiState.value.currentClickCoords;
     };
 
-    const getIsViewEventList = () => {
-        return uiState.value.isViewingEventList;
+    const getIsEventListVisible = () => {
+        return uiState.value.isEventListVisible;
     }
 
     const closeEventList = () => {
-        uiState.value.isViewingEventList = false;
+        uiState.value.isEventListVisible = false;
     };
 
     return {
         viewEventList,
         getCurrentClickCoordinates,
-        getIsViewEventList,
+        getIsEventListVisible,
         closeEventList,
     };
 }
