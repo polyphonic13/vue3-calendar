@@ -1,4 +1,5 @@
 import type { IBox, ICoordinates } from '@/interfaces';
+import { MOBILE_WINDOW_WIDTH } from '@/stores/ui';
 
 export function usePositionElementInWindow() {
 
@@ -17,7 +18,7 @@ export function usePositionElementInWindow() {
         const targetWidth = target.clientWidth;
         const targetHeight = target.clientHeight;
 
-        if ((x === 0 && y === 0) || (winWidth <= 700)) {
+        if ((x === 0 && y === 0) || (winWidth <= MOBILE_WINDOW_WIDTH)) {
             // keyboard click yielded no mouse x/y OR mobile, position in center
             return {
                 x: (winWidth / 2) - (targetWidth / 2),

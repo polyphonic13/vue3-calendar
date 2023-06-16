@@ -11,6 +11,8 @@ import type {
     IUIState,
 } from '@/interfaces';
 
+export const MOBILE_WINDOW_WIDTH = 400;
+
 export const useUIStore = defineStore('ui', () => {
     const createState = (): IUIState => {
         const savedState = load<IUIState>(LOCAL_STORAGE_KEY);
