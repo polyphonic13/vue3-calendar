@@ -40,11 +40,11 @@
             </button>
             <button
                 class="layout_selector__list_item layout__btn"
-                :disabled="props.layout === CalendarLayout.YEAR"
-                @click="() => onLayoutBtnClicked(CalendarLayout.YEAR)"
+                :disabled="props.layout === CalendarLayout.SCHEDULE"
+                @click="() => onLayoutBtnClicked(CalendarLayout.SCHEDULE)"
             >
-                <span>YEAR</span>
-                <span>y</span>
+                <span>SCHEDULE</span>
+                <span>s</span>
             </button>
 
         </div>
@@ -76,6 +76,7 @@
             ['m', CalendarLayout.MONTH],
             ['w', CalendarLayout.WEEK],
             ['d', CalendarLayout.DAY],
+            ['s', CalendarLayout.SCHEDULE],
         ],
     );
 

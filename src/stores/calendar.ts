@@ -350,10 +350,10 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const INCREMENT_METHODS = {
-        [CalendarLayout.YEAR]: incrementYear,
         [CalendarLayout.MONTH]: incrementMonth,
         [CalendarLayout.WEEK]: incrementWeek,
         [CalendarLayout.DAY]: incrementDay,
+        [CalendarLayout.SCHEDULE]: () => { },
     };
 
     const increment = () => {
@@ -361,10 +361,10 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const DECREMENT_METHODS = {
-        [CalendarLayout.YEAR]: decrementYear,
         [CalendarLayout.MONTH]: decrementMonth,
         [CalendarLayout.WEEK]: decrementWeek,
         [CalendarLayout.DAY]: decrementDay,
+        [CalendarLayout.SCHEDULE]: () => { },
     };
 
     const decrement = () => {
