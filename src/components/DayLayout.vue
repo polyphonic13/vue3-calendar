@@ -10,6 +10,7 @@
             :selected-items="selectedItems"
             :current-initiator="currentInitiator"
             :current-type="currentType"
+            :is-emit-date-clicked="false"
             @day-on-mouse-down="onDayMouseDown"
             @day-on-mouse-over="onDayMouseOver"
             @day-on-mouse-up="onDayMouseUp"

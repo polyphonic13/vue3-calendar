@@ -12,7 +12,7 @@
         <button
             class="day_btn"
             :class="classes"
-            @click.stop="$emit('dateClicked', props.index)"
+            @click.stop="onDateClicked"
             @mousedown.stop=""
             @touchstart.stop=""
         >{{ props.day }}</button>
@@ -37,6 +37,7 @@
         isSelecting: boolean;
         selectedItems: number[];
         currentType: string;
+        isEmitDateClicked: boolean;
     }
 
     const props = defineProps<IDayOfWeekHeaderProps>();
@@ -45,6 +46,7 @@
         'dayOnMouseDown',
         'dayOnMouseOver',
         'dayOnMouseUp',
+        'dateClicked',
     ]);
 
     const isSelectingDays = computed(() => {
@@ -67,6 +69,13 @@
     const classes = reactive({
         current: getIsToday(),
     });
+
+    const onDateClicked = (index: number) => {
+        if (!props.isEmitDateClicked) {
+            return;
+        }
+        emit('dateClicked', index);
+    }
 </script>
 
 <style scoped lang="scss">
