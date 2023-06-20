@@ -121,11 +121,11 @@
     }
 
     .current {
-        background-color: $highlightedColorPrimary;
+        background-color: $highlightedBGPrimary;
     }
 
     .current:hover {
-        background-color: $highlightedColorPrimaryHover;
+        background-color: $highlightedBGPrimaryHover;
     }
 
     .day_of_week_header__selection_area {

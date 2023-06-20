@@ -53,7 +53,7 @@
         month: number;
     }
 
-    const props: IMonthProps = defineProps<IMonthProps>();
+    const props = defineProps<IMonthProps>();
 
     const {
         weeklyDates,
@@ -79,6 +79,7 @@
     const emit = defineEmits(['createEvent', 'dateClicked']);
 
     watch(() => props.month, () => {
+        setMonthAndYear(props.month, props.year);
         initSelectionItemsWithDays();
     });
 

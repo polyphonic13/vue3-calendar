@@ -83,6 +83,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getEventsForRange = (startDate: Date, endDate: Date, isSorted: boolean = true): IEvent[] => {
+        console.log(`getEventsForRange, startDate = ${startDate}, endDate = ${endDate}`);
         const events = state.value.events.filter((event: IEvent) => {
             if (getAreDatesWithinRange(event.start, event.end, startDate, endDate, true)) {
                 return event;

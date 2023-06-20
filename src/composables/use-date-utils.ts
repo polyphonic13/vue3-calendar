@@ -34,6 +34,10 @@ export const MONTH_NAMES = Array.from({ length: 12 }, (_, i) => {
     return new Date(0, i).toLocaleString('en-US', { month: 'long' });
 });
 
+export const SHORT_MONTH_NAMES = Array.from({ length: 12 }, (_, i) => {
+    return new Date(0, i).toLocaleString('en-US', { month: 'short' });
+});
+
 export const DAY_NAMES = [
     'Sunday',
     'Monday',
@@ -259,6 +263,11 @@ export function useDateUtils() {
         return todayIndices;
     };
 
+    const getIsDateToday = (date: Date) => {
+        const today = new Date();
+        return date.getFullYear() === today.getFullYear() && date.getDate() === today.getDate() && date.getMonth() === today.getMonth();
+    };
+
     const convertDateToHHMM = (value: Date, isIncludeAMPM: boolean = true) => {
         const localTimeString = value.toLocaleTimeString();
 
@@ -346,6 +355,7 @@ export function useDateUtils() {
     return {
         getYMDFromDate,
         getYearData,
+        getIsDateToday,
         getTodayIndices,
         convertDateToHHMM,
         convertDateTimeToNumber,

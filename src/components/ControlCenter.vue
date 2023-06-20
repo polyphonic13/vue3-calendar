@@ -39,7 +39,7 @@
 
     .control_center {
         color: $secondaryColor01;
-        background-color: $highlightedColorPrimary;
+        background-color: $highlightedBGPrimary;
         box-shadow: $boxShadow02;
 
         padding: 8px;

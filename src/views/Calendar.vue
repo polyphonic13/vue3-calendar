@@ -47,6 +47,8 @@
         />
         <ScheduleLayout
             v-if="calendarState.layout === CalendarLayout.SCHEDULE"
+            :year="calendarState.year"
+            :month="calendarState.month"
             @create-event="onCreateEvent"
         ></ScheduleLayout>
         <EventModal

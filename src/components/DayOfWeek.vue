@@ -276,11 +276,11 @@
     }
 
     .current {
-        background-color: $highlightedColorPrimary;
+        background-color: $highlightedBGPrimary;
     }
 
     .current:hover {
-        background-color: $highlightedColorPrimaryHover;
+        background-color: $highlightedBGPrimaryHover;
 
     }
 

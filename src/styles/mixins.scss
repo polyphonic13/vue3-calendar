@@ -71,11 +71,11 @@
 }
 
 @mixin circle_button--current {
-    background-color: $highlightedColorPrimary;
+    background-color: $highlightedBGPrimary;
 }
 
 @mixin circle_button--current--hover {
-    background-color: $highlightedColorPrimaryHover;
+    background-color: $highlightedBGPrimaryHover;
 }
 
 @mixin link_btn {
