@@ -5,6 +5,7 @@
                 v-for="(date, d) in days"
                 :key="d"
                 class="schedule_layout__day"
+                :id="`schedule-layout-day-${d}`"
             >
                 <div class="schedule_layout__day__date">
                     <button
@@ -25,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-    import { onMounted, computed, watch } from 'vue';
+    import { onMounted, computed, watch, ref } from 'vue';
 
     import { SHORT_MONTH_NAMES, SHORT_DAY_NAMES, useDateUtils } from '@/composables/use-date-utils';
 
@@ -56,7 +57,13 @@
     const emit = defineEmits(['createEvent', 'dateClicked']);
 
     watch(() => props.month, () => {
+        scrollToToday();
         setMonthAndYear(props.month, props.year);
+    });
+
+    const getTodayIndex = computed(() => {
+        const today = new Date();
+        return days.value.findIndex(date => date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate());
     });
 
     const days = computed(() => {
@@ -66,6 +73,23 @@
     const events = computed(() => {
         return getEventsForRange(currentMonth.value[0], currentMonth.value[weeklyDates.value.length - 1]);
     });
+
+    const scrollElIntoView = (id: string) => {
+        const el = document.getElementById(id);
+        if (!el) {
+            return;
+        }
+        el.scrollIntoView({block: 'start', inline: 'nearest' });
+    };
+
+    const scrollToToday = () => {
+        if (getTodayIndex.value === -1) {
+            scrollElIntoView('schedule-layout-day-0');
+            return;
+        }
+
+        scrollElIntoView(`schedule-layout-day-${getTodayIndex.value}`);
+    };
 
     const onDateClicked = (index: number) => {
         if (!currentMonth.value) {
@@ -81,7 +105,7 @@
     };
 
     onMounted(() => {
-        console.log(`ScheduleLayout/onMounted, month = ${props.month}`);
+        scrollToToday();
         setMonthAndYear(props.month, props.year);
     });
 </script>

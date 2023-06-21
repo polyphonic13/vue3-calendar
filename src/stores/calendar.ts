@@ -128,7 +128,6 @@ export const useCalendarStore = defineStore('calendar', () => {
         calendarState.value.layout = value;
 
         if (value === CalendarLayout.SCHEDULE) {
-            console.log(`is schedule, setting info to today`);
             setInfoToToday();
         }
 
