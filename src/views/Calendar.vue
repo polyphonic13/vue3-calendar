@@ -49,6 +49,7 @@
             v-if="calendarState.layout === CalendarLayout.SCHEDULE"
             :year="calendarState.year"
             :month="calendarState.month"
+            @date-clicked="onDateClicked"
             @create-event="onCreateEvent"
         ></ScheduleLayout>
         <EventModal

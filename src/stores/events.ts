@@ -60,7 +60,8 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const state = ref<IEventState>(createState());
-    console.log(`EventsStore/init, state events = `, state.value.events);
+    console.log(`EventsStore/init, state events = `);
+    console.log(state.value.events);
 
     const eventFactory = (seed: Partial<IEvent>) => {
         const today = new Date();
@@ -83,7 +84,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getEventsForRange = (startDate: Date, endDate: Date, isSorted: boolean = true): IEvent[] => {
-        console.log(`getEventsForRange, startDate = ${startDate}, endDate = ${endDate}`);
+        // console.log(`getEventsForRange, startDate = ${startDate}, endDate = ${endDate}`);
         const events = state.value.events.filter((event: IEvent) => {
             if (getAreDatesWithinRange(event.start, event.end, startDate, endDate, true)) {
                 return event;

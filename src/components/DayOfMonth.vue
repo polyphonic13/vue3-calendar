@@ -15,7 +15,9 @@
                 :class="dayButtonClasses"
                 @click="$emit('dateClicked')"
                 @mousedown.stop=""
+                @mouseup.stop=""
                 @touchstart.stop=""
+                @touchend.stop=""
             >{{ props.day }}</button>
         </div>
         <div

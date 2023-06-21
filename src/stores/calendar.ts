@@ -115,7 +115,8 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const calendarState = ref<ICalendarState>(createState());
-    console.log(`CalendarStore/createState, calendarState = `, calendarState.value);
+    console.log(`CalendarStore/createState, calendarState = `);
+    console.log(calendarState.value);
 
     const saveState = () => {
         const { year, month, week, dayOfWeek, layout } = calendarState.value;
@@ -126,6 +127,11 @@ export const useCalendarStore = defineStore('calendar', () => {
     const setLayout = (value: CalendarLayout) => {
         calendarState.value.layout = value;
 
+        if (value === CalendarLayout.SCHEDULE) {
+            console.log(`is schedule, setting info to today`);
+            setInfoToToday();
+        }
+
         if (value !== CalendarLayout.DAY) {
             saveState();
             return;
@@ -134,6 +140,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         const { month, week, day } = calendarState.value.todayIndices;
 
         if (month === -1 || week === -1 || day === -1) {
+            // today is not in the current year
             saveWeekAndDayIndices({ week: 0, day: 0 });
             return;
         }
@@ -214,6 +221,11 @@ export const useCalendarStore = defineStore('calendar', () => {
         saveState();
     };
 
+    /**
+     * `saveWeekAndDayIndices` updates the states week and dayOfWeek which provide the
+     * indices used to reference a date in the states weeks[][] array.
+     * @param indices: { week: number, day: number } -- the week and day of week
+     */
     const saveWeekAndDayIndices = (indices: { week: number, day: number }) => {
         const { week, day } = indices;
 

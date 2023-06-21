@@ -2,7 +2,7 @@
     <div class="schedule_layout">
         <div class="schedule_layout__days">
             <div
-                v-for="(date, d) in currentMonth"
+                v-for="(date, d) in days"
                 :key="d"
                 class="schedule_layout__day"
             >
@@ -10,7 +10,7 @@
                     <button
                         class="day_btn"
                         :class="{ 'day_btn--current': getIsDateToday(date) }"
-                        @click.stop="onDateClicked"
+                        @click.stop="onDateClicked(d)"
                         @mousedown.stop=""
                         @touchstart.stop=""
                     >{{ date.getDate() }}</button>
@@ -32,6 +32,7 @@
     import { useCalendarByMonth } from '@/composables/use-calendar-by-month';
 
     import { useEventStore } from '@/stores/events';
+    import { useCalendarStore } from '@/stores/calendar';
 
     interface IScheduleLayoutProps {
         year: number;
@@ -50,17 +51,37 @@
 
     const { getIsDateToday } = useDateUtils();
 
+    const { getWeekForDate } = useCalendarStore();
+
     const emit = defineEmits(['createEvent', 'dateClicked']);
 
     watch(() => props.month, () => {
         setMonthAndYear(props.month, props.year);
     });
 
+    const days = computed(() => {
+        return currentMonth.value.filter(date => date.getMonth() === props.month);
+    })
+
     const events = computed(() => {
         return getEventsForRange(currentMonth.value[0], currentMonth.value[weeklyDates.value.length - 1]);
     });
 
+    const onDateClicked = (index: number) => {
+        if (!currentMonth.value) {
+            console.warn(`WARNING: no month info present`);
+            return;
+        }
+
+        const target = currentMonth.value[index];
+        const day = target.getDate();
+        const week = getWeekForDate(target);
+
+        emit('dateClicked', { day, week });
+    };
+
     onMounted(() => {
+        console.log(`ScheduleLayout/onMounted, month = ${props.month}`);
         setMonthAndYear(props.month, props.year);
     });
 </script>
