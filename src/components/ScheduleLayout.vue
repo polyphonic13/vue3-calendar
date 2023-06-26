@@ -1,8 +1,8 @@
 <template>
     <div class="schedule_layout">
-        <div class="schedule_layout__days">
+        <div class="schedule_layout__daysWithEvents">
             <div
-                v-for="(date, d) in currentMonth"
+                v-for="(date, d) in currentMonthOnlyDays"
                 :key="d"
                 class="schedule_layout__day"
                 :id="`schedule-layout-day-${d}`"
@@ -82,19 +82,19 @@
 
     const getTodayIndex = computed(() => {
         const today = new Date();
-        return days.value.findIndex(date => date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate());
+        return daysWithEvents.value.findIndex(date => date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate());
     });
 
-    const filteredDays = computed(() => {
+    const currentMonthOnlyDays = computed(() => {
         return currentMonth.value.filter(date => date.getMonth() === props.month);
     });
 
-    const days = computed(() => {
-        return filteredDays.value.filter((_, d) => events.value[d].length > 0);
+    const daysWithEvents = computed(() => {
+        return currentMonthOnlyDays.value.filter((_, d) => events.value[d].length > 0);
     })
 
     const events = computed(() => {
-        return currentMonth.value.map(date => getEventsForDate(date, true));
+        return currentMonthOnlyDays.value.map(date => getEventsForDate(date, true));
     });
 
     const scrollElIntoView = (id: string) => {
@@ -158,7 +158,7 @@
 
     }
 
-    .schedule_layout__days {
+    .schedule_layout__daysWithEvents {
         width: 100%;
 
         display: flex;
