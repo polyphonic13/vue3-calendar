@@ -20,13 +20,18 @@
                     </span>
                 </div>
                 <div class="schedule_layout__day__events">
-                    <button
+                    <div
                         v-for="(event, e) in filteredEvents[d]"
                         :key="`${d}${e}`"
-                        class="schedule_layout__day__events__event_link"
-                        @click="onEventClicked(d, e)"
-                    >{{ event.title }}</button>
-
+                        class="schedule_layout__day__event"
+                    >
+                        <div class="event_dot"></div>
+                        <div class="schedule_layout__day__event__date_time">{{ getEventDateTime(event) }}</div>
+                        <button
+                            class="schedule_layout__day__event__link"
+                            @click="onEventClicked(d, e)"
+                        >{{ event.title }}</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,6 +56,7 @@
 
     import { useEventStore } from '@/stores/events';
     import { useCalendarStore } from '@/stores/calendar';
+    import type { IEvent } from '@/interfaces';
 
     interface IScheduleLayoutProps {
         year: number;
@@ -65,9 +71,9 @@
         setMonthAndYear,
     } = useCalendarByMonth();
 
-    const { getEventsForDate } = useEventStore();
+    const { getEventsForDate, getIsFullDayEvent } = useEventStore();
 
-    const { getIsDateToday } = useDateUtils();
+    const { getIsDateToday, convertDateToHHMM } = useDateUtils();
 
     const { getWeekForDate } = useCalendarStore();
 
@@ -116,6 +122,14 @@
         }
 
         scrollElIntoView(`schedule-layout-day-${getTodayIndex.value}`);
+    };
+
+    const getEventDateTime = (event: IEvent) => {
+        if (getIsFullDayEvent(event)) {
+            return 'All Day';
+        }
+
+        return `${convertDateToHHMM(event.start, true)} - ${convertDateToHHMM(event.end, true)}`;
     };
 
     const onDateClicked = (index: number) => {
@@ -195,6 +209,7 @@
         }
     }
 
+
     .date_month_and_day {
         width: 96px;
     }
@@ -231,12 +246,42 @@
         align-items: flex-start
     }
 
-    .schedule_layout__day__events__event_link {
+    .schedule_layout__day__event {
+        display: flex;
+        align-items: center;
+
+        > * {
+            padding: 0 4px;
+        }
+    }
+
+    .event_dot {
+        @include event_dot;
+    }
+
+    .schedule_layout__day__event__date_time {
+        min-width: 128px;
+        margin-right: 16px;
+
+        user-select: none;
+    }
+
+
+    .schedule_layout__day__event__link {
         @include link_btn;
 
-        padding: 8px 0;
+        padding: 8px;
 
         font-weight: 500;
     }
 
+    @media screen and (max-width: 400px) {
+        .schedule_layout__day__date {
+            width: 128px;
+        }
+
+        .schedule_layout__day__event__date_time {
+            display: none;
+        }
+    }
 </style>

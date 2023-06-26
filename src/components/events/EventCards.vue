@@ -22,7 +22,7 @@
             :style="getCardStyle(event, e)"
             @click.stop="onEventClicked(e)"
         >
-            <span v-if="event.isHourly" class="event_dot"></span>
+            <div v-if="event.isHourly" class="event_dot"></div>
             <span class="event_card__title"><b>{{ event.title }}</b></span>
             <span v-if="event.isHourly" class="event_card--hourly__time">{{ convertDateToHHMM(event.start, true) }}</span>
         </button>
