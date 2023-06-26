@@ -2,7 +2,7 @@
     <div class="schedule_layout">
         <div class="schedule_layout__days">
             <div
-                v-for="(date, d) in days"
+                v-for="(date, d) in currentMonth"
                 :key="d"
                 class="schedule_layout__day"
                 :id="`schedule-layout-day-${d}`"
@@ -19,18 +19,35 @@
                         {{ SHORT_MONTH_NAMES[date.getMonth()].toUpperCase() }}, {{ SHORT_DAY_NAMES[date.getDay()] }}
                     </span>
                 </div>
-                <div class="schedule_layout__day__events"></div>
+                <div class="schedule_layout__day__events">
+                    <button
+                        v-for="(event, e) in events[d]"
+                        :key="`${d}${e}`"
+                        class="schedule_layout__day__events__event_link"
+                        @click="onEventClicked(d, e)"
+                    >{{ event.title }}</button>
+
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { onMounted, computed, watch, ref } from 'vue';
+    import {
+        onMounted,
+        computed,
+        watch,
+    } from 'vue';
 
-    import { SHORT_MONTH_NAMES, SHORT_DAY_NAMES, useDateUtils } from '@/composables/use-date-utils';
+    import {
+        SHORT_MONTH_NAMES,
+        SHORT_DAY_NAMES,
+        useDateUtils,
+     } from '@/composables/use-date-utils';
 
     import { useCalendarByMonth } from '@/composables/use-calendar-by-month';
+    import { useViewEvent } from '@/composables/use-view-event';
 
     import { useEventStore } from '@/stores/events';
     import { useCalendarStore } from '@/stores/calendar';
@@ -48,11 +65,13 @@
         setMonthAndYear,
     } = useCalendarByMonth();
 
-    const { getEventsForRange } = useEventStore();
+    const { getEventsForDate } = useEventStore();
 
     const { getIsDateToday } = useDateUtils();
 
     const { getWeekForDate } = useCalendarStore();
+
+    const { viewEvent } = useViewEvent();
 
     const emit = defineEmits(['createEvent', 'dateClicked']);
 
@@ -66,12 +85,16 @@
         return days.value.findIndex(date => date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate());
     });
 
-    const days = computed(() => {
+    const filteredDays = computed(() => {
         return currentMonth.value.filter(date => date.getMonth() === props.month);
+    });
+
+    const days = computed(() => {
+        return filteredDays.value.filter((_, d) => events.value[d].length > 0);
     })
 
     const events = computed(() => {
-        return getEventsForRange(currentMonth.value[0], currentMonth.value[weeklyDates.value.length - 1]);
+        return currentMonth.value.map(date => getEventsForDate(date, true));
     });
 
     const scrollElIntoView = (id: string) => {
@@ -104,7 +127,12 @@
         emit('dateClicked', { day, week });
     };
 
+    const onEventClicked = (day: number, event: number) => {
+        viewEvent(events.value[day][event]);
+    };
+
     onMounted(() => {
+        console.log(`ScheduleLayout/onMounted, events = `, events.value);
         scrollToToday();
         setMonthAndYear(props.month, props.year);
     });
@@ -120,6 +148,7 @@
         flex: 1;
 
         border-left: 1px solid $borderColor01;
+        border-right: 1px solid $borderColor01;
         border-top: 1px solid $borderColor01;
 
         box-sizing: border-box;
@@ -194,5 +223,19 @@
 
     .schedule_layout__day__events {
         flex: 1;
+
+        display: flex;
+        flex-direction: column;
+
+        align-items: flex-start
     }
+
+    .schedule_layout__day__events__event_link {
+        @include link_btn;
+
+        padding: 8px 0;
+
+        font-weight: 500;
+    }
+
 </style>

@@ -221,6 +221,7 @@
     .more_events_btn {
         @include link_btn;
 
+        width: 100%;
         padding-top: 54px;
     }
 

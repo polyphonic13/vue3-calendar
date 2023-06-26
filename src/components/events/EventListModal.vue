@@ -171,6 +171,8 @@
     .event_list_modal__event_btn {
         @include link_btn;
 
+        width: 100%;
+
         display: flex;
         align-items: center;
         justify-self: flex-start;
