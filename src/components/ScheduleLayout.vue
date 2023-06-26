@@ -1,8 +1,8 @@
 <template>
     <div class="schedule_layout">
-        <div class="schedule_layout__daysWithEvents">
+        <div class="schedule_layout__days">
             <div
-                v-for="(date, d) in currentMonthOnlyDays"
+                v-for="(date, d) in daysWithEvents"
                 :key="d"
                 class="schedule_layout__day"
                 :id="`schedule-layout-day-${d}`"
@@ -21,7 +21,7 @@
                 </div>
                 <div class="schedule_layout__day__events">
                     <button
-                        v-for="(event, e) in events[d]"
+                        v-for="(event, e) in filteredEvents[d]"
                         :key="`${d}${e}`"
                         class="schedule_layout__day__events__event_link"
                         @click="onEventClicked(d, e)"
@@ -91,10 +91,14 @@
 
     const daysWithEvents = computed(() => {
         return currentMonthOnlyDays.value.filter((_, d) => events.value[d].length > 0);
-    })
+    });
 
     const events = computed(() => {
         return currentMonthOnlyDays.value.map(date => getEventsForDate(date, true));
+    });
+
+    const filteredEvents = computed(() => {
+        return events.value.filter(day => day.length > 0);
     });
 
     const scrollElIntoView = (id: string) => {
@@ -128,11 +132,10 @@
     };
 
     const onEventClicked = (day: number, event: number) => {
-        viewEvent(events.value[day][event]);
+        viewEvent(filteredEvents.value[day][event]);
     };
 
     onMounted(() => {
-        console.log(`ScheduleLayout/onMounted, events = `, events.value);
         scrollToToday();
         setMonthAndYear(props.month, props.year);
     });
@@ -147,9 +150,7 @@
 
         flex: 1;
 
-        border-left: 1px solid $borderColor01;
-        border-right: 1px solid $borderColor01;
-        border-top: 1px solid $borderColor01;
+        border: 1px solid $borderColor01;
 
         box-sizing: border-box;
 
@@ -158,7 +159,7 @@
 
     }
 
-    .schedule_layout__daysWithEvents {
+    .schedule_layout__days {
         width: 100%;
 
         display: flex;
