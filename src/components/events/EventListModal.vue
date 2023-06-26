@@ -88,7 +88,6 @@
             return;
         }
 
-        // console.log(`EventListModal/onDocumentCliked, eventListModal = `, eventListModal.value, `\n\tevent.target = `, event.target);
         const isChild = eventListModal.value.contains(event.target as Node);
 
         if (isChild) {

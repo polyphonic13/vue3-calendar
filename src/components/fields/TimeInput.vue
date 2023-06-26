@@ -6,6 +6,7 @@
             :class="classes"
             :disable="!isModalOpen"
             :value="inputFieldValue"
+            :name="inputFieldValue"
             ref="textField"
             @keydown.stop=""
             @blur="onTextFieldBlur"

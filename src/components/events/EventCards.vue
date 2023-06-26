@@ -24,7 +24,7 @@
         >
             <span v-if="event.isHourly" class="event_dot"></span>
             <span class="event_card__title"><b>{{ event.title }}</b></span>
-            <span v-if="event.isHourly" class="event_card--hourly__time">{{ convertDateToHHMM(event.start) }}</span>
+            <span v-if="event.isHourly" class="event_card--hourly__time">{{ convertDateToHHMM(event.start, true) }}</span>
         </button>
     </div>
 </template>

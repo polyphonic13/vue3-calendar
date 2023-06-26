@@ -4,7 +4,7 @@
             class="date_selector__btn"
             :class="dateSelectorBtnClasses"
             @click="onDateSelectorBtnClicked"
-        >{{ props.value.toDateString() }}</button>
+        >{{ getDayMDFromDate(props.value) }}</button>
         <div
             v-if="isModalOpen"
             class="date_selector__modal"
@@ -49,7 +49,7 @@
 
     import { useCalendarStore } from '@/stores/calendar';
 
-    import { MONTH_NAMES } from '@/composables/use-date-utils';
+    import { MONTH_NAMES, useDateUtils } from '@/composables/use-date-utils';
     import { useDocumentClickListener } from '@/composables/use-document-click-listener';
 
     const { getMonthForYear } = useCalendarStore();
@@ -60,6 +60,8 @@
         isEditing: boolean;
         value: Date;
     }
+
+    const { getDayMDFromDate } = useDateUtils();
 
     const props = defineProps<IDateSelectorProps>();
 

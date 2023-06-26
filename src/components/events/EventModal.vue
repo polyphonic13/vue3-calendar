@@ -49,7 +49,7 @@
                         @date-selected="onEndDateSelected"
                     />
                 </div>
-                <div v-if="!isFullDayEvent" class="event__time">
+                <div v-if="isViewingTime" class="event__time">
                     <TimeInput
                         :is-editing="isEditing || isNew"
                         :value="props.event!.start!"
@@ -62,6 +62,13 @@
                         @time-updated="onEndTimeSelected"
                     />
                 </div>
+                <div class="spacer"></div>
+                <CheckBox
+                    :model="!isViewingTime"
+                    :disabled="isEditingDisabled"
+                    label="All Day"
+                    @checkbox-changed="onAllDayChanged"
+                ></CheckBox>
             </div>
             <textarea
                 class="event__description"
@@ -85,7 +92,13 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onMounted, nextTick } from 'vue';
+    import {
+        ref,
+        computed,
+        onMounted,
+        nextTick,
+        watch,
+     } from 'vue';
 
     import type { IEvent } from '@/interfaces';
 
@@ -96,6 +109,7 @@
 
     import DateSelector from '@/components/fields/DateSelector.vue';
     import TimeInput from '../fields/TimeInput.vue';
+    import CheckBox from '../fields/CheckBox.vue';
 
     const {
         createDateFromDateAndHHMM,
@@ -122,6 +136,7 @@
     const emit = defineEmits(['onClose']);
 
     const isEditing = ref(false);
+    const isViewingTime = ref(false);
     const titleInput = ref<HTMLElement | null>(null);
     const editButton = ref<HTMLElement | null>(null);
 
@@ -232,6 +247,16 @@
         props.event.end = new Date(year, month, day, parseInt(split[0]), parseInt(split[1]));
     };
 
+    const onAllDayChanged = () => {
+        isViewingTime.value = !isViewingTime.value;
+
+        if (isViewingTime.value) {
+            return;
+        }
+        props.event!.start = createDateFromDateAndHHMM(props.event!.start!, 0, 0);
+        props.event!.end = createDateFromDateAndHHMM(props.event!.end!, 0, 0);
+    };
+
     const onCloseClicked = () => {
         close();
     };
@@ -257,17 +282,6 @@
     };
 
     const close = () => {
-        // console.log(`close, isEditingDisabled = ${isEditingDisabled.value}`);
-        // if (isEditingDisabled.value) {
-        //     emit('onClose');
-        //     return;
-        // }
-
-        // const isConfirmed = confirm('Discard unsaved changes?');
-
-        // if (!isConfirmed) {
-        //     return;
-        // }
         emit('onClose');
     };
 
@@ -300,6 +314,8 @@
     }
 
     onMounted(() => {
+        isViewingTime.value = !isFullDayEvent.value;
+
         if (!props.isNew) {
             focusEditButton();
             return;
@@ -374,6 +390,7 @@
         width: 100%;
         display: flex;
         align-items: center;
+        justify-content: space-between;
     }
 
     .event__date, .event__time {
@@ -431,6 +448,10 @@
     .date_selector__btn--enabled {
         background-color: $transparentGrey02;
         border-bottom: 1px solid $borderColor01;
+    }
+
+    .spacer {
+        flex-grow: 1;
     }
 
     @media screen and (max-width: 400px) {
