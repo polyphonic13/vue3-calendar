@@ -49,7 +49,7 @@
                         @date-selected="onEndDateSelected"
                     />
                 </div>
-                <div v-if="isViewingTime" class="event__time">
+                <div v-if="isViewingTime || !isAllDayEvent" class="event__time">
                     <TimeInput
                         :is-editing="isEditing || isNew"
                         :value="props.event!.start!"
@@ -64,7 +64,7 @@
                 </div>
                 <div class="spacer"></div>
                 <CheckBox
-                    v-if="isEditing || isFullDayEvent"
+                    v-if="isEditing || isAllDayEvent"
                     :model="!isViewingTime"
                     :disabled="isEditingDisabled"
                     label="All Day"
@@ -129,6 +129,7 @@
         deleteEvent,
         getIsFullDayEvent,
         getIsSameDayEvent,
+        getIsEventWithTimes,
     } = eventStore;
 
     const { viewEvent } = useViewEvent();
@@ -150,11 +151,11 @@
         return getIsSameDayEvent();
     });
 
-    const isFullDayEvent = computed(() => {
+    const isAllDayEvent = computed(() => {
         if (!props.event || !props.event.start || !props.event.end) {
             return true;
         }
-        return getIsFullDayEvent(props.event!);
+        return !getIsEventWithTimes(props.event!);
     });
 
     const isSaveDisabled = computed(() => {
@@ -314,7 +315,7 @@
     }
 
     onMounted(() => {
-        isViewingTime.value = !isFullDayEvent.value;
+        isViewingTime.value = !isAllDayEvent.value;
 
         if (!props.isNew) {
             focusEditButton();

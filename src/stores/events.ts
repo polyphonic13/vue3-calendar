@@ -204,10 +204,6 @@ export const useEventStore = defineStore('eventStore', () => {
     }
 
     const getIsFullDayEvent = (event: Partial<IEvent>) => {
-        if (!event) {
-            return true;
-        }
-
         if (!event.start || !event.end) {
             return true;
         }
@@ -215,6 +211,38 @@ export const useEventStore = defineStore('eventStore', () => {
         const endHour = event.end.getHours();
 
         return startHour === 0 && endHour === 0;
+    };
+
+    const getIsFullOrMultiDayEvent = (event: Partial<IEvent>) => {
+        if (!event.start || !event.end) {
+            return false;
+        }
+
+        const { start, end } = event;
+
+        if (getDifferenceInDays(start, end) > 1) {
+            return true;
+        }
+
+        const startHour = event.start.getHours();
+        const endHour = event.end.getHours();
+
+        return startHour === 0 && endHour === 0;
+    };
+
+    const getIsEventWithTimes = (event: Partial<IEvent>) => {
+        if (!event.start || !event.end) {
+            return false;
+        }
+
+        const { start, end } = event;
+
+        const startHour = start.getHours();
+        const startMinutes = start.getMinutes();
+        const endHour = end.getHours();
+        const endMinutes = end.getMinutes();
+
+        return startHour !== 0 || startMinutes !== 0 || endHour !== 0 || endMinutes !== 0;
     };
 
     const getIsSameDayEvent = () => {
@@ -238,6 +266,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getDaysInEventInDateRangeCount = (event: IEvent, rangeStart: Date, rangeEnd: Date) => {
+        console.log(`get days in event in date range for ${event.title}`);
         return getDifferenceInDays(event.start, event.end, rangeStart, rangeEnd) + 1;
     };
 
@@ -265,6 +294,8 @@ export const useEventStore = defineStore('eventStore', () => {
         setIsViewingEvent,
         getFocusedEvent,
         getIsFullDayEvent,
+        getIsEventWithTimes,
+        getIsFullOrMultiDayEvent,
         getIsSameDayEvent,
         getDaysInEventCount,
         getDaysInEventInDateRangeCount,

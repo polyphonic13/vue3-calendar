@@ -307,19 +307,19 @@ export function useDateUtils() {
         const startTime = start.getTime();
         const endTime = end.getTime();
 
-        if (!rStart && !rEnd) {
-            const msDiff = end.getTime() - start.getTime();
+        if (!rStart || !rEnd) {
 
-            return (msDiff / MILLISECONDS_IN_DAY);
+            return (end.getTime() - start.getTime()) / MILLISECONDS_IN_DAY;
         }
 
-        const rStartTime = rStart!.getTime();
-        const rEndTime = rEnd!.getTime();
-
+        const rStartTime = rStart.getTime();
+        const rEndTime = rEnd.getTime();
         const s = (startTime > rStartTime) ? startTime : rStartTime;
         const e = (endTime < rEndTime) ? endTime : rEndTime;
+        const diff = Math.ceil((e - s) / MILLISECONDS_IN_DAY);
+        console.log(`\trStartTime = ${rStartTime}, rEndTime = ${rEndTime}\n\tstartTime = ${startTime}, endTime = ${endTime}\n\ts = ${s}, e = ${e}\n\tdiff = ${diff}`);
 
-        return ((e - s) / MILLISECONDS_IN_DAY);
+        return diff;
     };
 
     const createDateFromDateAndHHMM = (value: Date, hours: number, minutes: number) => {

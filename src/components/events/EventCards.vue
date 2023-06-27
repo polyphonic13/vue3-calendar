@@ -72,7 +72,7 @@
     const {
         getEventsForRange,
         getEventsForDate,
-        getIsFullDayEvent,
+        getIsFullOrMultiDayEvent,
         getDaysInEventInDateRangeCount,
      } = useEventStore();
 
@@ -88,9 +88,9 @@
 
     const weeklyEvents = computed(() => getEventsForRange(props.weekDates[0], props.weekDates[props.weekDates.length - 1]));
 
-    const fullDayEvents = computed(() => weeklyEvents.value.filter((event) => getIsFullDayEvent(event)));
+    const fullDayEvents = computed(() => weeklyEvents.value.filter(event => getIsFullOrMultiDayEvent(event)));
 
-    const hourlyEvents = computed(() => weeklyEvents.value.filter((event) => !getIsFullDayEvent(event)));
+    const hourlyEvents = computed(() => weeklyEvents.value.filter(event => !getIsFullOrMultiDayEvent(event)));
 
     const events = computed(() => {
         // console.log(`fullDayEvents = `, fullDayEvents.value);
@@ -114,7 +114,7 @@
             // console.log(`no hourly events should be included`);
             return daily;
         }
-        // console.log(`going to add hourly events`);
+
         const hourly = hourlyEvents.value.map((event) => {
             let leftMultiplier = props.weekDates.findIndex((date) => date.getDate() === event.start.getDate());
             if (leftMultiplier === -1) {
@@ -146,10 +146,10 @@
             return 'display: none';
         }
         const widthDivider = (props.isWeek) ? 7 : 1;
-
         const width = (100 / widthDivider) * event.daysWithinWeek;
         const top = ((eventRows.value[index]) * 24);
         const left = (100 / widthDivider) * event.leftMultiplier;
+        // console.log(`getCardStyle for ${event.title}\n\tdaysWithinWeek = ${event.daysWithinWeek}, width = ${width}`);
 
         return `width: ${width}%; top: ${top}px; left: ${left}%`;
     };
@@ -159,7 +159,7 @@
             'event_card--whole': (event.dayCount <= event.daysWithinWeek && (event.start.getHours() === 0 && event.end.getHours() === 0)),
             'event_card--left': (event.dayCount > event.daysWithinWeek && event.leftMultiplier > 0 && (event.start.getHours() === 0 && event.end.getHours() === 0)),
             'event_card--right': (event.dayCount > event.daysWithinWeek && event.leftMultiplier < 1 && event.daysWithinWeek < 7 && (event.start.getHours() === 0 && event.end.getHours() === 0)),
-            'event_card--hourly': (event.start.getHours() !== 0 && event.end.getHours() !== 0),
+            'event_card--hourly': (event.dayCount === 1) && (event.start.getHours() !== 0 && event.end.getHours() !== 0),
         };
     };
 
@@ -272,6 +272,10 @@
 
     .event_card--hourly {
         @include event_card--hourly;
+    }
+
+    .event_card--hourly__time {
+        min-width: 64px;
     }
 
     .event_dot {
