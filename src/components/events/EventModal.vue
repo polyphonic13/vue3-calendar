@@ -64,6 +64,7 @@
                 </div>
                 <div class="spacer"></div>
                 <CheckBox
+                    v-if="isEditing || isFullDayEvent"
                     :model="!isViewingTime"
                     :disabled="isEditingDisabled"
                     label="All Day"
@@ -97,7 +98,6 @@
         computed,
         onMounted,
         nextTick,
-        watch,
      } from 'vue';
 
     import type { IEvent } from '@/interfaces';
@@ -398,7 +398,7 @@
         align-items: center;
 
         > * {
-            padding-right: 8px;
+            padding-right: 4px;
         }
     }
 

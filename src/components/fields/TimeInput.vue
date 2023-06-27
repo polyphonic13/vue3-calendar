@@ -61,11 +61,9 @@
 
         background-color: transparent;
 
-        padding: 4px 8px;
+        padding: 4px;
         border: none;
         box-sizing: border-box;
-
-        font-size: 0.95em;
 
         cursor: default;
     }
