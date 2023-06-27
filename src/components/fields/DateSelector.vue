@@ -160,6 +160,8 @@
         border: none;
         box-sizing: border-box;
 
+        font-size: 0.95em;
+
         cursor: default;
     }
 

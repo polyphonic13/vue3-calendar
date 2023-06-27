@@ -115,6 +115,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const createEvent = (payload: Partial<IEvent>) => {
+        console.log(`createEvent, payload = `, payload);
         state.value.focusedEvent = eventFactory(payload);
     };
 

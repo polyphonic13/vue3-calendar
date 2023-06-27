@@ -260,22 +260,15 @@ export function useDateUtils() {
         return date.getFullYear() === today.getFullYear() && date.getDate() === today.getDate() && date.getMonth() === today.getMonth();
     };
 
-    const convertDateToHHMM = (value: Date, isIncludeAMPM: boolean) => {
+    const convertDateToHHMM = (value: Date, isForDisplay: boolean = true) => {
+        if (!isForDisplay) {
+            return value.toTimeString().split(' ')[0].substring(0, 5);
+        }
         const localTimeString = value.toLocaleTimeString();
         const spaceSplit = localTimeString.split(' ');
         const colonSplit = localTimeString.split(':');
 
-        let hh;
-
-        if (colonSplit[0] === '12' && spaceSplit[1] === 'AM') {
-            hh = `00`;
-        } else {
-            hh = (parseInt(colonSplit[0]) > 9) ? colonSplit[0] : `0${colonSplit[0]}`;
-        }
-
-        if (!isIncludeAMPM) {
-            return `${hh}:${colonSplit[1]}`;
-        }
+        const hh = (colonSplit[0] === '12' && spaceSplit[1] === 'AM') ? '00' : colonSplit[0];
 
         return `${hh}:${colonSplit[1]} ${spaceSplit[1]}`;
     };

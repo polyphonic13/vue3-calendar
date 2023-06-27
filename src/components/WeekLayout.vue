@@ -171,10 +171,10 @@
     const onTimeMouseUp = (dayIndex: number) => {
         const times = getNumberValuesFromItems();
         const { year, month, day } = getYMDFromDate(props.weekInfo[dayIndex]);
-
         const start = getDateFromTimes(times.start, { year, month, day });
         const end = getDateFromTimes(times.end, { year, month, day });
 
+        console.log(`onTimeMouseUp, start/end times = ${times.start} / ${times.end}, start = ${start} end = ${end}`);
         emitCreateEvent(start, end);
         onMouseUp();
     };
