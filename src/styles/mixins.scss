@@ -163,6 +163,8 @@
 @mixin event_dot {
     width: 12px;
     height: 12px;
+    margin-right: 4px;
+
     background-color: $eventCard01BG;
     clip-path: circle(6px at 50% 50%);
 }

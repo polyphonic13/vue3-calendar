@@ -14,7 +14,11 @@ import type {
 const LOCAL_STORAGE_KEY = 'calendarAppEventData';
 
 const { load, save } = useLocalStorage();
-const { getDifferenceInDays, getAreDatesWithinRange } = useDateUtils();
+const {
+    getDifferenceInDays,
+    getAreDatesWithinRange,
+    dateAddition,
+} = useDateUtils();
 
 export const useEventStore = defineStore('eventStore', () => {
     const deserializeEvents = (serialized: ISerializedEvent[]): IEvent[] => {
@@ -262,7 +266,10 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getDaysInEventCount = (event: IEvent) => {
-        return Math.floor(getDifferenceInDays(event.start, event.end) + 1);
+        // add 1 to end to account for mid-day ending days.
+        const end = (event.end.getHours() === 0 && event.end.getMinutes() === 0) ? event.end : dateAddition(event.end, 1);
+
+        return Math.floor(getDifferenceInDays(event.start, end) + 1);
     };
 
     const getDaysInEventInDateRangeCount = (event: IEvent, rangeStart: Date, rangeEnd: Date) => {
