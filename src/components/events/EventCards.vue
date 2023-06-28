@@ -157,9 +157,9 @@
 
     const getCardClasses = (event: IMultiDayEvent) => {
         return {
-            'event_card--whole': (event.dayCount <= event.daysWithinWeek && (event.start.getHours() === 0 && event.end.getHours() === 0)),
-            'event_card--left': (event.dayCount > event.daysWithinWeek && event.leftMultiplier > 0 && (event.start.getHours() === 0 && event.end.getHours() === 0)),
-            'event_card--right': (event.dayCount > event.daysWithinWeek && event.leftMultiplier < 1 && event.daysWithinWeek < 7 && (event.start.getHours() === 0 && event.end.getHours() === 0)),
+            'event_card--whole': (event.dayCount <= event.daysWithinWeek && (event.dayCount > 1)),
+            'event_card--left': (event.dayCount > event.daysWithinWeek && event.leftMultiplier > 0 && (event.dayCount > 1)),
+            'event_card--right': (event.dayCount > event.daysWithinWeek && event.leftMultiplier < 1 && event.daysWithinWeek < 7 && (event.dayCount > 1)),
             'event_card--hourly': (event.dayCount === 1) && (event.start.getHours() !== 0 && event.end.getHours() !== 0),
         };
     };
