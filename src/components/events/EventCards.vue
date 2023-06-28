@@ -95,6 +95,7 @@
     const events = computed(() => {
         // console.log(`fullDayEvents = `, fullDayEvents.value);
         const daily = fullDayEvents.value.map((event) => {
+            // console.log(`\nWEEK = ${props.weekDates[0]} - ${props.weekDates[props.weekDates.length - 1]}`);
             const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekDates[0], props.weekDates[props.weekDates.length - 1]);
             let leftMultiplier = props.weekDates.findIndex(date => date.getDate() === event.start.getDate());
 

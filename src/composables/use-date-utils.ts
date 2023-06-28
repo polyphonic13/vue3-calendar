@@ -308,16 +308,17 @@ export function useDateUtils() {
         const endTime = end.getTime();
 
         if (!rStart || !rEnd) {
-
             return (end.getTime() - start.getTime()) / MILLISECONDS_IN_DAY;
         }
+        rEnd = dateAddition(rEnd, 1);
 
+        // console.log(`\tstart = ${start}\n\tend = ${end}\n\trStart = ${rStart}\n\trEnd = ${rEnd}`);
         const rStartTime = rStart.getTime();
         const rEndTime = rEnd.getTime();
         const s = (startTime > rStartTime) ? startTime : rStartTime;
         const e = (endTime < rEndTime) ? endTime : rEndTime;
-        const diff = Math.ceil((e - s) / MILLISECONDS_IN_DAY);
-        console.log(`\trStartTime = ${rStartTime}, rEndTime = ${rEndTime}\n\tstartTime = ${startTime}, endTime = ${endTime}\n\ts = ${s}, e = ${e}\n\tdiff = ${diff}`);
+        const diff = Math.floor((e - s) / MILLISECONDS_IN_DAY);
+        // console.log(`\tstartTime = ${startTime}, endTime = ${endTime}\n\trStartTime = ${rStartTime}, rEndTime = ${rEndTime}\n\ts = ${s}, e = ${e}\n\tdiff = ${diff}`);
 
         return diff;
     };
@@ -343,6 +344,12 @@ export function useDateUtils() {
         };
     };
 
+    const dateAddition = (value: Date, dayCount: number) => {
+        const temp = new Date(value);
+        temp.setDate(temp.getDate() + dayCount);
+        return temp;
+    };
+
     return {
         getYMDFromDate,
         getDayMDFromDate,
@@ -355,6 +362,7 @@ export function useDateUtils() {
         getDifferenceInDays,
         createDateFromDateAndHHMM,
         getHHMMFromNumber,
+        dateAddition,
     };
 
 }

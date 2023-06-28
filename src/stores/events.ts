@@ -266,7 +266,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getDaysInEventInDateRangeCount = (event: IEvent, rangeStart: Date, rangeEnd: Date) => {
-        console.log(`get days in event in date range for ${event.title}`);
+        // console.log(`\tget days in event in date range for ${event.title}\n\tday count = ${event.dayCount}`);
         return getDifferenceInDays(event.start, event.end, rangeStart, rangeEnd) + 1;
     };
 
