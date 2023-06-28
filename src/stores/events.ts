@@ -67,17 +67,30 @@ export const useEventStore = defineStore('eventStore', () => {
     console.log(`EventsStore/init, state events = `);
     console.log(state.value.events);
 
-    const eventFactory = (seed: Partial<IEvent>) => {
+
+    const getIsAllDay = (event: Partial<IEvent>) => {
+        if (!event.start || !event.end) {
+            return true;
+        }
+
+        return event.start.getHours() === 0 && event.start.getMinutes() === 0 && event.end.getHours() === 0 && event.end.getMinutes() === 0;
+    };
+
+    const eventFactory = (value: Partial<IEvent>) => {
         const today = new Date();
+
+        const isAllDay = getIsAllDay(value);
+
         const event: IEvent = {
             id: today.getTime(),
             title: '',
             description: '',
             location: '',
             start: today,
-            end: new Date(),
+            end: today,
             dayCount: 0,
-            ...seed,
+            isAllDay,
+            ...value,
         };
 
         return event;
@@ -176,11 +189,17 @@ export const useEventStore = defineStore('eventStore', () => {
             return;
         }
 
-        state.value.focusedEvent.dayCount = getDaysInEventCount(state.value.focusedEvent as IEvent);
+        const focusedEvent = state.value.focusedEvent;
+
+        focusedEvent.dayCount = getDaysInEventCount(focusedEvent as IEvent);
+        focusedEvent.isAllDay = getIsAllDay(focusedEvent);
 
         state.value.events = state.value.events.map((event: IEvent) => {
-            return (event.id === state.value.focusedEvent!.id) ? { ...event, ...state.value.focusedEvent! } : event;
+            return (event.id === focusedEvent!.id) ? { ...event, ...focusedEvent! } : event;
         });
+
+        state.value.focusedEvent = focusedEvent;
+
         saveEvents();
     };
 

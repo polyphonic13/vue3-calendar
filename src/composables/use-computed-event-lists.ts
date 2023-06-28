@@ -4,7 +4,7 @@ import { useEventStore } from '@/stores/events';
 import type { IEvent } from '@/interfaces';
 
 export function useComputedEventLists() {
-    const { getEventsForRange, getIsFullDayEvent } = useEventStore();
+    const { getEventsForRange, getIsFullDayEvent, getIsFullOrMultiDayEvent } = useEventStore();
 
     const startDate = ref<Date>();
     const endDate = ref<Date>();
@@ -25,11 +25,11 @@ export function useComputedEventLists() {
     });
 
     const dailyEvents = computed(() => {
-        return weeklyEvents.value.filter((event) => getIsFullDayEvent(event));
+        return weeklyEvents.value.filter((event) => getIsFullOrMultiDayEvent(event));
     });
 
     const hourlyEvents = computed(() => {
-        return weeklyEvents.value.filter((event) => !getIsFullDayEvent(event));
+        return weeklyEvents.value.filter((event) => !getIsFullOrMultiDayEvent(event));
     });
 
     const getHourlyEventsForDay = (date: Date) => {

@@ -155,7 +155,7 @@
         if (!props.event || !props.event.start || !props.event.end) {
             return true;
         }
-        return !getIsEventWithTimes(props.event!);
+        return props.event.isAllDay;
     });
 
     const isSaveDisabled = computed(() => {

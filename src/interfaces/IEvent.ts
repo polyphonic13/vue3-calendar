@@ -4,6 +4,7 @@ export interface IBaseEvent {
     description: string;
     location: string;
     dayCount: number;
+    isAllDay: boolean;
 }
 
 export interface ISerializedEvent extends IBaseEvent {
