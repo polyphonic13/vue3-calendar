@@ -204,11 +204,15 @@
 
     .weekly_event_cards {
         @include event_card_list;
+
+        border-right: 1px solid $greyscale02;
     }
 
     .weekly_event_cards__day {
-        border-right: 1px solid $greyscale02;
         box-sizing: border-box;
+    }
+
+    .weekly_event_cards__day:last-child {
     }
 
     .weekly_event_cards__day--weekly {

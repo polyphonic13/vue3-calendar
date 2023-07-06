@@ -248,17 +248,7 @@
     }
 
     .day_container {
-        width: 100%;
-
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-
-        border-top: 1px solid $borderColor01;
-        box-sizing: border-box;
-
-        overflow-y: scroll;
-
+        @include day_container;
     }
 
     .time_column {
