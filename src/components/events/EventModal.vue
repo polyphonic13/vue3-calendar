@@ -71,6 +71,12 @@
                     @checkbox-changed="onAllDayChanged"
                 ></CheckBox>
             </div>
+            <CalendarNameSelector
+                :value="event!.calendarName"
+                :calendars="calendars"
+                :is-enabled="isEditing || isNew"
+                @calendar-name-clicked="onCalendarNameClicked"
+            />
             <textarea
                 class="event__description"
                 rows="5"
@@ -98,7 +104,7 @@
         computed,
         onMounted,
         nextTick,
-     } from 'vue';
+    } from 'vue';
 
     import type { IEvent } from '@/interfaces';
 
@@ -110,6 +116,8 @@
     import DateSelector from '@/components/fields/DateSelector.vue';
     import TimeInput from '../fields/TimeInput.vue';
     import CheckBox from '../fields/CheckBox.vue';
+
+    import CalendarNameSelector from '../fields/CalendarNameSelector.vue';
 
     const {
         createDateFromDateAndHHMM,
@@ -127,9 +135,8 @@
         addEvent,
         updateEvent,
         deleteEvent,
-        getIsFullDayEvent,
         getIsSameDayEvent,
-        getIsEventWithTimes,
+        getEventCalendars,
     } = eventStore;
 
     const { viewEvent } = useViewEvent();
@@ -159,7 +166,11 @@
     });
 
     const isSaveDisabled = computed(() => {
-        return !props.event || !props.event.title || props.event.title === '';
+        return !props.event || !props.event.title || props.event.title === '' || !props.event.calendarName;
+    });
+
+    const calendars = computed(() => {
+        return getEventCalendars();
     });
 
     const onEditClicked = (event: MouseEvent) => {
@@ -256,6 +267,10 @@
         }
         props.event!.start = createDateFromDateAndHHMM(props.event!.start!, 0, 0);
         props.event!.end = createDateFromDateAndHHMM(props.event!.end!, 0, 0);
+    };
+
+    const onCalendarNameClicked = (index: number) => {
+        props.event!.calendarName = calendars.value[index].name;
     };
 
     const onCloseClicked = () => {
@@ -367,7 +382,6 @@
 
         > * {
             padding: 8px 0;
-            margin-bottom: 16px;
         }
     }
 
@@ -379,12 +393,17 @@
         background-color: $transparentGrey01;
         border: none;
         border-bottom: 1px solid $borderColor01;
-        outline: none;
     }
 
     .event__title:disabled {
         background-color: transparent;
         border: none;
+
+        padding: 0;
+    }
+
+    .event__title, .calendar_name_selector {
+        margin-bottom: 8px;
     }
 
     .event__date_and_time {
@@ -404,6 +423,7 @@
     }
 
     .event__description {
+        border-color: $borderColor01;
 
         font-family: $mainFont;
 

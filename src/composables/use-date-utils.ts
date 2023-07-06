@@ -1,3 +1,4 @@
+import { start } from 'repl';
 import type {
     IDateIndices,
     IMonthData,
@@ -303,7 +304,10 @@ export function useDateUtils() {
         return ((vEnd >= rStart && vEnd <= rEnd) || (vStart <= rEnd && vStart >= rStart) || (vStart <= rStart && vEnd >= rEnd));
     };
 
-    const getDifferenceInDays = (start: Date, end: Date, rStart?: Date, rEnd?: Date) => {
+    const getDifferenceInDays = (startDate: Date, endDate: Date, rStart?: Date, rEnd?: Date) => {
+        const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+        const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+
         const startTime = start.getTime();
         const endTime = end.getTime();
 
@@ -315,10 +319,11 @@ export function useDateUtils() {
         // console.log(`\tstart = ${start}\n\tend = ${end}\n\trStart = ${rStart}\n\trEnd = ${rEnd}`);
         const rStartTime = rStart.getTime();
         const rEndTime = rEnd.getTime();
+        // console.log(`\tendTime = ${endTime}, rEndTime = ${rEndTime}`);
         const s = (startTime > rStartTime) ? startTime : rStartTime;
         const e = (endTime < rEndTime) ? endTime : rEndTime;
-        const diff = Math.floor((e - s) / MILLISECONDS_IN_DAY);
-        // console.log(`\tstartTime = ${startTime}, endTime = ${endTime}\n\trStartTime = ${rStartTime}, rEndTime = ${rEndTime}\n\ts = ${s}, e = ${e}\n\tdiff = ${diff}`);
+        const diff = (e - s) / MILLISECONDS_IN_DAY;
+        console.log(`\tstartTime = ${startTime}, endTime = ${endTime}\n\trStartTime = ${rStartTime}, rEndTime = ${rEndTime}\n\ts = ${s}, e = ${e}\n\tdiff = ${diff}`);
 
         return diff;
     };

@@ -62,8 +62,6 @@
     min-height: 24px;
 
     padding: 4px;
-
-    // font-size: 0.5em;
 }
 
 @mixin circle_button--hover {
@@ -103,6 +101,23 @@
     cursor: pointer;
 }
 
+@mixin control__btn--hover {
+    background-color: $transparentGrey03;
+}
+
+@mixin calendar_name__btn {
+    min-width: 64px;
+    max-height: 32px;
+
+    padding: 4px 16px;
+    margin: 0 4px;
+
+    border: 1px solid $greyscale02;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
 @mixin event_card_list {
     width: 100%;
 
@@ -131,12 +146,14 @@
     padding: 2px 4px;
     box-sizing: border-box;
 
-    background-color: $eventCard01BG;
-    color: $eventCard01Color;
+    // background-color: $eventCard01BG;
+    // background: none;
+    // color: $eventCard01Color;
     border: 1px solid $eventCard01Border;
 
     display: flex;
-    flex-direction: column;
+    // align-items: center;
+    // flex-direction: column;
 
     overflow: hidden;
 
@@ -165,7 +182,7 @@
     height: 12px;
     margin-right: 4px;
 
-    background-color: $eventCard01BG;
+    // background-color: $eventCard01BG;
     clip-path: circle(6px at 50% 50%);
 }
 
@@ -230,6 +247,10 @@
     display: block;
 }
 
+@mixin hourly_event_card {
+    background: none;
+}
+
 @mixin day_container {
     width: 100%;
 
@@ -241,7 +262,6 @@
     box-sizing: border-box;
 
     overflow-y: scroll;
-
 }
 
 @mixin modal {
@@ -255,4 +275,52 @@
     flex-direction: column;
 
     position: absolute;
+}
+
+@mixin list_btn {
+    min-width: 128px;
+    background-color: $primaryBg01;
+
+    padding: 8px;
+
+    border: 1px solid;
+    border-color: $borderColor01;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    cursor: pointer;
+}
+
+@mixin list_btn--hover {
+    background-color: $primaryBg01Hover;
+}
+
+@mixin list_btn--disabled {
+    color: $primaryColor;
+    border: none;
+}
+
+@mixin list_btn--hover--disabled {
+    background-color: transparent;
+}
+
+@mixin selector_list {
+    background-color: $primaryBg01;
+
+    right: 0;
+
+    padding: 8px;
+    box-sizing: border-box;
+
+    box-shadow: $boxShadow01;
+
+    position: absolute;
+    z-index: 100;
+
+    display: flex;
+    flex-direction: column;
 }

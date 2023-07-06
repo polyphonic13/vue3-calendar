@@ -38,6 +38,7 @@
                     :key="event.id"
                     role="button"
                     class="event_card"
+                    :class="{ [`${event.calendarName}_event_calendar`]: true }"
                     :style="`height: ${event.height}%; top: ${event.top}%;`"
                     @click.stop="onEventClicked(e)"
                 >
@@ -244,11 +245,14 @@
     }
 
     .event_card {
+        @include event_card;
+        @include event_card--rounded;
+
+        flex-direction: column;
+
         position: absolute;
         z-index: 2;
 
-        @include event_card;
-        @include event_card--rounded;
     }
 
     .event_card:hover {

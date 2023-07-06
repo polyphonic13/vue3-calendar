@@ -96,6 +96,7 @@
         user-select: none;
 
         border-top: 1px solid $borderColor01;
+        border-right: 1px solid $borderColor01;
 
         cursor: pointer;
     }

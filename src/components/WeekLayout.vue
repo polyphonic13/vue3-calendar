@@ -244,7 +244,7 @@
         display: flex;
 
         box-sizing: border-box;
-        border-right: 1px solid $borderColor01;
+        // border-right: 1px solid $borderColor01;
     }
 
     .day_container {

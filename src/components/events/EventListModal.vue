@@ -26,7 +26,7 @@
                 class="event_list_modal__event_btn"
                 @click="onEventClicked(e)"
             >
-                <span class="event_dot"></span>
+                <span class="event_dot" :class="{ [`${event.calendarName}_event_calendar`]: true }"></span>
                 <span class="event_card__title">{{ event.title }}</span>
             </button>
         </div>
@@ -116,6 +116,7 @@
 </script>
 
 <style scoped lang="scss">
+    @import '../../styles/global.scss';
     @import '../../styles/mixins.scss';
 
     .event_list_modal {
@@ -186,4 +187,12 @@
     .event_dot {
         @include event_dot;
     }
+
+    .event_card__title {
+        @include event_card__title;
+
+        padding: 2px 0 0 2px;
+    }
+
+
 </style>

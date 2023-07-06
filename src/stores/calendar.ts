@@ -78,8 +78,11 @@ export const useCalendarStore = defineStore('calendar', () => {
         const todayIndices = getTodayIndices(yearData[year]);
         const currentMonth = getDaysForMonth(month, yearData[year]);
 
-
         if (savedState) {
+            if (!savedState.layout) {
+                savedState.layout = CalendarLayout.WEEK;
+            }
+            
             return {
                 ...savedState,
                 yearData,

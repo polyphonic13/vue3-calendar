@@ -5,6 +5,7 @@ import type ICoordinates from './ICoordinates';
 import type IDateIndices from './IDateIndices';
 import type IEvent from './IEvent';
 import type { IBaseEvent, ISerializedEvent } from './IEvent';
+import type IEventCalendar from './IEventCalendar';
 import type IEventState from './IEventState';
 import type { ISerializedEventState } from './IEventState';
 import type IMonthData from './IMonthData';
@@ -21,6 +22,7 @@ export type {
     ICoordinates,
     IDateIndices,
     IEvent,
+    IEventCalendar,
     IEventState,
     IMonthData,
     ISavedAppData,

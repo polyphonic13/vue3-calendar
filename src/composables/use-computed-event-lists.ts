@@ -21,7 +21,7 @@ export function useComputedEventLists() {
         if (!startDate.value || !endDate.value) {
             return [];
         }
-        return getEventsForRange(startDate.value, endDate.value);
+        return getEventsForRange(startDate.value, endDate.value, true);
     });
 
     const dailyEvents = computed(() => {

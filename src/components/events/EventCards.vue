@@ -9,10 +9,10 @@
             :class="dayClasses"
         >
             <button
-                v-if="getEventsForDate(date).length > 2"
+                v-if="getEventsForDate(date, true).length > 2"
                 class="more_events_btn"
                 @click="onViewEventListClicked($event, props.weekDates[d])"
-            >{{ `${getEventsForDate(date).length - 2} more` }}</button>
+            >{{ `${getEventsForDate(date, true).length - 2} more` }}</button>
         </div>
         <button
             v-for="(event, e) in events"
@@ -22,7 +22,7 @@
             :style="getCardStyle(event, e)"
             @click.stop="onEventClicked(e)"
         >
-            <div v-if="event.isHourly" class="event_dot"></div>
+            <div v-if="event.isHourly" class="event_dot" :class="{ [`${event.calendarName}_event_calendar`]: true }"></div>
             <span class="event_card__title"><b>{{ event.title }}</b></span>
             <span v-if="event.isHourly" class="event_card--hourly__time">{{ convertDateToHHMM(event.start, true) }}</span>
         </button>
@@ -86,7 +86,7 @@
         return getRowsForEvents(events.value, props.weekDates);
     });
 
-    const weeklyEvents = computed(() => getEventsForRange(props.weekDates[0], props.weekDates[props.weekDates.length - 1]));
+    const weeklyEvents = computed(() => getEventsForRange(props.weekDates[0], props.weekDates[props.weekDates.length - 1], true));
 
     const fullDayEvents = computed(() => weeklyEvents.value.filter(event => getIsFullOrMultiDayEvent(event)));
 
@@ -96,7 +96,7 @@
         // console.log(`fullDayEvents = `, fullDayEvents.value);
         const daily = fullDayEvents.value.map((event) => {
             // console.log(`\nWEEK = ${props.weekDates[0]} - ${props.weekDates[props.weekDates.length - 1]}`);
-            const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekDates[0], props.weekDates[props.weekDates.length - 1]);
+            const daysWithinWeek = getDaysInEventInDateRangeCount(event, props.weekDates);
             let leftMultiplier = props.weekDates.findIndex(date => date.getDate() === event.start.getDate());
 
             if (leftMultiplier === -1) {
@@ -146,21 +146,21 @@
         if (eventRows.value[index] > 1) {
             return 'display: none';
         }
-        const widthDivider = (props.isWeek) ? 7 : 1;
-        const width = (100 / widthDivider) * event.daysWithinWeek;
+        const widthDivisor = (props.isWeek) ? 7 : 1;
+        const width = (100 / widthDivisor) * event.daysWithinWeek;
         const top = ((eventRows.value[index]) * 24);
-        const left = (100 / widthDivider) * event.leftMultiplier;
-        // console.log(`getCardStyle for ${event.title}\n\tdaysWithinWeek = ${event.daysWithinWeek}, width = ${width}`);
+        const left = (100 / widthDivisor) * event.leftMultiplier;
 
-        return `width: ${width}%; top: ${top}px; left: ${left}%`;
+        return `width: ${width}%; top: ${top}px; left: calc(${left}% - 1px)`;
     };
 
     const getCardClasses = (event: IMultiDayEvent) => {
         return {
-            'event_card--whole': ((event.dayCount <= event.daysWithinWeek && (event.dayCount > 1))),
-            'event_card--left': (event.dayCount > event.daysWithinWeek && event.leftMultiplier > 0 && (event.dayCount > 1)),
-            'event_card--right': (event.dayCount > event.daysWithinWeek && event.leftMultiplier < 1 && event.daysWithinWeek < 7 && (event.dayCount > 1)),
-            'event_card--hourly': (event.dayCount === 1) && (event.start.getHours() !== 0 && event.end.getHours() !== 0),
+            [`${event.calendarName}_event_calendar`]: (event.calendarName && !event.isHourly),
+            'event_card--whole': ((event.dayCount <= event.daysWithinWeek && event.dayCount === 1)),
+            'event_card--left': (event.leftMultiplier > 0 && (event.dayCount > 1)),
+            'event_card--right': ((event.leftMultiplier + event.dayCount) < 8),
+            'event_card--hourly': event.isHourly,
         };
     };
 
@@ -205,14 +205,11 @@
     .weekly_event_cards {
         @include event_card_list;
 
-        border-right: 1px solid $greyscale02;
     }
 
     .weekly_event_cards__day {
         box-sizing: border-box;
-    }
-
-    .weekly_event_cards__day:last-child {
+        border-right: 1px solid $greyscale02;
     }
 
     .weekly_event_cards__day--weekly {
@@ -270,8 +267,10 @@
         @include event_card;
 
         height: 24px;
-
         left: 0;
+
+        align-items: center;
+
         position: absolute;
     }
 

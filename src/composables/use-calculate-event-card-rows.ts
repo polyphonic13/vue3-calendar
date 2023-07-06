@@ -27,7 +27,7 @@ export function useCalculateEventCardRows() {
     const populateGridForEvent = (grid: boolean[][], event: IGridEvent, dayIndex: number, rows: number[]) => {
         const duration = event.clampedDuration;
         let isFree: boolean;
-        // console.log(`\tdayIndex = ${dayIndex}, start = ${event.start.day}`);
+        // console.log(`\tdayIndex = ${dayIndex}, start = ${event.start.day}, clampedDuration = ${event.clampedDuration}`);
         for (let i = 0; i < grid.length; i++) {
             isFree = true;
             for (let j = dayIndex; j < (duration + dayIndex); j++) {
@@ -40,7 +40,7 @@ export function useCalculateEventCardRows() {
             }
 
             if (isFree) {
-                // console.log(`\tfound free space at row ${i}`);
+                // console.log(`\tfound free space at row ${i}, dayIndex = ${dayIndex}, duration + dayIndex = ${(duration + dayIndex)}`);
                 for (let k = dayIndex; k < (duration + dayIndex); k++) {
                     // console.log(`\t\tpopulating [ ${i} ][ ${k} ] with true`);
                     grid[i][k] = true;
@@ -65,9 +65,11 @@ export function useCalculateEventCardRows() {
             if (event.start.getDate() >= startDay) {
                 sDay = event.start.getDate();
                 clampedDuration = event.dayCount;
+                // console.log(`>>>>> clampedDuration for ${event.title} = ${clampedDuration}`);
             } else {
                 sDay = startDay;
-                clampedDuration = event.dayCount - (startDay - event.start.getDate());
+                clampedDuration = event.dayCount - (startDay - event.start.getDate()) + 1;
+                // console.log(`===== clampedDuration for ${event.title} = ${clampedDuration}`);
             }
 
             return {
@@ -81,9 +83,11 @@ export function useCalculateEventCardRows() {
         });
 
         let grid: boolean[][] = createGrid(events.length, dates.length);
-        // console.log(`grid = `, grid);
+        if (grid.length > 0) {
+            // console.log(`\n------- created grid = `, grid);
+        }
         clampedEvents.forEach((event) => {
-            // console.log(`event[ ${event.id} ] duration = ${event.dayCount}`);
+            // console.log(`event[ ${event.title} ] duration = ${event.dayCount}`);
 
             dates.forEach((date, d) => {
                 if (date.getDate() === event.start.day) {

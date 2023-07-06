@@ -95,7 +95,7 @@ input[type="checkbox"] {
     width: 24px;
     height: 24px;
     margin-right: 8px;
-    border: 2px solid currentColor;
+    border: 1px solid currentColor;
     border-radius: 2px;
     transform: translateY(-0.075em);
 

@@ -25,7 +25,7 @@
                         :key="`${d}${e}`"
                         class="schedule_layout__day__event"
                     >
-                        <div class="event_dot"></div>
+                        <span class="event_dot" :class="{ [`${event.calendarName}_event_calendar`]: true }"></span>
                         <div class="schedule_layout__day__event__date_time">{{ getEventDateTime(event) }}</div>
                         <button
                             class="schedule_layout__day__event__link"
@@ -66,7 +66,6 @@
     const props = defineProps<IScheduleLayoutProps>();
 
     const {
-        weeklyDates,
         currentMonth,
         setMonthAndYear,
     } = useCalendarByMonth();
@@ -100,7 +99,7 @@
     });
 
     const events = computed(() => {
-        return currentMonthOnlyDays.value.map(date => getEventsForDate(date, true));
+        return currentMonthOnlyDays.value.map(date => getEventsForDate(date));
     });
 
     const filteredEvents = computed(() => {
