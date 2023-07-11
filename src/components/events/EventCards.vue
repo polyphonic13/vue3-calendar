@@ -9,10 +9,10 @@
             :class="dayClasses"
         >
             <button
-                v-if="getEventsForDate(date, true).length > 2"
+                v-if="getEventsForDate(date, true, events).length > 2"
                 class="more_events_btn"
                 @click="onViewEventListClicked($event, props.weekDates[d])"
-            >{{ `${getEventsForDate(date, true).length - 2} more` }}</button>
+            >{{ `${getEventsForDate(date, true, events).length - 2} more` }}</button>
         </div>
         <button
             v-for="(event, e) in events"

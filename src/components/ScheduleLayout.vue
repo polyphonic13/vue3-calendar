@@ -51,12 +51,13 @@
         useDateUtils,
      } from '@/composables/use-date-utils';
 
+     import type { IEvent } from '@/interfaces';
+
     import { useCalendarByMonth } from '@/composables/use-calendar-by-month';
     import { useViewEvent } from '@/composables/use-view-event';
 
     import { useEventStore } from '@/stores/events';
     import { useCalendarStore } from '@/stores/calendar';
-    import type { IEvent } from '@/interfaces';
 
     interface IScheduleLayoutProps {
         year: number;

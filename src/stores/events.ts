@@ -166,8 +166,9 @@ export const useEventStore = defineStore('eventStore', () => {
         return filterEventsByActiveCalendars(events);
     };
 
-    const getEventsForDate = (date: Date, isFilteredByActiveCalendars: boolean = false): IEvent[] => {
-        const events = state.value.events.filter((event: IEvent) => {
+    const getEventsForDate = (date: Date, isFilteredByActiveCalendars: boolean = false, eventList?: IEvent[]): IEvent[] => {
+        const source = (eventList) ? eventList : state.value.events;
+        const events = source.filter((event: IEvent) => {
             if (getAreDatesWithinRange(event.start, event.end, date, date, true)) {
                 return event;
             }
