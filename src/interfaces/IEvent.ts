@@ -3,9 +3,12 @@ export interface IBaseEvent {
     title: string;
     description: string;
     location: string;
+    calendarName: string;
     dayCount: number;
     isAllDay: boolean;
-    calendarName: string;
+    isRepeating?: boolean;
+    repeatingQuantity?: number;
+    repeatingUnit?: 'day' | 'week' | 'month' | 'year';
 }
 
 export interface ISerializedEvent extends IBaseEvent {
