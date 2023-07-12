@@ -111,6 +111,11 @@
                 </div>
             </div>
             <div class="event__repeating">
+                <RepeatingEventSettings
+                    v-if="!!props.event!.isRepeating"
+                    :event="props.event"
+                    :is-enabled="isEditing || isNew"
+                />
                 <div class="spacer"></div>
                 <CheckBox
                     :model="!!props.event!.isRepeating"
@@ -165,7 +170,7 @@
     import DateSelector from '@/components/fields/DateSelector.vue';
     import TimeInput from '../fields/TimeInput.vue';
     import CheckBox from '../fields/CheckBox.vue';
-
+    import RepeatingEventSettings from '../fields/RepeatingEventSettings.vue';
     import CalendarNameSelector from '../fields/CalendarNameSelector.vue';
 
     const {
@@ -466,7 +471,7 @@
     }
 
     .event__title, .calendar_name_selector {
-        margin-bottom: 8px;
+        margin-bottom: 16px;
     }
 
     .event__date_and_time {
@@ -508,6 +513,11 @@
 
     .event__repeating {
         @include flex_display;
+
+        align-items: center;
+
+        min-height: 48px;
+        max-height: 48px;
     }
 
     .event__description {

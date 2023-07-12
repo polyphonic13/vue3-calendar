@@ -1,19 +1,113 @@
 <template>
     <div class="repeating_event_settings">
+        <button
+            class="repeating_event_settings__value list__btn"
+            :disabled="!isEnabled"
+            ref="listBtn"
+            @click="toggleListVisible"
+            @keydown.stop="onKeyDown"
+        >
+            <span>{{ valueString }}</span>
+            <svg v-if="isEnabled" xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 0 24 24" width="15px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 10l5 5 5-5z"/></svg>
+        </button>
+        <div v-if="isListOpen" class="repeating_event_settings__list">
+            <!-- <button
+                v-for="(calendar, c) in props.calendars"
+                :key="c"
+                class="calendar_name_list__btn"
+                :class="{ [`${calendar.name}_event_calendar`]: true, selected: calendar.name === props.value }"
+                @click="onRepeatingTypeClicked(c)"
+            >{{ calendar.name }}</button> -->
+        </div>
 
     </div>
 </template>
 
 <script setup lang="ts">
+    import { ref, computed, onUnmounted } from 'vue';
+
+    import { useSelectorComponent } from '@/composables/use-selector-component';
+    import type { IEvent } from '@/interfaces';
+
+    interface IRepeatingEventSettingsProps {
+        event: Partial<IEvent>;
+        isEnabled: boolean;
+    }
+
+    const props = defineProps<IRepeatingEventSettingsProps>();
+
+    const {
+        isListOpen,
+        setElements,
+        toggleListVisible,
+        onKeyDown,
+        removeDocumentListener,
+    } = useSelectorComponent();
+
+    const root = ref<HTMLElement | null>(null);
+    const listBtn = ref<HTMLElement | null>(null);
+
+    const valueString = computed(() => {
+        return 'Every 2 weeks on Thursday';
+    });
+
+    const onRepeatingTypeClicked = () => {
+
+    };
+
+    onUnmounted(() => {
+        removeDocumentListener();
+    });
 
 </script>
 
 <style scoped lang="scss">
+    @import '../../styles/mixins.scss';
+    @import '../../styles/global.scss';
+
     .repeating_event_settings {
-        width: 150px;
+        width: 256px;
 
         display: flex;
         flex-direction: column;
 
+        position: relative;
+    }
+
+    .repeating_event_settings__list {
+        @include selector_list;
+
+        width: 256px;
+        top: 46px;
+    }
+
+    .repeating_event_settings__value, .calendar_name_list__btn {
+        min-width: 256px;
+        max-width: 256px;
+    }
+
+    .calendar_name_list__btn:hover {
+        @include control__btn--hover;
+    }
+
+    .list__btn {
+        @include list_btn;
+
+        &:hover {
+            @include list_btn--hover;
+        }
+
+        &:disabled {
+            @include list_btn--disabled;
+        }
+
+        &:hover:disabled {
+            @include list_btn--hover--disabled;
+        }
+    }
+
+    .calendar_name_list__btn {
+        @include calendar_name__btn;
+        margin: 4px 0;
     }
 </style>

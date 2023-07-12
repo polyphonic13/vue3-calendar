@@ -81,14 +81,18 @@
     background-color: $highlightedBGPrimaryHover;
 }
 
-@mixin link_btn {
-    background-color: transparent;
-    border: none;
-
+@mixin link {
     text-decoration: underline;
     text-decoration-color: $eventCard01Border;
 
     cursor: pointer;
+}
+
+@mixin link_btn {
+    @include link;
+
+    background-color: transparent;
+    border: none;
 }
 
 @mixin control__btn {
@@ -306,7 +310,8 @@
 
 @mixin list_btn--disabled {
     color: $primaryColor;
-    border: none;
+
+    cursor: default;
 }
 
 @mixin list_btn--hover--disabled {
