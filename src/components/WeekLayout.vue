@@ -135,7 +135,7 @@
         initHourIndices();
     });
 
-    const emitCreateEvent = (start: Date, end: Date) => {
+    const emitCreateEvent = (start: Date, end: Date, isAllDay: boolean) => {
         if (isViewEventList.value) {
             return;
         }
@@ -143,6 +143,7 @@
         const event = {
             start,
             end,
+            isAllDay,
         };
 
         emit('createEvent', event);
@@ -175,7 +176,7 @@
         const end = getDateFromTimes(times.end, { year, month, day });
 
         console.log(`onTimeMouseUp, start/end times = ${times.start} / ${times.end}, start = ${start} end = ${end}`);
-        emitCreateEvent(start, end);
+        emitCreateEvent(start, end, false);
         onMouseUp();
     };
 
@@ -202,7 +203,7 @@
         const start = getDateFromTimes(0, { ...startDay });
         const end = getDateFromTimes(0, { ...endDay });
 
-        emitCreateEvent(start, end);
+        emitCreateEvent(start, end, true);
         onMouseUp();
     };
 

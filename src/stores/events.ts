@@ -61,7 +61,6 @@ export const useEventStore = defineStore('eventStore', () => {
         if (count < 1) {
             count = 1;
         }
-        console.log(`diff = ${count}`);
         return count;
     };
 
@@ -115,6 +114,10 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getIsAllDay = (event: Partial<IEvent>) => {
+        if (event.isAllDay) {
+            return event.isAllDay;
+        }
+
         if (!event.start || !event.end) {
             return true;
         }
@@ -151,7 +154,6 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getEventsForRange = (startDate: Date, endDate: Date, isFilteredByActiveCalendars: boolean = false): IEvent[] => {
-        // console.log(`getEventsForRange, startDate = ${startDate}, endDate = ${endDate}`);
         const events = state.value.events.filter((event: IEvent) => {
             if (getAreDatesWithinRange(event.start, event.end, startDate, endDate, true)) {
                 return event;
@@ -183,7 +185,6 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const createEvent = (payload: Partial<IEvent>) => {
-        console.log(`createEvent, payload = `, payload);
         state.value.focusedEvent = eventFactory(payload);
     };
 
@@ -331,7 +332,7 @@ export const useEventStore = defineStore('eventStore', () => {
         }
 
         const { start, end } = focusedEvent;
-        // console.log(`start = `, start, `\nend = `, end);
+
         return (start.getFullYear() === end.getFullYear()) && (start.getMonth() === end.getMonth()) && (start.getDate() === end.getDate());
     };
 

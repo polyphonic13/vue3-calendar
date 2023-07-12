@@ -64,8 +64,7 @@
                 </div>
                 <div class="spacer"></div>
                 <CheckBox
-                    v-if="isEditing || isAllDayEvent"
-                    :model="isViewingTime"
+                    :model="!!props.event!.isAllDay"
                     :disabled="isEditingDisabled"
                     label-position="left"
                     label="All Day"
@@ -75,7 +74,7 @@
             <div class="row">
                 <div class="spacer"></div>
                 <CheckBox
-                    :model="props.event!.isRepeating"
+                    :model="!!props.event!.isRepeating"
                     :disabled="isEditingDisabled"
                     label-position="left"
                     label="Repeats"
@@ -173,6 +172,7 @@
         if (!props.event || !props.event.start || !props.event.end) {
             return true;
         }
+        console.log(`isAllDayEvent = ${props.event.isAllDay}`);
         return props.event.isAllDay;
     });
 
@@ -271,9 +271,15 @@
     };
 
     const onAllDayChanged = () => {
-        isViewingTime.value = !isViewingTime.value;
+        if (!props.event) {
+            return;
+        }
 
-        if (isViewingTime.value) {
+        // isViewingTime.value = !isViewingTime.value;
+
+        props.event.isAllDay = !props.event.isAllDay;
+
+        if (!props.event.isAllDay) {
             return;
         }
         props.event!.start = createDateFromDateAndHHMM(props.event!.start!, 0, 0);

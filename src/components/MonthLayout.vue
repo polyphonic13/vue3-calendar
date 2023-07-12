@@ -106,7 +106,13 @@
         const start = new Date(currentMonth.value[selectedItems.value[0]].toJSON());
         const end = new Date(currentMonth.value[selectedItems.value[selectedItems.value.length - 1]].toJSON());
 
-        emit('createEvent', { start, end });
+        const event = {
+            start,
+            end,
+            isAllDay: true,
+        };
+
+        emit('createEvent', event);
 
         onMouseUp();
     };
