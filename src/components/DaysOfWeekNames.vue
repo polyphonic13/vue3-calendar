@@ -20,7 +20,7 @@
     .day_names {
         background-color: $primaryBg01;
         width: 100%;
-        min-height: 28px;
+        min-height: 22px;
         box-sizing: border-box;
 
         display: flex;
@@ -36,7 +36,7 @@
         border-right: 1px solid $borderColor01;
 
         display:flex;
-        align-items: center;
+        align-items: flex-end;
         justify-content: center;
 
         user-select: none;

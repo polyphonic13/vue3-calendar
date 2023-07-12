@@ -83,7 +83,7 @@
         background-color: $primaryBg01;
 
         border-right: 1px solid $borderColor01;
-        border-top: 1px solid $borderColor01;
+        // border-top: 1px solid $borderColor01;
 
         cursor: pointer;
     }
@@ -97,7 +97,7 @@
     }
 
     .day_of_month__header {
-        padding: 4px;
+        padding: 8px;
 
         flex: 1;
         display: flex;
@@ -112,7 +112,12 @@
     .day_btn {
         @include circle_button;
 
-        font-size: 1.5em;
+        max-width: 16px;
+        min-width: 16px;
+        max-height: 16px;
+        min-height: 16px;
+
+        font-size: 1em;
         line-height: 1em;
     }
 
@@ -129,7 +134,7 @@
     }
 
     .day_of_month__selection_area {
-        height: 24px;
+        height: 16px;
 
         cursor: pointer;
     }

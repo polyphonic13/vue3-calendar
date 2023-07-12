@@ -205,6 +205,7 @@
     .weekly_event_cards {
         @include event_card_list;
 
+        border-bottom: 1px solid $greyscale02;
     }
 
     .weekly_event_cards__day {
@@ -224,7 +225,7 @@
         @include link_btn;
 
         width: 100%;
-        padding-top: 54px;
+        padding-top: 52px;
     }
 
     .weekly_event_cards {
