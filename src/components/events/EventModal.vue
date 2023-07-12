@@ -110,7 +110,7 @@
                     />
                 </div>
             </div>
-            <div class="row">
+            <div class="event__repeating">
                 <div class="spacer"></div>
                 <CheckBox
                     :model="!!props.event!.isRepeating"
@@ -504,6 +504,10 @@
         // > * {
         //     padding-right: 4px;
         // }
+    }
+
+    .event__repeating {
+        @include flex_display;
     }
 
     .event__description {
