@@ -316,6 +316,12 @@
     }
 
     @media screen and (max-width: 400px) {
+
+        .event_card {
+            min-height: 16px;
+            max-height: 16px;
+        }
+
         .event_dot, .event_card--hourly__time {
             display: none;
         }

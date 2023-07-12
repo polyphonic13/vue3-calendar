@@ -161,4 +161,5 @@
     .weekly_event_cards {
         flex: 1;
     }
+
 </style>

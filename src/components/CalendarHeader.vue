@@ -192,12 +192,21 @@
             flex-direction: column;
         }
 
+        .title {
+            padding: 8px 4px;
+            font-size: 0.9em;
+        }
+
         .header__content {
             margin: 0 8px 8px 8px;
         }
 
         .controls {
             margin-bottom: 8px;
+        }
+
+        .calendar_header__calendar_names {
+            display: none;
         }
 
     }
