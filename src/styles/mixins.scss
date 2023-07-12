@@ -5,8 +5,13 @@
     background-color: $selectingColorPrimary;
 }
 
-@mixin flex_centered {
+@mixin flex_display {
     display: flex;
+}
+
+@mixin flex_centered {
+    @include flex_display;
+
     align-content: center;
     align-items: center;
     justify-content: center;

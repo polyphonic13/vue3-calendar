@@ -6,7 +6,7 @@ export interface IBaseEvent {
     calendarName: string;
     dayCount: number;
     isAllDay: boolean;
-    isRepeating?: boolean;
+    isRepeating: boolean;
     repeatingQuantity?: number;
     repeatingUnit?: 'day' | 'week' | 'month' | 'year';
 }

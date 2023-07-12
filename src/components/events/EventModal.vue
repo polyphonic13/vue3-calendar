@@ -65,11 +65,22 @@
                 <div class="spacer"></div>
                 <CheckBox
                     v-if="isEditing || isAllDayEvent"
-                    :model="!isViewingTime"
+                    :model="isViewingTime"
                     :disabled="isEditingDisabled"
+                    label-position="left"
                     label="All Day"
                     @checkbox-changed="onAllDayChanged"
                 ></CheckBox>
+            </div>
+            <div class="row">
+                <div class="spacer"></div>
+                <CheckBox
+                    :model="props.event!.isRepeating"
+                    :disabled="isEditingDisabled"
+                    label-position="left"
+                    label="Repeats"
+                    @checkbox-changed="onRepeatsChanged"
+                />
             </div>
             <CalendarNameSelector
                 :value="event!.calendarName"
@@ -267,6 +278,14 @@
         }
         props.event!.start = createDateFromDateAndHHMM(props.event!.start!, 0, 0);
         props.event!.end = createDateFromDateAndHHMM(props.event!.end!, 0, 0);
+    };
+
+    const onRepeatsChanged = () => {
+        if (!props.event) {
+            return;
+        }
+
+        props.event.isRepeating = !props.event.isRepeating;
     };
 
     const onCalendarNameClicked = (index: number) => {
@@ -471,8 +490,8 @@
         border-bottom: 1px solid $borderColor01;
     }
 
-    .spacer {
-        flex-grow: 1;
+    .row {
+        @include flex_display;
     }
 
     @media screen and (max-width: 400px) {

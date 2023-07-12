@@ -134,9 +134,10 @@ export const useEventStore = defineStore('eventStore', () => {
             location: '',
             start: today,
             end: today,
+            calendarName: '',
             dayCount: 0,
             isAllDay,
-            calendarName: '',
+            isRepeating: false,
             ...value,
         };
 

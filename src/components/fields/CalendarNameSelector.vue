@@ -53,7 +53,7 @@
     const listBtn = ref<HTMLElement | null>(null);
 
     const valueString = computed(() => {
-        return (props.value) ? props.value : 'Please Select';
+        return (props.value) ? props.value : 'Select Calendar';
     });
 
     const valueClassName = computed(() => ({
@@ -86,7 +86,7 @@
     @import '../../styles/global.scss';
 
     .calendar_name_selector {
-        width: 128px;
+        width: 150px;
 
         display: flex;
         flex-direction: column;
@@ -105,14 +105,14 @@
     .calendar_name_selector__list {
         @include selector_list;
 
-        width: 128px;
+        width: 150px;
         top: 46px;
     }
 
     .calendar_name_selector__value, .calendar_name_list__btn {
 
-        min-width: 128px;
-        max-width: 128px;
+        min-width: 150px;
+        max-width: 150px;
     }
 
     .calendar_name_list__btn:hover {
