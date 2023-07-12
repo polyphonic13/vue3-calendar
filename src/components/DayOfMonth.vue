@@ -144,6 +144,10 @@
     }
 
     @media screen and (max-width: 400px) {
+        .day_of_month__header {
+            padding: 1px;
+        }
+
         .day_btn {
             @include circle_button--mobile;
         }
