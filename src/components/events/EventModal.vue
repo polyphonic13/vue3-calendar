@@ -34,7 +34,7 @@
                 v-model="props.event!.title"
                 @keydown.stop="onTitleInputKeydown"
             />
-            <div class="event__date_and_time">
+            <div class="event__date_and_time event__date_and_time--desktop">
                 <div class="event__date">
                     <DateSelector
                         :is-editing="isEditing || isNew"
@@ -70,6 +70,45 @@
                     label="All Day"
                     @checkbox-changed="onAllDayChanged"
                 ></CheckBox>
+            </div>
+            <div class="event__date_and_time event__date_and_time--mobile">
+                <div class="event__date">
+                    <DateSelector
+                        :is-editing="isEditing || isNew"
+                        :value="props.event!.start!"
+                        @date-selected="onStartDateSelected"
+                    />
+                    <span v-if="!isSameDayEvent"> - </span>
+                    <DateSelector
+                        v-if="!isSameDayEvent"
+                        :is-editing="isEditing || isNew"
+                        :value="props.event!.end!"
+                        @date-selected="onEndDateSelected"
+                    />
+                </div>
+                <div  class="event__time">
+                    <TimeInput
+                        v-if="isViewingTime || !isAllDayEvent"
+                        :is-editing="isEditing || isNew"
+                        :value="props.event!.start!"
+                        @time-updated="onStartTimeSelected"
+                    />
+                    <span v-if="isViewingTime || !isAllDayEvent"> - </span>
+                    <TimeInput
+                        v-if="isViewingTime || !isAllDayEvent"
+                        :is-editing="isEditing || isNew"
+                        :value="props.event!.end!"
+                        @time-updated="onEndTimeSelected"
+                    />
+                    <div class="spacer"></div>
+                    <CheckBox
+                        :model="!!props.event!.isAllDay"
+                        :disabled="isEditingDisabled"
+                        label-position="left"
+                        label="All Day"
+                        @checkbox-changed="onAllDayChanged"
+                    />
+                </div>
             </div>
             <div class="row">
                 <div class="spacer"></div>
@@ -172,7 +211,6 @@
         if (!props.event || !props.event.start || !props.event.end) {
             return true;
         }
-        console.log(`isAllDayEvent = ${props.event.isAllDay}`);
         return props.event.isAllDay;
     });
 
@@ -433,18 +471,39 @@
 
     .event__date_and_time {
         width: 100%;
+        justify-content: space-between;
+    }
+
+    .event__date_and_time--desktop {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+
+        .event__date, .event__time {
+            > * {
+                padding-right: 4px;
+            }
+        }
+    }
+
+    .event__date_and_time--mobile {
+        display: none;
+        align-items: flex-start;
+        flex-direction: column;
+
+        > * {
+            width: 100%;
+            min-height: 32px;
+            margin-bottom: 8px;
+        }
     }
 
     .event__date, .event__time {
         display: flex;
         align-items: center;
 
-        > * {
-            padding-right: 4px;
-        }
+        // > * {
+        //     padding-right: 4px;
+        // }
     }
 
     .event__description {
@@ -505,5 +564,14 @@
             width: 90%;
             height: 75%;
         }
+
+        .event__date_and_time--desktop {
+            display: none;
+        }
+
+        .event__date_and_time--mobile {
+            display: flex;
+        }
+
     }
 </style>
