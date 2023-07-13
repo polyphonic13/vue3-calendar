@@ -11,13 +11,11 @@
             <svg v-if="isEnabled" xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 0 24 24" width="15px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 10l5 5 5-5z"/></svg>
         </button>
         <div v-if="isListOpen" class="repeating_event_settings__list">
-            <!-- <button
-                v-for="(calendar, c) in props.calendars"
-                :key="c"
-                class="calendar_name_list__btn"
-                :class="{ [`${calendar.name}_event_calendar`]: true, selected: calendar.name === props.value }"
-                @click="onRepeatingTypeClicked(c)"
-            >{{ calendar.name }}</button> -->
+            <button
+                v-for="(type, t) in repititionTypes"
+                :key="t"
+                class="repitition_type__btn"
+            >{{ type }}</button>
         </div>
 
     </div>
@@ -26,8 +24,10 @@
 <script setup lang="ts">
     import { ref, computed, onUnmounted } from 'vue';
 
-    import { useSelectorComponent } from '@/composables/use-selector-component';
     import type { IEvent } from '@/interfaces';
+
+    import { useRepeatingEventSettings } from '@/composables/use-repeating-event-settings';
+    import { useSelectorComponent } from '@/composables/use-selector-component';
 
     interface IRepeatingEventSettingsProps {
         event: Partial<IEvent>;
@@ -35,6 +35,8 @@
     }
 
     const props = defineProps<IRepeatingEventSettingsProps>();
+
+    const { getRepetitionTypes } = useRepeatingEventSettings();
 
     const {
         isListOpen,
@@ -49,6 +51,14 @@
 
     const valueString = computed(() => {
         return 'Every 2 weeks on Thursday';
+    });
+
+    const repititionTypes = computed(() => {
+        if (!props.event || !props.event.start) {
+            return [];
+        }
+
+        return getRepetitionTypes(props.event.start);
     });
 
     const onRepeatingTypeClicked = () => {
@@ -106,8 +116,11 @@
         }
     }
 
-    .calendar_name_list__btn {
-        @include calendar_name__btn;
-        margin: 4px 0;
+    .repitition_type__btn {
+        @include link_btn;
+
+        margin: 8px 0;
+
+        text-align: left;
     }
 </style>
