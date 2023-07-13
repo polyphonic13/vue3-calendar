@@ -65,6 +65,7 @@
 
     const classes = computed(() => ({
         day_of_month__other_month: (props.month !== props.currentMonth),
+        'day_of_month--selecting': props.isSelecting && props.isSelected,
     }));
 </script>
 
@@ -86,6 +87,10 @@
         // border-top: 1px solid $borderColor01;
 
         cursor: pointer;
+    }
+
+    .day_of_month--selecting {
+        @include selected_item;
     }
 
     .day_of_month__other_month {
@@ -134,7 +139,7 @@
     }
 
     .day_of_month__selection_area {
-        height: 16px;
+        height: 2px;
 
         cursor: pointer;
     }

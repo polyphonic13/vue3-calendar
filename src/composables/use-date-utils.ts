@@ -384,8 +384,6 @@ export function useDateUtils() {
     const getNextMonthlyWeekdayIteration = (date: Date) => {
         const dayOfWeek = date.getDay();
         const weekOfMonth = getWeekOfMonth(date);
-
-
     };
 
 
