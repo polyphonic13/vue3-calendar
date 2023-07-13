@@ -1,9 +1,9 @@
 <template>
-    <div class="repeating_event_settings">
+    <div ref="roolEl" class="repeating_event_settings">
         <button
             class="repeating_event_settings__value list__btn"
             :disabled="!isEnabled"
-            ref="listBtn"
+            ref="listBtnEl"
             @click="toggleListVisible"
             @keydown.stop="onKeyDown"
         >
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed, onUnmounted } from 'vue';
+    import { onMounted, onUnmounted, ref, computed } from 'vue';
 
     import type { IEvent } from '@/interfaces';
 
@@ -46,8 +46,8 @@
         removeDocumentListener,
     } = useSelectorComponent();
 
-    const root = ref<HTMLElement | null>(null);
-    const listBtn = ref<HTMLElement | null>(null);
+    const roolEl = ref<HTMLElement | null>(null);
+    const listBtnEl = ref<HTMLElement | null>(null);
 
     const valueString = computed(() => {
         return 'Every 2 weeks on Thursday';
@@ -64,6 +64,13 @@
     const onRepeatingTypeClicked = () => {
 
     };
+
+    onMounted(() => {
+        if (!roolEl.value || !listBtnEl.value) {
+            return;
+        }
+        setElements(roolEl.value, listBtnEl.value);
+    });
 
     onUnmounted(() => {
         removeDocumentListener();

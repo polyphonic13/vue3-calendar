@@ -44,7 +44,7 @@
     // Learn about this technique:
     // @link https://moderncss.dev/pure-css-custom-checkbox-style/
 
-    :root {
+    :roolEl {
     --form-control-color: rebeccapurple;
     --form-control-disabled: #959495;
     }

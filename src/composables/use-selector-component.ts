@@ -3,12 +3,12 @@ import { ref } from 'vue';
 export function useSelectorComponent() {
     const isListOpen = ref(false);
 
-    const root = ref<HTMLElement | null>(null);
-    const listBtn = ref<HTMLElement | null>(null);
-    
-    const setElements = (rootEl: HTMLElement, listBtnEl: HTMLElement) => {
-        root.value = rootEl;
-        listBtn.value = listBtnEl;
+    const roolEl = ref<HTMLElement | null>(null);
+    const listBtnEl = ref<HTMLElement | null>(null);
+
+    const setElements = (roolElEl: HTMLElement, listBtnElEl: HTMLElement) => {
+        roolEl.value = roolElEl;
+        listBtnEl.value = listBtnElEl;
     }
     const toggleListVisible = () => {
         isListOpen.value = !isListOpen.value;
@@ -36,11 +36,11 @@ export function useSelectorComponent() {
 
         isListOpen.value = false;
 
-        if (!listBtn.value) {
+        if (!listBtnEl.value) {
             return;
         }
 
-        listBtn.value.blur();
+        listBtnEl.value.blur();
     };
 
     const onDocumentClicked = (event: MouseEvent) => {
@@ -48,7 +48,7 @@ export function useSelectorComponent() {
             return;
         }
 
-        if (!root || !root.value) {
+        if (!roolEl || !roolEl.value) {
             return;
         }
 
@@ -56,7 +56,7 @@ export function useSelectorComponent() {
             return;
         }
 
-        if (root.value.contains(event.target as HTMLElement)) {
+        if (roolEl.value.contains(event.target as HTMLElement)) {
             return;
         }
 
@@ -64,7 +64,7 @@ export function useSelectorComponent() {
     };
 
     const addDocumentListener = () => {
-        document.addEventListener('click',event => onDocumentClicked(event));
+        document.addEventListener('click', event => onDocumentClicked(event));
     };
 
     const removeDocumentListener = () => {

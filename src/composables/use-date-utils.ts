@@ -136,7 +136,7 @@ export const HALF_HOURS_IN_DAY = [
     '11:30 PM',
 ];
 
-export const WEEK_NUMBER_STRINGS = [
+export const WEEK_OF_MONTH_STRINGS = [
     'first',
     'second',
     'third',
@@ -362,15 +362,40 @@ export function useDateUtils() {
         return temp;
     };
 
+    const getFirstWeekDayInMonth = (year: number, month: number) => {
+        return new Date(year, month, 1).getDay();
+    };
+
     const getWeekOfMonth = (date: Date) => {
-        var firstWeekday = new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
-        if (firstWeekday < 0) firstWeekday = 6;
-        var offsetDate = date.getDate() + firstWeekday - 1;
+        let firstWeekdayIndex = getFirstWeekDayInMonth(date.getFullYear(), date.getMonth());
+
+        if (firstWeekdayIndex < 0) {
+            firstWeekdayIndex = 6;
+        };
+
+        const offsetDate = date.getDate() + firstWeekdayIndex - 1;
         return Math.floor(offsetDate / 7);
     };
 
     const getWeekOfMonthString = (date: Date) => {
-        return WEEK_NUMBER_STRINGS[getWeekOfMonth(date)];
+        return WEEK_OF_MONTH_STRINGS[getWeekOfMonth(date)];
+    };
+
+    const getNextMonthlyWeekdayIteration = (date: Date) => {
+        const dayOfWeek = date.getDay();
+        const weekOfMonth = getWeekOfMonth(date);
+
+
+    };
+
+
+    const getIsLeapYear = (year: number) => {
+        return ((year & 3) == 0 && ((year % 25) != 0 || (year & 15) == 0));
+        // from https://stackoverflow.com/questions/3220163/how-to-find-leap-year-programmatically-in-c/11595914#11595914
+    };
+
+    const getLastDayOfMonth = (month: number, year: number) => {
+        return new Date(year, month + 1, 0).getDate();
     };
 
     return {
@@ -387,6 +412,9 @@ export function useDateUtils() {
         getHHMMFromNumber,
         dateAddition,
         getWeekOfMonthString,
+        getWeekOfMonth,
+        getIsLeapYear,
+        getLastDayOfMonth,
     };
 
 }

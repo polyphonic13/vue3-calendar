@@ -7,8 +7,10 @@ export interface IBaseEvent {
     dayCount: number;
     isAllDay: boolean;
     isRepeating: boolean;
-    repeatingQuantity?: number;
-    repeatingUnit?: 'day' | 'week' | 'month' | 'year';
+    repeatingId?: number;
+    repeatingQuantity?: number | { day: number, week: number };
+    repeatingUnit?: 'daily' | 'weekly' | 'monthlyDate' | 'monthlyWeek' | 'yearly';
+    repeatingEnd?: Date;
 }
 
 export interface ISerializedEvent extends IBaseEvent {

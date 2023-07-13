@@ -1,8 +1,8 @@
 <template>
-    <div ref="root" class="layout_selector">
+    <div ref="roolEl" class="layout_selector">
         <button
             class="list__btn"
-            ref="listBtn"
+            ref="listBtnEl"
             @click="toggleListVisible"
             @keydown="onKeyDown"
         >
@@ -58,8 +58,8 @@
 
     import { CalendarLayout } from '@/enum/CalendarLayout';
 
-    const root = ref<HTMLElement | null>(null);
-    const listBtn = ref<HTMLElement | null>(null);
+    const roolEl = ref<HTMLElement | null>(null);
+    const listBtnEl = ref<HTMLElement | null>(null);
 
     interface ILayoutSelectorProps {
         layout: CalendarLayout;
@@ -91,10 +91,10 @@
     };
 
     onMounted(() => {
-        if (!root.value || !listBtn.value) {
+        if (!roolEl.value || !listBtnEl.value) {
             return;
         }
-        setElements(root.value, listBtn.value);
+        setElements(roolEl.value, listBtnEl.value);
     });
 
     onUnmounted(() => {

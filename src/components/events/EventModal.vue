@@ -335,6 +335,8 @@
         }
 
         props.event.isRepeating = !props.event.isRepeating;
+
+        props.event.repeatingId = (!props.event.isRepeating) ? -1 : Date.now();
     };
 
     const onCalendarNameClicked = (index: number) => {

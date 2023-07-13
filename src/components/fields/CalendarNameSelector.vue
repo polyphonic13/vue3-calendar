@@ -1,10 +1,10 @@
 <template>
-    <div ref="root" class="calendar_name_selector">
+    <div ref="roolEl" class="calendar_name_selector">
         <button
             class="calendar_name_selector__value list__btn"
             :class="valueClassName"
             :disabled="!isEnabled"
-            ref="listBtn"
+            ref="listBtnEl"
             @click="toggleListVisible"
             @keydown.stop="onKeyDown"
         >
@@ -49,8 +49,8 @@
         removeDocumentListener,
     } = useSelectorComponent();
 
-    const root = ref<HTMLElement | null>(null);
-    const listBtn = ref<HTMLElement | null>(null);
+    const roolEl = ref<HTMLElement | null>(null);
+    const listBtnEl = ref<HTMLElement | null>(null);
 
     const valueString = computed(() => {
         return (props.value) ? props.value : 'Select Calendar';
@@ -70,10 +70,10 @@
     }
 
     onMounted(() => {
-        if (!root.value || !listBtn.value) {
+        if (!roolEl.value || !listBtnEl.value) {
             return;
         }
-        setElements(root.value, listBtn.value);
+        setElements(roolEl.value, listBtnEl.value);
     });
 
     onUnmounted(() => {
