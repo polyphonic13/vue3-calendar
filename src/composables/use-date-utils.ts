@@ -381,9 +381,19 @@ export function useDateUtils() {
         return WEEK_OF_MONTH_STRINGS[getWeekOfMonth(date)];
     };
 
-    const getNextMonthlyWeekdayIteration = (date: Date) => {
-        const dayOfWeek = date.getDay();
-        const weekOfMonth = getWeekOfMonth(date);
+    const getNthWeekdayOfMonth = (weekday: number, n: number, year: number, month: number) => {
+        let count = 0;
+        let idate = new Date(year, month, 1);
+
+        while (true) {
+            if (idate.getDay() === weekday) {
+                if (++count == n) {
+                    break;
+                }
+            }
+            idate.setDate(idate.getDate() + 1);
+        }
+        return idate;
     };
 
 
@@ -413,6 +423,7 @@ export function useDateUtils() {
         getWeekOfMonth,
         getIsLeapYear,
         getLastDayOfMonth,
+        getNthWeekdayOfMonth,
     };
 
 }
