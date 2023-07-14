@@ -380,7 +380,7 @@
 
     const save = () => {
         const method = (isEditing.value) ? updateEvent : addEvent;
-        console.log(`EventModal/save, event = `, props.event, `\nmethod = `, method);
+
         method();
         emit('onClose');
     };
@@ -413,7 +413,7 @@
     onMounted(() => {
         isViewingTime.value = !isAllDayEvent.value;
         isRepeating.value = props.event!.repeatType !== RepeatEventType.NONE;
-
+        // console.log(`EventModal/onMounted, event = ${JSON.stringify(props.event)}`);
         if (!props.isNew) {
             focusEditButton();
             return;

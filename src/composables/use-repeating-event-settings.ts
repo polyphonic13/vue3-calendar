@@ -3,13 +3,13 @@ import { MONTH_NAMES, DAYS_OF_WEEK, useDateUtils, NUMBER_SUFFICES } from './use-
 import { RepeatEventType } from '@/enum/RepeatEventType';
 
 export function useRepeatingEventSettings() {
-    const { getWeekOfMonthIndexString } = useDateUtils();
+    const { getWeekOfMonthString } = useDateUtils();
 
     const getRepetitionTypes = (target: Date) => {
         const dayOfWeek = target.getDay();
         const date = target.getDate();
         const month = target.getMonth();
-        const week = getWeekOfMonthIndexString(target);
+        const week = getWeekOfMonthString(target);
 
         return [
             'Does not Repeat',
@@ -48,7 +48,7 @@ export function useRepeatingEventSettings() {
             return '';
         }
         console.log(`event.start = ${JSON.stringify(event.start)}`);
-        return `Monthly on the ${getWeekOfMonthIndexString(event.start)} ${DAYS_OF_WEEK[event.start.getDay()]}`;
+        return `Monthly on the ${getWeekOfMonthString(event.start)} ${DAYS_OF_WEEK[event.start.getDay()]}`;
     };
 
     return {

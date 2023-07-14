@@ -137,7 +137,7 @@ export const HALF_HOURS_IN_DAY = [
 ];
 
 export const WEEK_OF_MONTH_STRINGS = [
-    'zeroth',
+    // 'zeroth',
     'first',
     'second',
     'third',
@@ -397,20 +397,53 @@ export function useDateUtils() {
         return temp;
     };
 
-    const getWeekOfMonthIndex = (date: Date) => {
-        let firstWeekdayIndex = new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
-        if (firstWeekdayIndex < 0) {
-            firstWeekdayIndex = 6;
-        };
+    const getWeekIndexOfMonthForDay = (source: Date) => {
+        const year = source.getFullYear();
+        const month = source.getMonth();
+        const date = source.getDate();
+        const targetDayOfWeek = source.getDay();
+        console.log(`getWeekOfMonth, year = ${year}, month = ${month}, date = ${date}`);
 
-        const offsetDate = date.getDate() + firstWeekdayIndex - 1;
-        const weekOfMonth = Math.floor(offsetDate / 7);
-        console.log(`\tweekOfMonth = ${weekOfMonth}`);
-        return weekOfMonth;
+        let dayOfWeek = new Date(year, month, 1).getDay(); // get the dayOfWeek of day 1
+
+        // let weekIndex = (dayOfWeek > targetDayOfWeek) ? -1 : 0; // 0-indexed weeks
+        let countOfTargetDayOfWeek = 0;
+
+        let head = 1;
+        console.log(`\tdayOfWeek = ${dayOfWeek}`);
+
+        while (head < date) {
+            if (dayOfWeek === targetDayOfWeek) {
+                countOfTargetDayOfWeek++;
+            }
+
+            if (dayOfWeek === 6) {
+                console.log(`\t\ton a sunday; incrementing week`);
+                dayOfWeek = 0;
+            }
+
+            head++;
+            dayOfWeek++;
+
+            console.log(`head = ${head}, dayOfWeek = ${dayOfWeek}`);
+        }
+
+        console.log(`\tdayOfWeek = ${dayOfWeek}, countOfTargetDayOfWeek = ${countOfTargetDayOfWeek}`);
+        return countOfTargetDayOfWeek;
+
+        // let firstWeekdayIndex = new Date(source.getFullYear(), source.getMonth(), 1).getDay() - 1;
+        // if (firstWeekdayIndex < 0) {
+        //     firstWeekdayIndex = 6;
+        // };
+
+        // const offsetDate = source.getDate() + firstWeekdayIndex - 1;
+        // const weekOfMonth = Math.floor(offsetDate / 7);
+        // console.log(`\tweekOfMonth = ${weekOfMonth}`);
+        // return weekOfMonth;
     };
 
-    const getWeekOfMonthIndexString = (date: Date) => {
-        return WEEK_OF_MONTH_STRINGS[getWeekOfMonthIndex(date)];
+    const getWeekOfMonthString = (date: Date) => {
+        return WEEK_OF_MONTH_STRINGS[getWeekIndexOfMonthForDay(date)];
     };
 
     const getNthWeekdayOfMonth = (weekday: number, n: number, year: number, month: number) => {
@@ -451,8 +484,8 @@ export function useDateUtils() {
         createDateFromDateAndHHMM,
         getHHMMFromNumber,
         dateAddition,
-        getWeekOfMonthIndexString,
-        getWeekOfMonthIndex,
+        getWeekOfMonthString,
+        getWeekIndexOfMonthForDay,
         getIsLeapYear,
         getLastDayOfMonth,
         getNthWeekdayOfMonth,

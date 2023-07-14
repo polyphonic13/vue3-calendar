@@ -49,7 +49,7 @@
         removeDocumentListener,
     } = useSelectorComponent();
 
-    const { getWeekOfMonthIndex } = useDateUtils();
+    const { getWeekIndexOfMonthForDay } = useDateUtils();
 
     const roolEl = ref<HTMLElement | null>(null);
     const listBtnEl = ref<HTMLElement | null>(null);
@@ -95,7 +95,7 @@
             return;
         }
 
-        props.event.repeatValue = getWeekOfMonthIndex(props.event.start);
+        props.event.repeatValue = getWeekIndexOfMonthForDay(props.event.start);
 
     };
 

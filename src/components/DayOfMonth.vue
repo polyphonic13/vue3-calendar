@@ -117,11 +117,6 @@
     .day_btn {
         @include circle_button;
 
-        max-width: 24px;
-        min-width: 24px;
-        max-height: 24px;
-        min-height: 24px;
-
         font-size: 1em;
         line-height: 1em;
     }
