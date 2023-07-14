@@ -15,6 +15,7 @@
                 v-for="(type, t) in repititionTypes"
                 :key="t"
                 class="repitition_type__btn"
+                @click="onRepeatingTypeClicked(t)"
             >{{ type }}</button>
         </div>
 
@@ -25,9 +26,11 @@
     import { onMounted, onUnmounted, ref, computed } from 'vue';
 
     import type { IEvent } from '@/interfaces';
+    import { RepeatEventType } from '@/enum/RepeatEventType';
 
     import { useRepeatingEventSettings } from '@/composables/use-repeating-event-settings';
     import { useSelectorComponent } from '@/composables/use-selector-component';
+    import { useDateUtils } from '@/composables/use-date-utils';
 
     interface IRepeatingEventSettingsProps {
         event: Partial<IEvent>;
@@ -36,7 +39,7 @@
 
     const props = defineProps<IRepeatingEventSettingsProps>();
 
-    const { getRepetitionTypes } = useRepeatingEventSettings();
+    const { getRepetitionTypes, getRepeatingValueString } = useRepeatingEventSettings();
 
     const {
         isListOpen,
@@ -46,11 +49,24 @@
         removeDocumentListener,
     } = useSelectorComponent();
 
+    const { getWeekOfMonthIndex } = useDateUtils();
+
     const roolEl = ref<HTMLElement | null>(null);
     const listBtnEl = ref<HTMLElement | null>(null);
 
+    const isCustomModalShown = ref(false);
+
+    const REPEAT_TYPES = [
+        RepeatEventType.NONE,
+        RepeatEventType.DAILY,
+        RepeatEventType.WEEKLY,
+        RepeatEventType.MONTHLY_DATE,
+        RepeatEventType.MONTHLY_WEEKDAY,
+        RepeatEventType.YEARLY,
+    ];
+
     const valueString = computed(() => {
-        return 'Every 2 weeks on Thursday';
+        return getRepeatingValueString(props.event as IEvent);
     });
 
     const repititionTypes = computed(() => {
@@ -61,7 +77,25 @@
         return getRepetitionTypes(props.event.start);
     });
 
-    const onRepeatingTypeClicked = () => {
+    const onRepeatingTypeClicked = (index: number) => {
+        if (index >= REPEAT_TYPES.length) {
+            isCustomModalShown.value = true;
+            return;
+        }
+
+        props.event.repeatType = REPEAT_TYPES[index];
+        toggleListVisible();
+
+        if (props.event.repeatType !== RepeatEventType.MONTHLY_WEEKDAY) {
+            return;
+        }
+
+        if (!props.event.start) {
+            console.warn(`WARNING: can not set repeat value with event start date`);
+            return;
+        }
+
+        props.event.repeatValue = getWeekOfMonthIndex(props.event.start);
 
     };
 
@@ -124,10 +158,14 @@
     }
 
     .repitition_type__btn {
-        @include link_btn;
+        @include list_btn;
 
-        margin: 8px 0;
+        border: none;
 
         text-align: left;
+    }
+
+    .repitition_type__btn:hover {
+        @include list_btn--hover;
     }
 </style>

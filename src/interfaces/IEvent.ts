@@ -8,10 +8,9 @@ export interface IBaseEvent {
     calendarName: string;
     dayCount: number;
     isAllDay: boolean;
-    isRepeating: boolean;
+    repeatType: RepeatEventType;
     repeatId?: string;
     repeatValue?: number;
-    repeatType?: RepeatEventType;
     repeatEnd?: Date;
 }
 

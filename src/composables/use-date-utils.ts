@@ -137,11 +137,46 @@ export const HALF_HOURS_IN_DAY = [
 ];
 
 export const WEEK_OF_MONTH_STRINGS = [
+    'zeroth',
     'first',
     'second',
     'third',
     'fourth',
     'fifth',
+];
+
+export const NUMBER_SUFFICES = [
+    'st', // 1st
+    'nd', // 2nd
+    'rd', // 3rd
+    'th', // 4th
+    'th', // 5th
+    'th', // 6th
+    'th', // 7th
+    'th', // 8th
+    'th', // 9th
+    'th', // 10th
+    'th', // 11th
+    'th', // 12th
+    'th', // 13th
+    'th', // 14th
+    'th', // 15th
+    'th', // 16th
+    'th', // 17th
+    'th', // 18th
+    'th', // 19th
+    'th', // 20th
+    'st', // 21st
+    'nd', // 22nd
+    'rd', // 23rd
+    'th', // 24th
+    'th', // 25th
+    'th', // 26th
+    'th', // 27th
+    'th', // 28th
+    'th', // 29th
+    'th', // 30th
+    'st', // 31st
 ];
 
 const MILLISECONDS_IN_DAY = 86400000;
@@ -362,23 +397,20 @@ export function useDateUtils() {
         return temp;
     };
 
-    const getFirstWeekDayInMonth = (year: number, month: number) => {
-        return new Date(year, month, 1).getDay();
-    };
-
-    const getWeekOfMonth = (date: Date) => {
-        let firstWeekdayIndex = getFirstWeekDayInMonth(date.getFullYear(), date.getMonth());
-
+    const getWeekOfMonthIndex = (date: Date) => {
+        let firstWeekdayIndex = new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
         if (firstWeekdayIndex < 0) {
             firstWeekdayIndex = 6;
         };
 
         const offsetDate = date.getDate() + firstWeekdayIndex - 1;
-        return Math.floor(offsetDate / 7);
+        const weekOfMonth = Math.floor(offsetDate / 7);
+        console.log(`\tweekOfMonth = ${weekOfMonth}`);
+        return weekOfMonth;
     };
 
-    const getWeekOfMonthString = (date: Date) => {
-        return WEEK_OF_MONTH_STRINGS[getWeekOfMonth(date)];
+    const getWeekOfMonthIndexString = (date: Date) => {
+        return WEEK_OF_MONTH_STRINGS[getWeekOfMonthIndex(date)];
     };
 
     const getNthWeekdayOfMonth = (weekday: number, n: number, year: number, month: number) => {
@@ -419,8 +451,8 @@ export function useDateUtils() {
         createDateFromDateAndHHMM,
         getHHMMFromNumber,
         dateAddition,
-        getWeekOfMonthString,
-        getWeekOfMonth,
+        getWeekOfMonthIndexString,
+        getWeekOfMonthIndex,
         getIsLeapYear,
         getLastDayOfMonth,
         getNthWeekdayOfMonth,

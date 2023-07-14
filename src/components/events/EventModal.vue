@@ -68,7 +68,7 @@
                     :disabled="isEditingDisabled"
                     label-position="left"
                     label="All Day"
-                    @checkbox-changed="onAllDayChanged"
+                    @checkbox-changed="onAllDayCheckboxChanged"
                 ></CheckBox>
             </div>
             <div class="event__date_and_time event__date_and_time--mobile">
@@ -106,23 +106,23 @@
                         :disabled="isEditingDisabled"
                         label-position="left"
                         label="All Day"
-                        @checkbox-changed="onAllDayChanged"
+                        @checkbox-changed="onAllDayCheckboxChanged"
                     />
                 </div>
             </div>
             <div class="event__repeat">
                 <RepeatingEventSettings
-                    v-if="!!props.event!.isRepeating"
-                    :event="props.event"
+                    v-if="isRepeating"
+                    :event="event!"
                     :is-enabled="isEditing || isNew"
                 />
                 <div class="spacer"></div>
                 <CheckBox
-                    :model="!!props.event!.isRepeating"
+                    :model="isRepeating"
                     :disabled="isEditingDisabled"
                     label-position="left"
                     label="Repeats"
-                    @checkbox-changed="onRepeatsChanged"
+                    @checkbox-changed="onRepeatsCheckboxChanged"
                 />
             </div>
             <CalendarNameSelector
@@ -140,6 +140,7 @@
                 @keydown.stop
             />
         </div>
+        <span>{{ props.event!.repeatValue }}</span>
         <div class="event_model__footer">
             <span></span>
             <button
@@ -161,6 +162,7 @@
     } from 'vue';
 
     import type { IEvent } from '@/interfaces';
+    import { RepeatEventType } from '@/enum/RepeatEventType';
 
     import { useEventStore } from '@/stores/events';
 
@@ -201,6 +203,8 @@
     const isViewingTime = ref(false);
     const titleInput = ref<HTMLElement | null>(null);
     const editButton = ref<HTMLElement | null>(null);
+
+    const isRepeating = ref(false);
 
     const props = defineProps<IEventModalProps>();
 
@@ -313,12 +317,10 @@
         props.event.end = new Date(year, month, day, parseInt(split[0]), parseInt(split[1]));
     };
 
-    const onAllDayChanged = () => {
+    const onAllDayCheckboxChanged = () => {
         if (!props.event) {
             return;
         }
-
-        // isViewingTime.value = !isViewingTime.value;
 
         props.event.isAllDay = !props.event.isAllDay;
 
@@ -329,14 +331,19 @@
         props.event!.end = createDateFromDateAndHHMM(props.event!.end!, 0, 0);
     };
 
-    const onRepeatsChanged = () => {
+    const onRepeatsCheckboxChanged = () => {
         if (!props.event) {
             return;
         }
 
-        props.event.isRepeating = !props.event.isRepeating;
+        isRepeating.value = !isRepeating.value;
 
-        props.event.repeatId = (!props.event.isRepeating) ? '' : crypto.randomUUID();
+        if (!isRepeating.value) {
+            props.event.repeatType = RepeatEventType.NONE;
+            return;
+        }
+
+        props.event.repeatId = crypto.randomUUID();
     };
 
     const onCalendarNameClicked = (index: number) => {
@@ -373,12 +380,12 @@
 
     const save = () => {
         const method = (isEditing.value) ? updateEvent : addEvent;
-
+        console.log(`EventModal/save, event = `, props.event, `\nmethod = `, method);
         method();
         emit('onClose');
     };
 
-    const deleteEvent = () => {
+    const setDeleteTypeAndDelete = () => {
 
     };
 
@@ -405,6 +412,7 @@
 
     onMounted(() => {
         isViewingTime.value = !isAllDayEvent.value;
+        isRepeating.value = props.event!.repeatType !== RepeatEventType.NONE;
 
         if (!props.isNew) {
             focusEditButton();

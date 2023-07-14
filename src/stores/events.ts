@@ -145,7 +145,7 @@ export const useEventStore = defineStore('eventStore', () => {
             calendarName: '',
             dayCount: 0,
             isAllDay,
-            isRepeating: false,
+            repeatType: RepeatEventType.NONE,
             ...value,
         };
 
@@ -226,6 +226,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const addEvent = () => {
+        console.log(`event store / addEvent, focusedEvent = `, state.value.focusedEvent);
         state.value.isViewingEvent = false;
         if (!state.value.focusedEvent) {
             console.warn(`ERROR: can not add new event`);
@@ -239,7 +240,9 @@ export const useEventStore = defineStore('eventStore', () => {
         state.value.events.push(event);
         event.dayCount = getDaysInEventCount(event);
 
-        if (!event.isRepeating) {
+        console.log(`about to save new event repeatType = `, event.repeatType);
+
+        if (event.repeatType === RepeatEventType.NONE) {
             saveState();
             return;
         }
@@ -249,6 +252,10 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const getNextDateInRepeatingEvent = (repeatType: RepeatEventType, current: Date, weekOfMonth: number) => {
+        if (repeatType === RepeatEventType.NONE) {
+            throw new Error(`ERROR: can not get next date, event has a repeat type of ${repeatType}`);
+        }
+
         if (repeatType === RepeatEventType.YEARLY) {
             return new Date(current.getFullYear() + 1, current.getMonth(), current.getDate());
         }
@@ -262,10 +269,8 @@ export const useEventStore = defineStore('eventStore', () => {
         }
 
         if (repeatType === RepeatEventType.MONTHLY_DATE) {
-            const month = current.getMonth();
-            const year = current.getFullYear();
-            const addedDays = getLastDayOfMonth(year, month);
-            return dateAddition(current, addedDays);
+            const temp = new Date(current.getFullYear(), current.getMonth(), current.getDate());
+            return new Date(current.setMonth(current.getMonth() + 1));
         }
 
         // RepeatEventType.MONTHLY_WEEKDAY
@@ -275,26 +280,25 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const addRepeatingSiblings = (event: IEvent) => {
-        if (!event.repeatType || !event.repeatValue) {
-            console.warn(`ERROR: can not create sibling events without repeat type ${event.repeatType}`);
+        if (event.repeatType === RepeatEventType.NONE) {
             return;
         }
-        const endDate = (event.repeatEnd) ? event.repeatEnd : dateAddition(event.start, 3650); // default end is 10 years from now
+        console.log(`\t----- addRepeatingSibilnes, type = ${event.repeatType}`);
+        const endDate = (event.repeatEnd) ? event.repeatEnd : dateAddition(event.start, 366); // default end is 1 year from now
         const weekOfMonth = (event.repeatType !== RepeatEventType.MONTHLY_WEEKDAY && typeof event.repeatValue === 'number') ? -1 : event.repeatValue as number;
 
         let currentStart = new Date(event.start);
         let currentEnd;
         let siblingEvent;
 
-        while (currentStart < endDate) {
+        while (currentStart.getTime() < endDate.getTime()) {
             currentStart = getNextDateInRepeatingEvent(event.repeatType, currentStart, weekOfMonth);
             siblingEvent = JSON.parse(JSON.stringify(event));
             siblingEvent.id = crypto.randomUUID();
             siblingEvent.start = new Date(currentStart.getFullYear(), currentStart.getMonth(), currentStart.getDate(), event.start.getHours(), event.start.getMinutes());
-            if (siblingEvent.dayCount > 1) {
-                currentEnd = dateAddition(siblingEvent.start, siblingEvent.dayCount);
-                siblingEvent.end = new Date(currentEnd.getFullYear(), currentEnd.getMonth(), currentEnd.getDate(), event.end.getHours(), event.end.getMinutes());
-            }
+            currentEnd = (event.dayCount > 1) ? dateAddition(siblingEvent.start, event.dayCount) : siblingEvent.start;
+            siblingEvent.end = new Date(currentEnd.getFullYear(), currentEnd.getMonth(), currentEnd.getDate(), event.end.getHours(), event.end.getMinutes());
+            console.log(`\tsibling event = ${JSON.stringify(siblingEvent)}`);
             state.value.events.push(siblingEvent);
         }
     };
@@ -315,7 +319,7 @@ export const useEventStore = defineStore('eventStore', () => {
         state.value.events = state.value.events.map((event: IEvent) => {
             if (event.id === focusedEvent.id) {
 
-                if (event.isRepeating) {
+                if (event.repeatType !== RepeatEventType.NONE) {
                     updateRepeatingSiblings(event, focusedEvent as IEvent);
                 }
 
@@ -337,7 +341,7 @@ export const useEventStore = defineStore('eventStore', () => {
             return;
         }
 
-        if (newEvent.isRepeating) {
+        if (newEvent.repeatType !== RepeatEventType.NONE) {
             // event is no longer repeat, get rid of other instances
             deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
             return;
@@ -352,7 +356,7 @@ export const useEventStore = defineStore('eventStore', () => {
         addRepeatingSiblings(newEvent);
     };
 
-    const deleteEvent = (repeatDeleteType: DeleteEventType = DeleteEventType.NONE) => {
+    const deleteEvent = (repeatDeleteType: DeleteEventType = DeleteEventType.ALL) => {
         state.value.isViewingEvent = false;
 
         if (!state.value.focusedEvent || !state.value.focusedEvent.id) {
