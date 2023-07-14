@@ -13,6 +13,8 @@ import type {
     ISerializedEvent,
     ISerializedEventState,
 } from '@/interfaces/';
+import { RepeatEventType } from '@/enum/RepeatEventType';
+import { DeleteEventType } from '@/enum/DeleteEventType';
 
 const LOCAL_STORAGE_KEY = 'calendarAppEventData';
 
@@ -23,6 +25,7 @@ const {
     dateAddition,
     getIsLeapYear,
     getLastDayOfMonth,
+    getNthWeekdayOfMonth,
 } = useDateUtils();
 
 export const useEventStore = defineStore('eventStore', () => {
@@ -133,7 +136,7 @@ export const useEventStore = defineStore('eventStore', () => {
         const isAllDay = getIsAllDay(value);
 
         const event: IEvent = {
-            id: today.getTime(),
+            id: crypto.randomUUID(),
             title: '',
             description: '',
             location: '',
@@ -155,9 +158,9 @@ export const useEventStore = defineStore('eventStore', () => {
         return events.filter(event => activeCalendars.includes(event.calendarName));
     };
 
-    const getEventsForRange = (startDate: Date, endDate: Date, isFilteredByActiveCalendars: boolean = false): IEvent[] => {
+    const getEventsForRange = (currentStart: Date, endDate: Date, isFilteredByActiveCalendars: boolean = false): IEvent[] => {
         const events = state.value.events.filter((event: IEvent) => {
-            if (getAreDatesWithinRange(event.start, event.end, startDate, endDate, true)) {
+            if (getAreDatesWithinRange(event.start, event.end, currentStart, endDate, true)) {
                 return event;
             }
         }).sort((a, b) => {
@@ -236,40 +239,63 @@ export const useEventStore = defineStore('eventStore', () => {
         state.value.events.push(event);
         event.dayCount = getDaysInEventCount(event);
 
+        if (!event.isRepeating) {
+            saveState();
+            return;
+        }
+
+        addRepeatingSiblings(event);
         saveState();
     };
 
-    const getRepeatingEventMultilpier = (repeatingUnit: 'daily' | 'weekly' | 'monthlyDate' | 'monthlyWeek' | 'yearly', current: Date) => {
-        if (repeatingUnit === 'yearly') {
+    const getNextDateInRepeatingEvent = (repeatType: RepeatEventType, current: Date, weekOfMonth: number) => {
+        if (repeatType === RepeatEventType.YEARLY) {
+            return new Date(current.getFullYear() + 1, current.getMonth(), current.getDate());
+        }
+
+        if (repeatType === RepeatEventType.WEEKLY) {
+            return dateAddition(current, 7);
+        }
+
+        if (repeatType === RepeatEventType.DAILY) {
+            return dateAddition(current, 1);
+        }
+
+        if (repeatType === RepeatEventType.MONTHLY_DATE) {
             const month = current.getMonth();
             const year = current.getFullYear();
-            return (month > 1 && getIsLeapYear(year + 1)) ? 366 : 365;
+            const addedDays = getLastDayOfMonth(year, month);
+            return dateAddition(current, addedDays);
         }
 
-        if (repeatingUnit === 'weekly') {
-            return 7;
-        }
-
-        if (repeatingUnit === 'daily') {
-            return 1;
-        }
-
-        if (repeatingUnit === 'monthlyDate') {
-            const month = current.getMonth();
-            const year = current.getFullYear();
-            return getLastDayOfMonth(year, month);
-        }
+        // RepeatEventType.MONTHLY_WEEKDAY
+        const month = (current.getMonth() < 11) ? current.getMonth() + 1 : 0;
+        const year = (month > 0) ? current.getFullYear() : current.getFullYear() + 1;
+        return getNthWeekdayOfMonth(current.getDay(), weekOfMonth, year, month);
     };
 
     const addRepeatingSiblings = (event: IEvent) => {
-        const endDate = (event.repeatingEnd) ? event.repeatingEnd : dateAddition(event.start, 3650); // default end is 10 years from now
+        if (!event.repeatType || !event.repeatValue) {
+            console.warn(`ERROR: can not create sibling events without repeat type ${event.repeatType}`);
+            return;
+        }
+        const endDate = (event.repeatEnd) ? event.repeatEnd : dateAddition(event.start, 3650); // default end is 10 years from now
+        const weekOfMonth = (event.repeatType !== RepeatEventType.MONTHLY_WEEKDAY && typeof event.repeatValue === 'number') ? -1 : event.repeatValue as number;
 
-        let startDate = new Date(event.start);
+        let currentStart = new Date(event.start);
+        let currentEnd;
         let siblingEvent;
-        let head = 0;
 
-        while (startDate < endDate) {
-
+        while (currentStart < endDate) {
+            currentStart = getNextDateInRepeatingEvent(event.repeatType, currentStart, weekOfMonth);
+            siblingEvent = JSON.parse(JSON.stringify(event));
+            siblingEvent.id = crypto.randomUUID();
+            siblingEvent.start = new Date(currentStart.getFullYear(), currentStart.getMonth(), currentStart.getDate(), event.start.getHours(), event.start.getMinutes());
+            if (siblingEvent.dayCount > 1) {
+                currentEnd = dateAddition(siblingEvent.start, siblingEvent.dayCount);
+                siblingEvent.end = new Date(currentEnd.getFullYear(), currentEnd.getMonth(), currentEnd.getDate(), event.end.getHours(), event.end.getMinutes());
+            }
+            state.value.events.push(siblingEvent);
         }
     };
 
@@ -307,26 +333,26 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const updateRepeatingSiblings = (oldEvent: IEvent, newEvent: IEvent) => {
-        if (!oldEvent.repeatingId) {
+        if (!oldEvent.repeatId) {
             return;
         }
 
         if (newEvent.isRepeating) {
-            // event is no longer repeating, get rid of other instances
-            deleteRepeatingSiblings(oldEvent.repeatingId, oldEvent.id);
+            // event is no longer repeat, get rid of other instances
+            deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
             return;
         }
 
-        if (oldEvent.repeatingQuantity === newEvent.repeatingQuantity && oldEvent.repeatingUnit === newEvent.repeatingUnit) {
+        if (oldEvent.repeatValue === newEvent.repeatValue && oldEvent.repeatType === newEvent.repeatType) {
             // there was nothing changed, no further action needed
             return;
         }
 
-        deleteRepeatingSiblings(oldEvent.repeatingId, oldEvent.id);
-
+        deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
+        addRepeatingSiblings(newEvent);
     };
 
-    const deleteEvent = (repeatingDeleteType?: 'none' | 'future' | 'all') => {
+    const deleteEvent = (repeatDeleteType: DeleteEventType = DeleteEventType.NONE) => {
         state.value.isViewingEvent = false;
 
         if (!state.value.focusedEvent || !state.value.focusedEvent.id) {
@@ -334,26 +360,35 @@ export const useEventStore = defineStore('eventStore', () => {
             return;
         }
 
-        const focusedEvent = state.value.focusedEvent;
+        const focusedEvent: IEvent = state.value.focusedEvent as IEvent;
 
-        if (repeatingDeleteType === 'future' || repeatingDeleteType === 'all') {
-            if (repeatingDeleteType === 'future') {
-                deleteFutureRepeatingSiblings(focusedEvent.repeatingId!, focusedEvent.start!);
-            } else {
-                deleteRepeatingSiblings(focusedEvent.repeatingId!, focusedEvent.id!)
-            }
+        if (repeatDeleteType === DeleteEventType.NONE) {
+            filterDeletedEventAndSave(focusedEvent.id);
+            return;
         }
 
-        state.value.events = state.value.events.filter(event => event.id !== focusedEvent.id);
+        if (repeatDeleteType === DeleteEventType.FUTURE) {
+            deleteFutureRepeatingSiblings(focusedEvent.repeatId!, focusedEvent.start!);
+            filterDeletedEventAndSave(focusedEvent.id);
+            return;
+
+        }
+
+        deleteRepeatingSiblings(focusedEvent.repeatId!, focusedEvent.id!)
+        filterDeletedEventAndSave(focusedEvent.id);
+    };
+
+    const filterDeletedEventAndSave = (id: string) => {
+        state.value.events = state.value.events.filter(event => event.id !== id);
         saveState();
     };
 
-    const deleteRepeatingSiblings = (repeatingId: number, focusedId: number) => {
-        state.value.events = state.value.events.filter(event => event.id === focusedId || event.repeatingId !== repeatingId);
+    const deleteRepeatingSiblings = (repeatId: string, focusedId: string) => {
+        state.value.events = state.value.events.filter(event => event.id === focusedId || event.repeatId !== repeatId);
     }
 
-    const deleteFutureRepeatingSiblings = (repeatingId: number, startDate: Date) => {
-        state.value.events = state.value.events.filter(event => event.repeatingId !== repeatingId || event.start.getTime() < startDate.getTime());
+    const deleteFutureRepeatingSiblings = (repeatId: string, currentStart: Date) => {
+        state.value.events = state.value.events.filter(event => event.repeatId !== repeatId || event.start.getTime() < currentStart.getTime());
     };
 
     const getisViewingEvent = () => {

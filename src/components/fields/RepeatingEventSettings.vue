@@ -1,7 +1,7 @@
 <template>
-    <div ref="roolEl" class="repeating_event_settings">
+    <div ref="roolEl" class="repeat_event_settings">
         <button
-            class="repeating_event_settings__value list__btn"
+            class="repeat_event_settings__value list__btn"
             :disabled="!isEnabled"
             ref="listBtnEl"
             @click="toggleListVisible"
@@ -10,7 +10,7 @@
             <span>{{ valueString }}</span>
             <svg v-if="isEnabled" xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 0 24 24" width="15px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 10l5 5 5-5z"/></svg>
         </button>
-        <div v-if="isListOpen" class="repeating_event_settings__list">
+        <div v-if="isListOpen" class="repeat_event_settings__list">
             <button
                 v-for="(type, t) in repititionTypes"
                 :key="t"
@@ -82,7 +82,7 @@
     @import '../../styles/mixins.scss';
     @import '../../styles/global.scss';
 
-    .repeating_event_settings {
+    .repeat_event_settings {
         width: 256px;
 
         display: flex;
@@ -91,14 +91,14 @@
         position: relative;
     }
 
-    .repeating_event_settings__list {
+    .repeat_event_settings__list {
         @include selector_list;
 
         width: 256px;
         top: 46px;
     }
 
-    .repeating_event_settings__value, .calendar_name_list__btn {
+    .repeat_event_settings__value, .calendar_name_list__btn {
         min-width: 256px;
         max-width: 256px;
     }

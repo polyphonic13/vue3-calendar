@@ -382,18 +382,18 @@ export function useDateUtils() {
     };
 
     const getNthWeekdayOfMonth = (weekday: number, n: number, year: number, month: number) => {
+        const date = new Date(year, month, 1);
         let count = 0;
-        let idate = new Date(year, month, 1);
 
         while (true) {
-            if (idate.getDay() === weekday) {
+            if (date.getDay() === weekday) {
                 if (++count == n) {
                     break;
                 }
             }
-            idate.setDate(idate.getDate() + 1);
+            date.setDate(date.getDate() + 1);
         }
-        return idate;
+        return date;
     };
 
 

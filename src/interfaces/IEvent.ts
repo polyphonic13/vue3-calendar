@@ -1,5 +1,7 @@
+import type { RepeatEventType } from '@/enum/RepeatEventType';
+
 export interface IBaseEvent {
-    id: number;
+    id: string;
     title: string;
     description: string;
     location: string;
@@ -7,10 +9,10 @@ export interface IBaseEvent {
     dayCount: number;
     isAllDay: boolean;
     isRepeating: boolean;
-    repeatingId?: number;
-    repeatingQuantity?: number | { day: number, week: number };
-    repeatingUnit?: 'daily' | 'weekly' | 'monthlyDate' | 'monthlyWeek' | 'yearly';
-    repeatingEnd?: Date;
+    repeatId?: string;
+    repeatValue?: number;
+    repeatType?: RepeatEventType;
+    repeatEnd?: Date;
 }
 
 export interface ISerializedEvent extends IBaseEvent {

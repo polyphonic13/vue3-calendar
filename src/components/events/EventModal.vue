@@ -110,7 +110,7 @@
                     />
                 </div>
             </div>
-            <div class="event__repeating">
+            <div class="event__repeat">
                 <RepeatingEventSettings
                     v-if="!!props.event!.isRepeating"
                     :event="props.event"
@@ -336,7 +336,7 @@
 
         props.event.isRepeating = !props.event.isRepeating;
 
-        props.event.repeatingId = (!props.event.isRepeating) ? -1 : Date.now();
+        props.event.repeatId = (!props.event.isRepeating) ? '' : crypto.randomUUID();
     };
 
     const onCalendarNameClicked = (index: number) => {
@@ -376,6 +376,10 @@
 
         method();
         emit('onClose');
+    };
+
+    const deleteEvent = () => {
+
     };
 
     const focusTitleInput = async () => {
@@ -513,7 +517,7 @@
         // }
     }
 
-    .event__repeating {
+    .event__repeat {
         @include flex_display;
 
         align-items: center;
