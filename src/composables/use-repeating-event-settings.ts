@@ -17,7 +17,7 @@ export function useRepeatingEventSettings() {
             `Weekly on ${DAYS_OF_WEEK[dayOfWeek]}`,
             `Monthly on the ${date}${NUMBER_SUFFICES[date]}`,
             `Monthly on the ${week} ${DAYS_OF_WEEK[dayOfWeek]}`,
-            `Yearly on ${MONTH_NAMES[month]} ${date}`,
+            `Yearly on ${MONTH_NAMES[month]} ${date}${NUMBER_SUFFICES[date]}`,
             `Custom...`,
         ];
     };
@@ -36,7 +36,8 @@ export function useRepeatingEventSettings() {
         }
 
         if (event.repeatType === RepeatEventType.YEARLY) {
-            return `Yearly on ${MONTH_NAMES[event.start.getMonth()]} ${event.start.getDate()}`;
+            const date = event.start.getDate();
+            return `Yearly on ${MONTH_NAMES[event.start.getMonth()]} ${date}${NUMBER_SUFFICES[date]}`;
         }
 
         if (event.repeatType === RepeatEventType.MONTHLY_DATE) {
