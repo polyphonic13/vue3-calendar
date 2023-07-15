@@ -116,7 +116,24 @@
                     :event="event!"
                     :is-enabled="isEditing || isNew"
                 />
+                <DateSelector
+                    v-if="isRepeatingEnds"
+                    :is-editing="isEditing || isNew"
+                    :value="props.event!.repeatEnd"
+                    class="repeating_end__date_selector"
+                    @date-selected="onRepeatingEndDateSelected"
+                />
+
                 <div class="spacer"></div>
+                <CheckBox
+                    v-if="isRepeating"
+                    :model="isRepeatingEnds"
+                    :disabled="isEditingDisabled"
+                    label-position="left"
+                    label="Ends"
+                    class="repeating_end__checkbox"
+                    @checkbox-changed="onRepeatEndsCheckboxChanged"
+                />
                 <CheckBox
                     :model="isRepeating"
                     :disabled="isEditingDisabled"
@@ -201,10 +218,12 @@
 
     const isEditing = ref(false);
     const isViewingTime = ref(false);
+    const isRepeating = ref(false);
+    const isRepeatingEnds = ref(false);
+
     const titleInput = ref<HTMLElement | null>(null);
     const editButton = ref<HTMLElement | null>(null);
 
-    const isRepeating = ref(false);
 
     const props = defineProps<IEventModalProps>();
 
@@ -344,6 +363,19 @@
         }
 
         props.event.repeatId = crypto.randomUUID();
+    };
+
+    const onRepeatEndsCheckboxChanged = () => {
+        if (!props.event) {
+            return;
+        }
+
+        isRepeatingEnds.value = !isRepeatingEnds.value;
+    };
+
+    const onRepeatingEndDateSelected = (date: Date) => {
+        props.event!.repeatEnd = date;
+        console.log(`EventModal/onRepeatingEndDateSelected, date = `, date, `\n\trepeatEnd now = `, props.event!.repeatEnd);
     };
 
     const onCalendarNameClicked = (index: number) => {
@@ -532,6 +564,10 @@
 
         min-height: 48px;
         max-height: 48px;
+    }
+
+    .repeating_end__date_selector, .repeating_end__checkbox {
+        margin: 0 4px;
     }
 
     .event__description {

@@ -146,6 +146,7 @@ export const useEventStore = defineStore('eventStore', () => {
             dayCount: 0,
             isAllDay,
             repeatType: RepeatEventType.NONE,
+            repeatEnd: (value.end) ? value.end : new Date(),
             ...value,
         };
 
@@ -299,7 +300,11 @@ export const useEventStore = defineStore('eventStore', () => {
             currentEnd = (event.dayCount > 1) ? dateAddition(siblingEvent.start, event.dayCount) : siblingEvent.start;
             siblingEvent.end = new Date(currentEnd.getFullYear(), currentEnd.getMonth(), currentEnd.getDate(), event.end.getHours(), event.end.getMinutes());
             console.log(`\tsibling event = ${JSON.stringify(siblingEvent)}`);
-            state.value.events.push(siblingEvent);
+            console.log(`\tsiblingEvent.start = ${JSON.stringify(siblingEvent.start)}, endDate = ${JSON.stringify(endDate)}`);
+
+            if (siblingEvent.start.getTime() <= endDate.getTime()) {
+                state.value.events.push(siblingEvent);
+            }
         }
     };
 

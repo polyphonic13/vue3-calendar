@@ -48,7 +48,7 @@ export function useRepeatingEventSettings() {
         if (!event.repeatValue) {
             return '';
         }
-        console.log(`event.start = ${JSON.stringify(event.start)}`);
+        // console.log(`event.start = ${JSON.stringify(event.start)}`);
         return `Monthly on the ${getWeekOfMonthString(event.start)} ${DAYS_OF_WEEK[event.start.getDay()]}`;
     };
 

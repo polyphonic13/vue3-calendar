@@ -1,5 +1,5 @@
 <template>
-  <label class="form-control">
+  <label class="form_field">
     <span v-if="props.labelPosition === 'left'" class="checkbox__left_label">{{ props.label }}</span>
     <input
         type="checkbox"
@@ -35,7 +35,7 @@
         return (props.model) ? 'checkbox-checked' : 'checkbox';
     });
 
-    const onChanged = ((event: InputEvent) => {
+    const onChanged = (() => {
         emit('checkboxChanged');
     });
 </script>
@@ -45,8 +45,8 @@
     // @link https://moderncss.dev/pure-css-custom-checkbox-style/
 
     :roolEl {
-    --form-control-color: rebeccapurple;
-    --form-control-disabled: #959495;
+    --form_field-color: rebeccapurple;
+    --form_field-disabled: #959495;
     }
 
     *,
@@ -64,7 +64,7 @@
         min-height: 100vh;
     }
 
-    .form-control {
+    .form_field {
         font-family: system-ui, sans-serif;
         line-height: 1.1;
         display: flex;
@@ -73,12 +73,8 @@
         user-select: none;
     }
 
-    .form-control + .form-control {
-        margin-top: 1em;
-    }
-
-    .form-control--disabled {
-        color: var(--form-control-disabled);
+    .form_field--disabled {
+        color: var(--form_field-disabled);
         cursor: not-allowed;
     }
 
@@ -113,7 +109,7 @@
         transform: scale(0);
         transform-origin: bottom left;
         transition: 120ms transform ease-in-out;
-        box-shadow: inset 1em 1em var(--form-control-color);
+        box-shadow: inset 1em 1em var(--form_field-color);
         /* Windows High Contrast Mode */
         background-color: CanvasText;
     }
@@ -123,9 +119,9 @@
     }
 
     input[type="checkbox"]:disabled {
-        --form-control-color: var(--form-control-disabled);
+        --form_field-color: var(--form_field-disabled);
 
-        color: var(--form-control-disabled);
+        color: var(--form_field-disabled);
         cursor: not-allowed;
     }
 
