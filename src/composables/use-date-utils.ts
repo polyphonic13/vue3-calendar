@@ -365,7 +365,7 @@ export function useDateUtils() {
         const s = (startTime > rStartTime) ? startTime : rStartTime;
         const e = (endTime < rEndTime) ? endTime : rEndTime;
         const diff = (e - s) / MILLISECONDS_IN_DAY;
-        console.log(`\tstartTime = ${startTime}, endTime = ${endTime}\n\trStartTime = ${rStartTime}, rEndTime = ${rEndTime}\n\ts = ${s}, e = ${e}\n\tdiff = ${diff}`);
+        // console.log(`\tstartTime = ${startTime}, endTime = ${endTime}\n\trStartTime = ${rStartTime}, rEndTime = ${rEndTime}\n\ts = ${s}, e = ${e}\n\tdiff = ${diff}`);
 
         return diff;
     };
@@ -402,7 +402,7 @@ export function useDateUtils() {
         const month = source.getMonth();
         const date = source.getDate();
         const targetDayOfWeek = source.getDay();
-        console.log(`getWeekOfMonth, year = ${year}, month = ${month}, date = ${date}, targetDayOfWeek = ${targetDayOfWeek}`);
+        // console.log(`getWeekOfMonth, year = ${year}, month = ${month}, date = ${date}, targetDayOfWeek = ${targetDayOfWeek}`);
 
         let dayOfWeek = new Date(year, month, 1).getDay(); // get the dayOfWeek of day 1
 
@@ -415,7 +415,7 @@ export function useDateUtils() {
         let countOfTargetDayOfWeek = (dayOfWeek === targetDayOfWeek) ? 1 : 0;
 
         let head = 1;
-        console.log(`\tdayOfWeek = ${dayOfWeek}`);
+        // console.log(`\tdayOfWeek = ${dayOfWeek}`);
 
         if (dayOfWeek === 6) {
             dayOfWeek = 0;
@@ -423,35 +423,23 @@ export function useDateUtils() {
         }
 
         while (head < date) {
-
-            console.log(`\t\thead = ${head}, dayOfWeek = ${dayOfWeek}`);
-
+            // console.log(`\t\thead = ${head}, dayOfWeek = ${dayOfWeek}`);
             if (dayOfWeek > 6) {
-                console.log(`\t\t\ton a sunday; incrementing week`);
+                // console.log(`\t\t\ton a sunday; incrementing week`);
                 dayOfWeek = 0;
             }
 
             if (dayOfWeek === targetDayOfWeek) {
                 countOfTargetDayOfWeek++;
-                console.log(`\t\t\t${dayOfWeek} matches ${targetDayOfWeek} on ${head}, date = ${date}, incremenet countOfTargetDayOfWeek to ${countOfTargetDayOfWeek}`);
+                // console.log(`\t\t\t${dayOfWeek} matches ${targetDayOfWeek} on ${head}, date = ${date}, incremenet countOfTargetDayOfWeek to ${countOfTargetDayOfWeek}`);
             }
 
             head++;
             dayOfWeek++;
         }
 
-        console.log(`\tdayOfWeek = ${dayOfWeek}, countOfTargetDayOfWeek = ${countOfTargetDayOfWeek}`);
-        return countOfTargetDayOfWeek;
-
-        // let firstWeekdayIndex = new Date(source.getFullYear(), source.getMonth(), 1).getDay() - 1;
-        // if (firstWeekdayIndex < 0) {
-        //     firstWeekdayIndex = 6;
-        // };
-
-        // const offsetDate = source.getDate() + firstWeekdayIndex - 1;
-        // const weekOfMonth = Math.floor(offsetDate / 7);
-        // console.log(`\tweekOfMonth = ${weekOfMonth}`);
-        // return weekOfMonth;
+        // console.log(`\tdayOfWeek = ${dayOfWeek}, countOfTargetDayOfWeek = ${countOfTargetDayOfWeek}`);
+        return (countOfTargetDayOfWeek < 5) ? countOfTargetDayOfWeek : 4;
     };
 
     const getWeekOfMonthString = (date: Date) => {
