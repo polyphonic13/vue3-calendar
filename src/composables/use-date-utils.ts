@@ -402,30 +402,42 @@ export function useDateUtils() {
         const month = source.getMonth();
         const date = source.getDate();
         const targetDayOfWeek = source.getDay();
-        console.log(`getWeekOfMonth, year = ${year}, month = ${month}, date = ${date}`);
+        console.log(`getWeekOfMonth, year = ${year}, month = ${month}, date = ${date}, targetDayOfWeek = ${targetDayOfWeek}`);
 
         let dayOfWeek = new Date(year, month, 1).getDay(); // get the dayOfWeek of day 1
 
+        if (dayOfWeek === targetDayOfWeek && date === 1) {
+            // first day is the tartget
+            return 0;
+        }
+
         // let weekIndex = (dayOfWeek > targetDayOfWeek) ? -1 : 0; // 0-indexed weeks
-        let countOfTargetDayOfWeek = 0;
+        let countOfTargetDayOfWeek = (dayOfWeek === targetDayOfWeek) ? 1 : 0;
 
         let head = 1;
         console.log(`\tdayOfWeek = ${dayOfWeek}`);
 
+        if (dayOfWeek === 6) {
+            dayOfWeek = 0;
+            head++;
+        }
+
         while (head < date) {
-            if (dayOfWeek === targetDayOfWeek) {
-                countOfTargetDayOfWeek++;
+
+            console.log(`\t\thead = ${head}, dayOfWeek = ${dayOfWeek}`);
+
+            if (dayOfWeek > 6) {
+                console.log(`\t\t\ton a sunday; incrementing week`);
+                dayOfWeek = 0;
             }
 
-            if (dayOfWeek === 6) {
-                console.log(`\t\ton a sunday; incrementing week`);
-                dayOfWeek = 0;
+            if (dayOfWeek === targetDayOfWeek) {
+                countOfTargetDayOfWeek++;
+                console.log(`\t\t\t${dayOfWeek} matches ${targetDayOfWeek} on ${head}, date = ${date}, incremenet countOfTargetDayOfWeek to ${countOfTargetDayOfWeek}`);
             }
 
             head++;
             dayOfWeek++;
-
-            console.log(`head = ${head}, dayOfWeek = ${dayOfWeek}`);
         }
 
         console.log(`\tdayOfWeek = ${dayOfWeek}, countOfTargetDayOfWeek = ${countOfTargetDayOfWeek}`);
