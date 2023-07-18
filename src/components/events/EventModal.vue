@@ -119,7 +119,7 @@
                 <DateSelector
                     v-if="isRepeatingEnds"
                     :is-editing="isEditing || isNew"
-                    :value="props.event!.repeatEnd"
+                    :value="props.event!.repeatEnd!"
                     class="repeating_end__date_selector"
                     @date-selected="onRepeatingEndDateSelected"
                 />
@@ -157,7 +157,6 @@
                 @keydown.stop
             />
         </div>
-        <span>{{ props.event!.repeatValue }}</span>
         <div class="event_model__footer">
             <span></span>
             <button
@@ -445,6 +444,8 @@
     onMounted(() => {
         isViewingTime.value = !isAllDayEvent.value;
         isRepeating.value = props.event!.repeatType !== RepeatEventType.NONE;
+        isRepeatingEnds.value = isRepeating.value && !!props.event!.repeatEnd;
+
         // console.log(`EventModal/onMounted, event = ${JSON.stringify(props.event)}`);
         if (!props.isNew) {
             focusEditButton();
@@ -567,7 +568,11 @@
     }
 
     .repeating_end__date_selector, .repeating_end__checkbox {
-        margin: 0 4px;
+        margin-left: 8px;
+    }
+
+    .repeating_end__checkbox {
+        margin-right: 8px;
     }
 
     .event__description {

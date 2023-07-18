@@ -82,7 +82,7 @@ export const useCalendarStore = defineStore('calendar', () => {
             if (!savedState.layout) {
                 savedState.layout = CalendarLayout.WEEK;
             }
-            
+
             return {
                 ...savedState,
                 yearData,
@@ -106,7 +106,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         });
 
         return {
-            layout: CalendarLayout.WEEK,
+            layout: CalendarLayout.MONTH,
             year,
             month,
             week,

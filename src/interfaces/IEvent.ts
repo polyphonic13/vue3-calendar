@@ -11,16 +11,17 @@ export interface IBaseEvent {
     repeatType: RepeatEventType;
     repeatId?: string;
     repeatValue?: number;
-    repeatEnd?: Date;
 }
 
 export interface ISerializedEvent extends IBaseEvent {
     start: string;
     end: string;
+    repeatEnd?: string;
 }
 
 export default interface IEvent extends IBaseEvent {
     start: Date;
     end: Date;
+    repeatEnd?: Date;
 }
 

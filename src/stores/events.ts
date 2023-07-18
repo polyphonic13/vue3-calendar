@@ -31,20 +31,35 @@ const {
 export const useEventStore = defineStore('eventStore', () => {
     const deserializeEvents = (serialized: ISerializedEvent[]): IEvent[] => {
         return serialized.map((event: ISerializedEvent) => {
+            let repeatEnd;
+
+            if (event.repeatEnd) {
+                repeatEnd = new Date(event.repeatEnd);
+            }
+
             return {
                 ...event,
                 start: new Date(event.start),
                 end: new Date(event.end),
+                repeatEnd,
             };
         });
     };
 
     const serializeEvents = (): ISerializedEvent[] => {
         return state.value.events.map((event: IEvent) => {
+            let repeatEnd;
+
+            console.log(`serializeEvents, event.repeatEnd = `, event.repeatEnd);
+            if (event.repeatEnd) {
+                repeatEnd = (event.repeatEnd instanceof Date) ? event.repeatEnd.toJSON() : event.repeatEnd // already string;
+            }
+
             return {
                 ...event,
                 start: event.start.toJSON(),
                 end: event.end.toJSON(),
+                repeatEnd,
             };
         });
     };
@@ -94,7 +109,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const state = ref<IEventState>(createState());
-    console.log(`EventsStore/init, state events = `, state.value.events, `\ncalendars = ${JSON.stringify(calendars)}`);
+    console.log(`EventsStore/init, state events =\n`, state.value.events, `\ncalendars = ${JSON.stringify(calendars)}`);
 
     const getCalendarNames = () => {
         return state.value.calendars.map(calendar => calendar.name);
@@ -241,7 +256,7 @@ export const useEventStore = defineStore('eventStore', () => {
         state.value.events.push(event);
         event.dayCount = getDaysInEventCount(event);
 
-        console.log(`about to save new event repeatType = `, event.repeatType);
+        console.log(`about to save new event repeatType = `, event.repeatType, `\tevent = `, event);
 
         if (event.repeatType === RepeatEventType.NONE) {
             saveState();
@@ -299,6 +314,10 @@ export const useEventStore = defineStore('eventStore', () => {
             siblingEvent.start = new Date(currentStart.getFullYear(), currentStart.getMonth(), currentStart.getDate(), event.start.getHours(), event.start.getMinutes());
             currentEnd = (event.dayCount > 1) ? dateAddition(siblingEvent.start, event.dayCount) : siblingEvent.start;
             siblingEvent.end = new Date(currentEnd.getFullYear(), currentEnd.getMonth(), currentEnd.getDate(), event.end.getHours(), event.end.getMinutes());
+
+            if (event.repeatEnd) {
+                siblingEvent.repeatEnd = new Date(event.repeatEnd.getFullYear(), event.repeatEnd.getMonth(), event.repeatEnd.getDate());
+            }
             console.log(`\tsibling event = ${JSON.stringify(siblingEvent)}`);
             console.log(`\tsiblingEvent.start = ${JSON.stringify(siblingEvent.start)}, endDate = ${JSON.stringify(endDate)}`);
 

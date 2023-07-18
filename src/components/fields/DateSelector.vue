@@ -4,7 +4,7 @@
             class="date_selector__btn"
             :class="dateSelectorBtnClasses"
             @click="onDateSelectorBtnClicked"
-        >{{ getDayMDFromDate(props.value) }}</button>
+        >{{ valueString }}</button>
         <div
             v-if="isModalOpen"
             class="date_selector__modal"
@@ -72,6 +72,14 @@
     const dateSelector = ref<HTMLElement | null>(null);
 
     const isModalOpen = ref(false);
+
+    const valueString = computed(() => {
+        if (!props.value || !(props.value instanceof Date)) {
+            return '';
+        }
+
+        return getDayMDFromDate(props.value);
+    });
 
     const dateSelectorBtnClasses = computed(() => ({
         'date_selector__btn--enabled': (props.isEditing),
@@ -142,6 +150,7 @@
     };
 
     onMounted(() => {
+        console.log(`DateSelector/onMounted, value = `, props.value);
         year.value = props.value.getFullYear();
         month.value = props.value.getMonth();
     });

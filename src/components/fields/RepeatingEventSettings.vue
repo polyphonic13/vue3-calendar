@@ -117,7 +117,7 @@
     @import '../../styles/global.scss';
 
     .repeat_event_settings {
-        width: 256px;
+        width: 222px;
 
         display: flex;
         flex-direction: column;
