@@ -213,6 +213,11 @@ export const useEventStore = defineStore('eventStore', () => {
         const copy = JSON.parse(JSON.stringify(payload));
         copy.start = new Date(copy.start);
         copy.end = new Date(copy.end);
+
+        if (copy.repeatEnd) {
+            copy.repeatEnd = new Date(copy.repeatEnd);
+        }
+
         state.value.focusedEvent = copy;
         state.value.isViewingEvent = true;
     };
@@ -318,8 +323,6 @@ export const useEventStore = defineStore('eventStore', () => {
             if (event.repeatEnd) {
                 siblingEvent.repeatEnd = new Date(event.repeatEnd.getFullYear(), event.repeatEnd.getMonth(), event.repeatEnd.getDate());
             }
-            console.log(`\tsibling event = ${JSON.stringify(siblingEvent)}`);
-            console.log(`\tsiblingEvent.start = ${JSON.stringify(siblingEvent.start)}, endDate = ${JSON.stringify(endDate)}`);
 
             if (siblingEvent.start.getTime() <= endDate.getTime()) {
                 state.value.events.push(siblingEvent);

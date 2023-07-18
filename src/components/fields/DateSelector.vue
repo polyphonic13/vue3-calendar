@@ -150,7 +150,6 @@
     };
 
     onMounted(() => {
-        console.log(`DateSelector/onMounted, value = `, props.value);
         year.value = props.value.getFullYear();
         month.value = props.value.getMonth();
     });

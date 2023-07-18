@@ -444,9 +444,8 @@
     onMounted(() => {
         isViewingTime.value = !isAllDayEvent.value;
         isRepeating.value = props.event!.repeatType !== RepeatEventType.NONE;
-        isRepeatingEnds.value = isRepeating.value && !!props.event!.repeatEnd;
+        isRepeatingEnds.value = isRepeating.value && (props.event!.repeatEnd instanceof Date);
 
-        // console.log(`EventModal/onMounted, event = ${JSON.stringify(props.event)}`);
         if (!props.isNew) {
             focusEditButton();
             return;
