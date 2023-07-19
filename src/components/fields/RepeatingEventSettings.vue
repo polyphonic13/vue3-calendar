@@ -96,6 +96,7 @@
         }
 
         props.event.repeatValue = getWeekIndexOfMonthForDay(props.event.start);
+        console.log(`repeatValue = ${props.event.repeatValue}`);
 
     };
 
@@ -117,7 +118,7 @@
     @import '../../styles/global.scss';
 
     .repeat_event_settings {
-        width: 222px;
+        width: 230px;
 
         display: flex;
         flex-direction: column;

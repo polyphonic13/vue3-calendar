@@ -45,11 +45,14 @@ export function useRepeatingEventSettings() {
             return `Monthly on the ${date}${NUMBER_SUFFICES[date]}`;
         }
 
+        // RepeatEventType.MONTHLY_WEEK
         if (!event.repeatValue) {
             return '';
         }
         // console.log(`event.start = ${JSON.stringify(event.start)}`);
-        return `Monthly on the ${getWeekOfMonthString(event.start)} ${DAYS_OF_WEEK[event.start.getDay()]}`;
+        const str = `Monthly on the ${getWeekOfMonthString(event.start)} ${DAYS_OF_WEEK[event.start.getDay()]}`;
+
+        return str;
     };
 
     return {
