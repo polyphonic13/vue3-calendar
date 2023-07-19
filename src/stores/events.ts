@@ -50,7 +50,7 @@ export const useEventStore = defineStore('eventStore', () => {
         return state.value.events.map((event: IEvent) => {
             let repeatEnd;
 
-            console.log(`serializeEvents, event.repeatEnd = `, event.repeatEnd);
+            console.log(`serializeEvents, event[ ${event.id} ].repeatEnd = `, event.repeatEnd);
             if (event.repeatEnd) {
                 repeatEnd = (event.repeatEnd instanceof Date) ? event.repeatEnd.toJSON() : event.repeatEnd // already string;
             }
@@ -343,34 +343,37 @@ export const useEventStore = defineStore('eventStore', () => {
         focusedEvent.dayCount = getDaysInEventCount(focusedEvent as IEvent);
         focusedEvent.isAllDay = getIsAllDay(focusedEvent);
 
-        state.value.events = state.value.events.map((event: IEvent) => {
-            if (event.id === focusedEvent.id) {
+        const oldEvent = state.value.events.find(event => event.id === focusedEvent.id);
 
-                if (event.repeatType !== RepeatEventType.NONE) {
-                    updateRepeatingSiblings(event, focusedEvent as IEvent);
-                }
-
-                return {
-                    ...event,
-                    ...focusedEvent!,
-                }
-            }
-            return event;
-        });
+        if (oldEvent && (oldEvent.repeatId || focusedEvent.repeatId)) {
+            updateRepeatingSiblings(oldEvent, focusedEvent as IEvent);
+        }
 
         state.value.focusedEvent = focusedEvent;
+
+        state.value.events.map(event => {
+            return (event.id === focusedEvent.id) ? focusedEvent : event;
+        });
 
         saveState();
     };
 
     const updateRepeatingSiblings = (oldEvent: IEvent, newEvent: IEvent) => {
+        console.log(`updateRepeatingSiblings\noldEvent = ${JSON.stringify(oldEvent)}\nnewEvent = ${JSON.stringify(newEvent)}`);
         if (!oldEvent.repeatId) {
+            return;
+        }
+
+        if (oldEvent.repeatType !== RepeatEventType.NONE && newEvent.repeatType === RepeatEventType.NONE) {
+            state.value.events = deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
+            console.log(`>>>>> switch to NONE repeat type\n\tstate.value.events now = `, state.value.events);
             return;
         }
 
         if (newEvent.repeatType !== RepeatEventType.NONE) {
             // event is no longer repeat, get rid of other instances
-            deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
+            state.value.events = deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
+            console.log(`>>>>> state.value.events now = `, state.value.events);
             return;
         }
 
@@ -379,7 +382,7 @@ export const useEventStore = defineStore('eventStore', () => {
             return;
         }
 
-        deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
+        state.value.events = deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
         addRepeatingSiblings(newEvent);
     };
 
@@ -405,7 +408,8 @@ export const useEventStore = defineStore('eventStore', () => {
 
         }
 
-        deleteRepeatingSiblings(focusedEvent.repeatId!, focusedEvent.id!)
+        state.value.events = deleteRepeatingSiblings(focusedEvent.repeatId!, focusedEvent.id!)
+
         filterDeletedEventAndSave(focusedEvent.id);
     };
 
@@ -415,7 +419,9 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const deleteRepeatingSiblings = (repeatId: string, focusedId: string) => {
-        state.value.events = state.value.events.filter(event => event.id === focusedId || event.repeatId !== repeatId);
+        console.log(`----------\ndeleteRepeatingSiblings, repeatId = ${repeatId}`);
+        return state.value.events.filter(event => event.id === focusedId || event.repeatId !== repeatId);
+        // console.log(`\tevents now = `, state.value.events);
     }
 
     const deleteFutureRepeatingSiblings = (repeatId: string, currentStart: Date) => {
@@ -508,6 +514,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const saveState = () => {
+        console.log(`SAVE STATE!`);
         const events = serializeEvents();
         const calendars = state.value.calendars;
 
