@@ -50,7 +50,7 @@ export const useEventStore = defineStore('eventStore', () => {
         return state.value.events.map((event: IEvent) => {
             let repeatEnd;
 
-            console.log(`serializeEvents, event[ ${event.id} ].repeatEnd = `, event.repeatEnd);
+            // console.log(`serializeEvents, event[ ${event.id} ].repeatEnd = `, event.repeatEnd);
             if (event.repeatEnd) {
                 repeatEnd = (event.repeatEnd instanceof Date) ? event.repeatEnd.toJSON() : event.repeatEnd // already string;
             }
@@ -109,7 +109,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const state = ref<IEventState>(createState());
-    console.log(`EventsStore/init, state events =\n`, state.value.events, `\ncalendars = ${JSON.stringify(calendars)}`);
+    console.info(`EventsStore/init, state events =\n`, state.value.events);
 
     const getCalendarNames = () => {
         return state.value.calendars.map(calendar => calendar.name);
@@ -247,7 +247,7 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const addEvent = () => {
-        console.log(`event store / addEvent, focusedEvent = `, state.value.focusedEvent);
+        // console.log(`event store / addEvent, focusedEvent = `, state.value.focusedEvent);
         state.value.isViewingEvent = false;
         if (!state.value.focusedEvent) {
             console.warn(`ERROR: can not add new event`);
@@ -261,7 +261,7 @@ export const useEventStore = defineStore('eventStore', () => {
         state.value.events.push(event);
         event.dayCount = getDaysInEventCount(event);
 
-        console.log(`about to save new event repeatType = `, event.repeatType, `\tevent = `, event);
+        // console.log(`about to save new event repeatType = `, event.repeatType, `\tevent = `, event);
 
         if (event.repeatType === RepeatEventType.NONE) {
             saveState();
@@ -304,7 +304,7 @@ export const useEventStore = defineStore('eventStore', () => {
         if (event.repeatType === RepeatEventType.NONE) {
             return;
         }
-        console.log(`\t----- addRepeatingSibilnes, type = ${event.repeatType}`);
+
         const endDate = (event.repeatEnd) ? event.repeatEnd : dateAddition(event.start, 366); // default end is 1 year from now
         const weekOfMonth = (event.repeatType !== RepeatEventType.MONTHLY_WEEKDAY && typeof event.repeatValue === 'number') ? -1 : event.repeatValue as number;
 
@@ -338,42 +338,53 @@ export const useEventStore = defineStore('eventStore', () => {
             return;
         }
 
-        const focusedEvent = state.value.focusedEvent;
+        const focusedEvent = state.value.focusedEvent as IEvent;
 
-        focusedEvent.dayCount = getDaysInEventCount(focusedEvent as IEvent);
+        focusedEvent.dayCount = getDaysInEventCount(focusedEvent);
         focusedEvent.isAllDay = getIsAllDay(focusedEvent);
 
         const oldEvent = state.value.events.find(event => event.id === focusedEvent.id);
 
         if (oldEvent && (oldEvent.repeatId || focusedEvent.repeatId)) {
-            updateRepeatingSiblings(oldEvent, focusedEvent as IEvent);
+            updateRepeatingSiblings(oldEvent, focusedEvent);
         }
 
-        state.value.focusedEvent = focusedEvent;
+        if (focusedEvent.repeatType === RepeatEventType.NONE) {
+            saveUpdatedEvent(focusedEvent);
+            return;
+        }
 
-        state.value.events.map(event => {
-            return (event.id === focusedEvent.id) ? focusedEvent : event;
+        addRepeatingSiblings(focusedEvent);
+        saveUpdatedEvent(focusedEvent);
+    };
+
+    const saveUpdatedEvent = (updated: IEvent) => {
+        state.value.focusedEvent = updated;
+
+        state.value.events = state.value.events.map(event => {
+            return (event.id === updated.id) ? updated as IEvent : event;
         });
 
         saveState();
+
     };
 
     const updateRepeatingSiblings = (oldEvent: IEvent, newEvent: IEvent) => {
-        console.log(`updateRepeatingSiblings\noldEvent = ${JSON.stringify(oldEvent)}\nnewEvent = ${JSON.stringify(newEvent)}`);
+        // console.log(`updateRepeatingSiblings\noldEvent = ${JSON.stringify(oldEvent)}\nnewEvent = ${JSON.stringify(newEvent)}`);
         if (!oldEvent.repeatId) {
             return;
         }
 
         if (oldEvent.repeatType !== RepeatEventType.NONE && newEvent.repeatType === RepeatEventType.NONE) {
             state.value.events = deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
-            console.log(`>>>>> switch to NONE repeat type\n\tstate.value.events now = `, state.value.events);
+            // console.log(`>>>>> switch to NONE repeat type\n\tstate.value.events now = `, state.value.events);
             return;
         }
 
         if (newEvent.repeatType !== RepeatEventType.NONE) {
             // event is no longer repeat, get rid of other instances
             state.value.events = deleteRepeatingSiblings(oldEvent.repeatId, oldEvent.id);
-            console.log(`>>>>> state.value.events now = `, state.value.events);
+            // console.log(`>>>>> state.value.events now = `, state.value.events);
             return;
         }
 
@@ -419,9 +430,9 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const deleteRepeatingSiblings = (repeatId: string, focusedId: string) => {
-        console.log(`----------\ndeleteRepeatingSiblings, repeatId = ${repeatId}`);
+        // console.log(`----------\ndeleteRepeatingSiblings, repeatId = ${repeatId}`);
         return state.value.events.filter(event => event.id === focusedId || event.repeatId !== repeatId);
-        // console.log(`\tevents now = `, state.value.events);
+        console.log(`\tevents now = `, state.value.events);
     }
 
     const deleteFutureRepeatingSiblings = (repeatId: string, currentStart: Date) => {
@@ -514,7 +525,6 @@ export const useEventStore = defineStore('eventStore', () => {
     };
 
     const saveState = () => {
-        console.log(`SAVE STATE!`);
         const events = serializeEvents();
         const calendars = state.value.calendars;
 

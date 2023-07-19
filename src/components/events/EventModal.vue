@@ -370,11 +370,18 @@
         }
 
         isRepeatingEnds.value = !isRepeatingEnds.value;
+
+        if (isRepeatingEnds.value) {
+            const start = props.event!.start!;
+            props.event!.repeatEnd = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+            return;
+        }
+
+        delete props.event!.repeatEnd;
     };
 
     const onRepeatingEndDateSelected = (date: Date) => {
         props.event!.repeatEnd = date;
-        console.log(`EventModal/onRepeatingEndDateSelected, date = `, date, `\n\trepeatEnd now = `, props.event!.repeatEnd);
     };
 
     const onCalendarNameClicked = (index: number) => {

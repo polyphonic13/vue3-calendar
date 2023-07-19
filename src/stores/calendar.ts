@@ -118,8 +118,7 @@ export const useCalendarStore = defineStore('calendar', () => {
     };
 
     const calendarState = ref<ICalendarState>(createState());
-    console.log(`CalendarStore/createState, calendarState = `);
-    console.log(calendarState.value);
+    console.info(`CalendarStore/createState, calendarState = `, calendarState.value);
 
     const saveState = () => {
         const { year, month, week, dayOfWeek, layout } = calendarState.value;
