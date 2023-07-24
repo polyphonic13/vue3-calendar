@@ -317,6 +317,7 @@ export const useEventStore = defineStore('eventStore', () => {
             siblingEvent = JSON.parse(JSON.stringify(event));
             siblingEvent.id = crypto.randomUUID();
             siblingEvent.start = new Date(currentStart.getFullYear(), currentStart.getMonth(), currentStart.getDate(), event.start.getHours(), event.start.getMinutes());
+            console.log(`siblingEvent.start = ${siblingEvent.start}`);
             currentEnd = (event.dayCount > 1) ? dateAddition(siblingEvent.start, event.dayCount) : siblingEvent.start;
             siblingEvent.end = new Date(currentEnd.getFullYear(), currentEnd.getMonth(), currentEnd.getDate(), event.end.getHours(), event.end.getMinutes());
 
