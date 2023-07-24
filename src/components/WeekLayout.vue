@@ -175,7 +175,7 @@
         const start = getDateFromTimes(times.start, { year, month, day });
         const end = getDateFromTimes(times.end, { year, month, day });
 
-        console.log(`onTimeMouseUp, start/end times = ${times.start} / ${times.end}, start = ${start} end = ${end}`);
+        // console.log(`onTimeMouseUp, start/end times = ${times.start} / ${times.end}, start = ${start} end = ${end}`);
         emitCreateEvent(start, end, false);
         onMouseUp();
     };

@@ -311,7 +311,7 @@ export function useDateUtils() {
         const spaceSplit = localTimeString.split(' ');
         const colonSplit = localTimeString.split(':');
 
-        const hh = (colonSplit[0] === '12' && spaceSplit[1] === 'AM') ? '00' : colonSplit[0];
+        const hh = colonSplit[0];
 
         return `${hh}:${colonSplit[1]} ${spaceSplit[1]}`;
     };
